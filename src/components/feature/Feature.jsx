@@ -1,9 +1,9 @@
 import React from 'react'
 
-const cta = () => {
+const Feature = () => {
   return (
     <div>cta</div>
   )
 }
 
-export default cta
+export default Feature
