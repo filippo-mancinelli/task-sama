@@ -21,8 +21,6 @@ const Navbar = () => {
   //toggleMenu -> il menu è visibile?
   const [toggleMenu, setToggleMenu]  = useState(false);
 
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const connect = async () => await provider.send('eth_requestAccounts', []);
   return (
     <div className='gpt3_navbar'>
       <div className='gpt3_navbar-links'>
@@ -41,7 +39,7 @@ const Navbar = () => {
 
     <div className='gpt3_navbar-sign'>
       <p>Sign in</p>
-      <button type='button' onClick={connect}>Connect</button>
+      <button type='button'>Sign up</button>
     </div>
 
     <div className="gpt3_navbar-menu">
