@@ -5,30 +5,14 @@
     scroll-behavior: smooth;
 }
 
+/*
 body {
-    background: var(--color-bg)
+    background: url("assets/y-so-serious.png");
 }
-
+*/
 a {
     color: unset;
     text-decoration: none;
-}
-
-.gradient_bg {
-    /* ff 3.6+ */
-    background:-moz-radial-gradient(circle at 3% 25%, rgba(255, 172, 31, 1) 1%, rgba(255, 100, 3, 0.91) 53%, rgba(203, 45, 177, 1) 88%);
-
-    /* safari 5.1+,chrome 10+ */
-    background:-webkit-radial-gradient(circle at 3% 25%, rgba(255, 172, 31, 1) 1%, rgba(255, 100, 3, 0.91) 53%, rgba(203, 45, 177, 1) 88%);
-
-    /* opera 11.10+ */
-    background:-o-radial-gradient(circle at 3% 25%, rgba(255, 172, 31, 1) 1%, rgba(255, 100, 3, 0.91) 53%, rgba(203, 45, 177, 1) 88%);
-
-    /* ie 10+ */
-    background:-ms-radial-gradient(circle at 3% 25%, rgba(255, 172, 31, 1) 1%, rgba(255, 100, 3, 0.91) 53%, rgba(203, 45, 177, 1) 88%);
-
-    /* global 92%+ browsers support */
-    background:radial-gradient(circle at 3% 25%, rgba(255, 172, 31, 1) 1%, rgba(255, 100, 3, 0.91) 53%, rgba(203, 45, 177, 1) 88%);
 }
 
 .gradient_text {
