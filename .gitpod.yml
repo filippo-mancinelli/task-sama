@@ -1,0 +1,4 @@
+tasks:
+  - name: install dependencies
+    before: echo '🛠️ Installing dependencies... '
+    init: npm install
