@@ -5,11 +5,11 @@
     scroll-behavior: smooth;
 }
 
-/*
+
 body {
-    background: url("assets/y-so-serious.png");
+  background:var(--background-page);
 }
-*/
+
 a {
     color: unset;
     text-decoration: none;
@@ -100,13 +100,6 @@ a {
     box-shadow: "0 1px 10px rgb(151 164 175 / 10%)";
   }
 
-  .headerRight {
-    display: "flex";
-    gap: "20px";
-    align-items: "center";
-    font-size: "15px";
-    font-weight: "600";
-  }
 
 
 

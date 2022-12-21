@@ -2,28 +2,23 @@ import React from 'react'
 import { useEffect, useState} from "react";
 import {
   BrowserRouter as Router,
-  Switch,
   Route,
+  Routes,
   NavLink,
-  Redirect,
+  Navigate,
+  BrowserRouter,
 } from "react-router-dom";
 import { Footer, Header } from './containers';
 import Navbar from './components/navbar/Navbar';
-import Account from "./components/account/Account";
-import Chains from "./components/chains/Chains";
 import NFTBalance from "./components/nftBalance/NFTBalance";
 import NFTTokenIds from "./components/nftTokenIds/NFTTokenIds";
 import NFTMarketTransactions from "./components/nftMarketTransactions/NFTMarketTransactions";
 import SearchCollections from "./components/searchCollections/SearchCollections";
-import NativeBalance from "./components/nativeBalance/NativeBalance";
 //import "antd/dist/antd.css"; //??
-//import "./style.css";
 import './App.css';
 //import Text from "antd/lib/typography/Text"; //??
 
 //const { Header, Footer } = Layout;
-
-
 
 const App = () => {
     
@@ -33,20 +28,35 @@ const App = () => {
   }, [isAuthenticated, isWeb3Enabled]);
   */
 
+  const [inputValue, setInputValue] = useState("explore");
+  console.log('inputValue:', inputValue);
+
   return (
-    <div className="App">
-      <Router>
-        <Navbar />
-        <Header />
-      </Router>
-        <div>
+    <>
+      <div className="App">
+        <Router>
+          <Navbar />
+          <Header parentToChildInputValue={inputValue}/>
+        </Router>
+      <div>
 
-        </div>
-      <Footer />
-    </div>
+      <div className='content'>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/nftBalance" element={<NFTBalance />} />
+            <Route path="/NFTMarketPlace" element={<NFTTokenIds inputValue={inputValue} setInputValue={setInputValue} />} />
+            <Route path="/Transactions" element={<NFTMarketTransactions />} />
+          </Routes>
+        </BrowserRouter>
+
+      </div>
+
+      </div>
+        <Footer />
+      </div>
+    </>
 
 
-    
   )
 }
 
