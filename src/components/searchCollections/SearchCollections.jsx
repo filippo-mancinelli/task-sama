@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 const SearchCollections = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [placeHolder, setPlaceHolder] = useState('Search NFT...');
 
   function handleSubmit(event){
     event.preventDefault();
@@ -16,7 +17,10 @@ const SearchCollections = () => {
 
   return (
       <form onSubmit={handleSubmit}>
-        <input className='input' type="search" placeholder="Search NFT..." value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} onKeyDown={handleKeyPress} />
+        <input className='input' type="search" placeholder="Search NFT..." value={searchQuery} 
+          onChange={(event) => setSearchQuery(event.target.value)} onKeyDown={handleKeyPress}
+          onFocus={() => setPlaceHolder("")}
+          onBlur={() => setPlaceHolder("Search NFT...")}  />
       </form>
   )
 }

@@ -52,20 +52,29 @@
 .menu li a:hover {
 	color: #FFFFFF;
 	background: #CF385B;
+	border-radius: 10px;
+	border: 0.5px solid #ffffff
 }
 .menu input {
 	display: block;
-	margin: 0;
-	padding: 0;
-	height: 40px;
+	margin-top: 5px;
+	padding: 5px;
+	height: 36px;
 	width: 100%;
-	background: #cc2149	;
+	background: #cc2149;
 	font: var(--font-family);
 	color: #FFFFFF;
-	border: none;
+	border-radius: 10px;
+	border: 0.5px solid #ffffff
 }
+
 .menu input[type="search"]::placeholder {
+	color: #ffffffc4;
+}
+
+.menu input[type="search"]:focus {
 	color: #FFFFFF;
+	outline: none;
 }
 
 .menu label {
