@@ -13,7 +13,6 @@ const Header = ({parentToChildInputValue}) => {
 
   const [inputValue, setInputValue] = useState("explore");
 
-
   return (
     <React.Fragment>
       <div className='header' id='home'>

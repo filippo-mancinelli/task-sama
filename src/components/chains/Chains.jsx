@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import useChain from "hooks/useChain";
+import useChain from "../../hooks/useChain";
 import { Menu, Dropdown, Button } from 'antd';
 import { AvaxLogo, PolygonLogo, BSCLogo, ETHLogo } from "./Logos";
 import { DownOutlined } from "@ant-design/icons";

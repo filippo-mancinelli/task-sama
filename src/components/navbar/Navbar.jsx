@@ -6,18 +6,9 @@ import { useState } from 'react';
 import './navbar.css';
 import logo from '../../assets/logo.svg';
 
-
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const connect = async () => { await provider.send("eth_requestAccounts", []) }
-
-const Menu = () => {
-  <>
-  <p><a href='#home'>Home</a></p>
-  <p><a href='#market-tasks'>Market-Tasks</a></p>
-  </>
-}
-
 const Navbar = () => {
+
+  const connect = async () => { await provider.send("eth_requestAccounts", []) }
 
   //toggleMenu -> il menu è visibile?
   const [toggleMenu, setToggleMenu]  = useState(false);

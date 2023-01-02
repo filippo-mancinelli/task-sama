@@ -18,15 +18,9 @@ import SearchCollections from "./components/searchCollections/SearchCollections"
 import './App.css';
 //import Text from "antd/lib/typography/Text"; //??
 
-//const { Header, Footer } = Layout;
-
 const App = () => {
-    
-  /*moralis
-  useEffect(() => {
-    if (isAuthenticated && !isWeb3Enabled && !isWeb3EnableLoading) enableWeb3();
-  }, [isAuthenticated, isWeb3Enabled]);
-  */
+ 
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
 
   const [inputValue, setInputValue] = useState("explore");
   console.log('inputValue:', inputValue);

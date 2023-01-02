@@ -1,11 +1,13 @@
-import { networkConfigs } from "helpers/networks";
+import { networkConfigs } from "../helpers/networks";
+import { ethers } from 'ethers';
+import { provider } from "../components/navbar/Navbar";
+
 
 const useChain = () => {
-  const { Moralis, isWeb3Enabled, enableWeb3 } = useMoralis();
   async function switchNetwork(chain) {
-    if (isWeb3Enabled) {
+    if (provider.isConnected()) { 
       try {
-        await Moralis.switchNetwork(chain);
+        await provider.setNetwork(chain);
       } catch (error) {
         if (error.code === 4902) {
           try {
@@ -26,7 +28,7 @@ const useChain = () => {
         }
       }
     } else {
-      enableWeb3();
+       await provider.send("eth_requestAccounts", []);
     }
   }
   return { switchNetwork };
