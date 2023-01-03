@@ -26,7 +26,7 @@ const Chains = () => {
   ];
 
   const { switchNetwork } = useChain();
-  const { chainId } = useMoralisDapp();
+  const { chainId } = null //useMoralisDapp();
   const [selected, setSelected] = useState({});
 
   useEffect(() => {

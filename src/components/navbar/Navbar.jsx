@@ -2,12 +2,14 @@ import React from 'react'
 import { RiMenu3Line, RiCloseLine } from 'react-icons/ri';
 import { ethers } from 'ethers';
 import { useState } from 'react';
-
+import { useContext } from "react";
+import { ProviderContext } from "../../App";
 import './navbar.css';
 import logo from '../../assets/logo.svg';
 
 const Navbar = () => {
 
+  const provider = useContext(ProviderContext);
   const connect = async () => { await provider.send("eth_requestAccounts", []) }
 
   //toggleMenu -> il menu è visibile?

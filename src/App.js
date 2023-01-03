@@ -14,9 +14,12 @@ import NFTBalance from "./components/nftBalance/NFTBalance";
 import NFTTokenIds from "./components/nftTokenIds/NFTTokenIds";
 import NFTMarketTransactions from "./components/nftMarketTransactions/NFTMarketTransactions";
 import SearchCollections from "./components/searchCollections/SearchCollections";
-//import "antd/dist/antd.css"; //??
 import './App.css';
+import { ethers } from 'ethers';
+//import "antd/dist/antd.css"; //??
 //import Text from "antd/lib/typography/Text"; //??
+
+const ProviderContext = React.createContext();
 
 const App = () => {
  
@@ -29,8 +32,10 @@ const App = () => {
     <>
       <div className="App">
         <Router>
-          <Navbar />
-          <Header parentToChildInputValue={inputValue}/>
+          <ProviderContext.Provider value={provider}>
+            <Navbar />
+            <Header parentToChildInputValue={inputValue}/>
+          </ProviderContext.Provider>
         </Router>
       <div>
 
@@ -54,4 +59,5 @@ const App = () => {
   )
 }
 
-export default App
+export default App;
+export ProviderContext;

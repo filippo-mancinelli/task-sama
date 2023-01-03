@@ -1,9 +1,12 @@
 import { networkConfigs } from "../helpers/networks";
 import { ethers } from 'ethers';
-import { provider } from "../components/navbar/Navbar";
-
+import { useContext } from "react";
+import { ProviderContext } from "../App"
 
 const useChain = () => {
+
+  const provider = useContext(ProviderContext);
+
   async function switchNetwork(chain) {
     if (provider.isConnected()) { 
       try {
