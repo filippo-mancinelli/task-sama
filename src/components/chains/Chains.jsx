@@ -7,12 +7,17 @@ import { DownOutlined } from "@ant-design/icons";
 import { ProviderContext } from '../../App';
 import { useContext } from 'react';
 
+export async function getChainId(provider) {
+  const network = await provider.getNetwork();
+  console.log("chainId", network.chainId);
+}
+
 const Chains = () => {
 
   const provider = useContext(ProviderContext);
   const { switchNetwork } = useChain();
   const [selected, setSelected] = useState({});
-  const { chainId } = getChainId();
+  const { chainId } = getChainId(provider);
 
   const menuItems = [
     {
@@ -31,11 +36,6 @@ const Chains = () => {
        icon: <AvaxLogo />,
      }
   ];
-
-  async function getChainId() {
-    const network = await provider.getNetwork();
-    console.log("chainId", network.chainId);
-  }
 
   useEffect(() => {
     if (!chainId) return;
