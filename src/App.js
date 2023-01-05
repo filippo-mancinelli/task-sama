@@ -23,7 +23,7 @@ const ProviderContext = React.createContext();
 
 const App = () => {
  
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const provider = ((window.ethereum != null) ? new ethers.providers.Web3Provider(window.ethereum) : ethers.providers.getDefaultProvider());
 
   const [inputValue, setInputValue] = useState("explore");
   console.log('inputValue:', inputValue);
@@ -60,4 +60,4 @@ const App = () => {
 }
 
 export default App;
-export ProviderContext;
+export { ProviderContext };

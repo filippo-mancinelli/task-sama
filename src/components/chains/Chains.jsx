@@ -4,8 +4,15 @@ import useChain from "../../hooks/useChain";
 import { Menu, Dropdown, Button } from 'antd';
 import { AvaxLogo, PolygonLogo, BSCLogo, ETHLogo } from "./Logos";
 import { DownOutlined } from "@ant-design/icons";
+import { ProviderContext } from '../../App';
+import { useContext } from 'react';
 
 const Chains = () => {
+
+  const provider = useContext(ProviderContext);
+  const { switchNetwork } = useChain();
+  const [selected, setSelected] = useState({});
+  const { chainId } = getChainId();
 
   const menuItems = [
     {
@@ -25,12 +32,13 @@ const Chains = () => {
      }
   ];
 
-  const { switchNetwork } = useChain();
-  const { chainId } = null //useMoralisDapp();
-  const [selected, setSelected] = useState({});
+  async function getChainId() {
+    const network = await provider.getNetwork();
+    console.log("chainId", network.chainId);
+  }
 
   useEffect(() => {
-    if (!chainId) return null;
+    if (!chainId) return;
     const newSelected = menuItems.find((item) => item.key === chainId);
     setSelected(newSelected);
     console.log("current chainId: ", chainId);
@@ -43,27 +51,28 @@ const Chains = () => {
 
   const menu = (
     <Menu onClick={handleMenuClick}>
-      {menuItems.map((item) => (
-        <Menu.Item className='item' key={item.key} icon={item.icon}>
-          <span style={{ marginLeft: "5px" }}>{item.value}</span>
-        </Menu.Item>
-      ))}
+        {menuItems.map((item) => (
+              <Menu.Item className='item' key={item.key} icon={item.icon}>
+                <span style={{ marginLeft: "5px" }}>{item.value}</span>
+              </Menu.Item>
+        ))}
     </Menu> 
   );
 
+  //TODO fixa
   return (
-    <div>
-      <Dropdown content={menu} trigger={["click"]}>
-        <Button
-          key={selected?.key}
-          icon={selected?.icon}
-          className='button'
-        >
-          <span style={{ marginLeft: "5px" }}>{selected?.value}</span>
-          <DownOutlined />
-        </Button>
-      </Dropdown>
-    </div>
+      <div>
+        <Dropdown content={menu} trigger={["click"]}>
+          <Button
+            key={selected?.key}
+            icon={selected?.icon}
+            className='button'>
+            Click me
+            <span style={{ marginLeft: "5px" }}>{selected?.value}</span>
+            <DownOutlined />
+          </Button>
+        </Dropdown>
+      </div>
   );  
 }
 export default Chains
