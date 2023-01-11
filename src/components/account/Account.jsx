@@ -5,35 +5,28 @@ import { useState } from "react";
 import Address from "../address/Address";
 import { SelectOutlined } from "@ant-design/icons";
 import { getExplorer } from "../../helpers/networks";
-const styles = {
-  account: {
-    height: "42px",
-    padding: "0 15px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "fit-content",
-    borderRadius: "12px",
-    backgroundColor: "rgb(244, 244, 244)",
-    cursor: "pointer",
-  },
-  text: {
-    color: "#21BF96",
-  },
-};
+import { ProviderContext } from "../../App";
+import { useContext } from "react";
+
+const provider = useContext(ProviderContext);
+const [isModalVisible, setIsModalVisible] = useState(false);
+const { authenticate, logout } = useMoralis();
 
 function Account() {
-  const { authenticate, isAuthenticated, logout } = useMoralis();
-  const { walletAddress, chainId } = useMoralisDapp();
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const connect = async () => { await provider.send("eth_requestAccounts", []) }
 
-  if (!isAuthenticated) {
+  if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
+    const isConnected = true;
+    const signer = provider.getSigner();
+    const { walletAddress } = signer.getAddress().then((address) => {return address})
+    const { chainId } = provider.getNetwork().then(res => {return res.chainId});
+  } 
+
+  
+  if (!isConnected) {
     return (
-      <div
-        style={styles.account}
-        onClick={() => authenticate({ signingMessage: "Hello World!" })}
-      >
-        <p style={styles.text}>Authenticate</p>
+      <div className="account" onClick={connect}>
+        <p className="text">Authenticate</p>
       </div>
     );
   }

@@ -11,9 +11,14 @@ const Navbar = () => {
 
   const provider = useContext(ProviderContext);
   const connect = async () => { await provider.send("eth_requestAccounts", []) }
+  const [toggleMenu, setToggleMenu]  = useState(false);   //toggleMenu -> il menu è visibile?
 
-  //toggleMenu -> il menu è visibile?
-  const [toggleMenu, setToggleMenu]  = useState(false);
+  if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
+    const isConnected = true;
+    const signer = provider.getSigner();
+    const { walletAddress } = signer.getAddress().then((address) => {return address})
+    const { chainId } = provider.getNetwork().then(res => {return res.chainId});
+  } 
 
   return (
     <div className='navbar'>
