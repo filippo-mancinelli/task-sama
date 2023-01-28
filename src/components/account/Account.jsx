@@ -5,10 +5,9 @@ import { useState } from "react";
 import Address from "../address/Address";
 import { SelectOutlined } from "@ant-design/icons";
 import { getExplorer } from "../../helpers/networks";
-import { ProviderContext } from "../../App";
 import { useContext } from "react";
 
-const provider = useContext(ProviderContext);
+const provider = useContext(UtilContext);
 const [isModalVisible, setIsModalVisible] = useState(false);
 const { authenticate, logout } = useMoralis();
 

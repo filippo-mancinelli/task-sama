@@ -1,5 +1,4 @@
 import Blockies from "react-blockies";
-import { ProviderContext } from "../../App";
 
 /**
  * Shows a blockie image for the provided wallet address
@@ -8,7 +7,7 @@ import { ProviderContext } from "../../App";
  */
 
 function Blockie(props) {
-    const provider = useContext(ProviderContext);
+    const provider = useContext(UtilContext);
     if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
         const signer = provider.getSigner();
         const { walletAddress } = signer.getAddress().then((address) => {return address})

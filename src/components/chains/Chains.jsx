@@ -4,20 +4,14 @@ import useChain from "../../hooks/useChain";
 import { Menu, Dropdown, Button } from 'antd';
 import { AvaxLogo, PolygonLogo, BSCLogo, ETHLogo } from "./Logos";
 import { DownOutlined } from "@ant-design/icons";
-import { ProviderContext } from '../../App';
 import { useContext } from 'react';
-
-export async function getChainId(provider) {
-  const network = await provider.getNetwork();
-  console.log("chainId", network.chainId);
-}
+import { useUtilConnection } from "./utilConnection";
 
 const Chains = () => {
 
-  const provider = useContext(ProviderContext);
-  const { switchNetwork } = useChain();
+  const { provider, switchNetwork } = useUtilConnection();
   const [selected, setSelected] = useState({});
-  const { chainId } = getChainId(provider);
+  const chainId = useUtilConnection.getChainId(provider);
 
   const menuItems = [
     {
@@ -41,7 +35,6 @@ const Chains = () => {
     if (!chainId) return;
     const newSelected = menuItems.find((item) => item.key === chainId);
     setSelected(newSelected);
-    console.log("current chainId: ", chainId);
   }, [chainId]);
 
   const handleMenuClick = (e) => {

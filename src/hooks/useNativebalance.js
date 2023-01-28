@@ -2,13 +2,14 @@ import { getNativeByChain } from "../helpers/networks";
 import { useEffect, useMemo, useState } from "react";
 import { getChainId } from "../components/chains/Chains";
 import { useContext } from "react";
-import { ProviderContext } from "../App";
 import { ethers } from "ethers";
+import { useUtilConnection } from "./utilConnection";
 
 export const useNativeBalance = (options) => {
-  const provider = useContext(ProviderContext);
 
-  const { chainId } = getChainId(provider);
+  const { provider } = useUtilConnection(); 
+  const { chainId } = getChainId(provider); //TODO
+  
   const nativeName = useMemo(() => getNativeByChain(options?.chain || chainId), [options, chainId]);
   const [balance, setBalance] = useState({ inWei: 0, formatted: 0 });
 
