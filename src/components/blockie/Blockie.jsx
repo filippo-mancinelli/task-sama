@@ -1,4 +1,5 @@
 import Blockies from "react-blockies";
+import { useUtilConnection } from "../../hooks/useUtilConnection";
 
 /**
  * Shows a blockie image for the provided wallet address
@@ -7,11 +8,7 @@ import Blockies from "react-blockies";
  */
 
 function Blockie(props) {
-    const provider = useContext(UtilContext);
-    if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
-        const signer = provider.getSigner();
-        const { walletAddress } = signer.getAddress().then((address) => {return address})
-    }
+    const { provider, walletAddress } = useUtilConnection();
 
     if ((!props.address && !props.currentWallet) || !walletAddress) return null;
 

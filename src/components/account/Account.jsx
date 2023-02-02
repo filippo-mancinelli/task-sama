@@ -5,22 +5,13 @@ import { useState } from "react";
 import Address from "../address/Address";
 import { SelectOutlined } from "@ant-design/icons";
 import { getExplorer } from "../../helpers/networks";
-import { useContext } from "react";
+import { useUtilConnection } from "../../hooks/useUtilConnection";
 
-const provider = useContext(UtilContext);
-const [isModalVisible, setIsModalVisible] = useState(false);
-const { authenticate, logout } = useMoralis();
 
 function Account() {
-  const connect = async () => { await provider.send("eth_requestAccounts", []) }
-
-  if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
-    const isConnected = true;
-    const signer = provider.getSigner();
-    const { walletAddress } = signer.getAddress().then((address) => {return address})
-    const { chainId } = provider.getNetwork().then(res => {return res.chainId});
-  } 
-
+  
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const { provider, connect, isConnected, signer, walletAddress, chainId, disconnect} = useUtilConnection();
   
   if (!isConnected) {
     return (
@@ -32,14 +23,14 @@ function Account() {
 
   return (
     <>
-      <div style={styles.account} onClick={() => setIsModalVisible(true)}>
-        <p style={{ marginRight: "5px", ...styles.text }}>
+      <div className="account" onClick={() => setIsModalVisible(true)}>
+        <p className="text">
           {getEllipsisTxt(walletAddress, 6)}
         </p>
         <Blockie currentWallet scale={3} />
       </div>
       <Modal
-        visible={isModalVisible}
+        open={isModalVisible}
         footer={null}
         onCancel={() => setIsModalVisible(false)}
         bodyStyle={{
@@ -86,7 +77,7 @@ function Account() {
             fontWeight: "500",
           }}
           onClick={() => {
-            logout();
+            disconnect();
             setIsModalVisible(false);
           }}
         >

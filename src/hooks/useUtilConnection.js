@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import React from 'react'
-import useChain from "./useChain";
 import { ethers } from 'ethers';
 import { networkConfigs } from '../helpers/networks';
 
@@ -8,26 +5,51 @@ export const useUtilConnection = () => {
 
   const provider = ((window.ethereum != null) ? new ethers.providers.Web3Provider(window.ethereum) : ethers.providers.getDefaultProvider());
 
-  var walletAddress;
-  var chainId = (isConnected() ? getChainId(provider) : null);
-
-  const connect = async () => { 
-    await provider.send("eth_requestAccounts", []) 
-    const signer = provider.getSigner();
-    walletAddress = signer.getAddress().then((address) => {return address})
-    chainId = provider.getNetwork().then(res => {return res.chainId});
-  }
-
-
   const isConnected = () => {
     if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
         const isConnected = true;
     } 
     return isConnected;
   }  
-  
+
+  const connect = async () => { 
+    if(!isConnected()){
+      await provider.send("eth_requestAccounts", []) 
+    }
+    console.log("provider",provider);
+    console.log("signer",getSigner(provider));
+    console.log("walletaddress",getWalletAddress(getSigner(provider)));
+  }
+
+  const disconnect = async (provider) => {
+    if(isConnected()){
+      provider.disconnect();
+    }
+  }
+
+  async function getSigner(provider) {
+    let signer;
+    if(isConnected()) {
+      signer = provider.getSigner();
+    }
+    console.log("signer", signer);
+    return signer;
+  }
+
+  async function getWalletAddress(signer) {
+    let walletAddress;
+    if(isConnected()){
+      walletAddress = signer.getAddress().then((address) => {return address});
+    }
+    console.log("walletAddress", walletAddress);
+    return walletAddress;
+  }
+
   async function getChainId(provider) {
-    const network = await provider.getNetwork();
+    let network;
+    if(isConnected()){
+      network = await provider.getNetwork();
+    }
     console.log("chainId", network.chainId);
     return network;
   }
@@ -44,5 +66,5 @@ export const useUtilConnection = () => {
     }
   }
 
-  return { provider, walletAddress, chainId, connect, isConnected, getChainId, switchNetwork };
+  return { provider, isConnected, connect, disconnect, getSigner, getChainId, getWalletAddress, switchNetwork };
 };

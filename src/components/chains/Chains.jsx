@@ -1,17 +1,15 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import useChain from "../../hooks/useChain";
 import { Menu, Dropdown, Button } from 'antd';
 import { AvaxLogo, PolygonLogo, BSCLogo, ETHLogo } from "./Logos";
 import { DownOutlined } from "@ant-design/icons";
-import { useContext } from 'react';
-import { useUtilConnection } from "./utilConnection";
+import { useUtilConnection } from "../../hooks/useUtilConnection";
 
 const Chains = () => {
 
-  const { provider, switchNetwork } = useUtilConnection();
+  const { provider, switchNetwork, getChainId } = useUtilConnection();
   const [selected, setSelected] = useState({});
-  const chainId = useUtilConnection.getChainId(provider);
+  const chainId = getChainId(provider);
 
   const menuItems = [
     {

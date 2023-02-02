@@ -1,17 +1,13 @@
 import { getNativeByChain } from "../helpers/networks";
 import { useEffect, useMemo, useState } from "react";
-import { getChainId } from "../components/chains/Chains";
-import { useContext } from "react";
 import { ethers } from "ethers";
-import { useUtilConnection } from "./utilConnection";
+import { useUtilConnection } from "./useUtilConnection";
 
 export const useNativeBalance = (options) => {
 
-  const { provider } = useUtilConnection(); 
-  const { chainId } = getChainId(provider); //TODO
-  
-  const nativeName = useMemo(() => getNativeByChain(options?.chain || chainId), [options, chainId]);
+  const { provider, chainId } = useUtilConnection(); 
   const [balance, setBalance] = useState({ inWei: 0, formatted: 0 });
+  const nativeName = useMemo(() => getNativeByChain(options?.chain || chainId), [options, chainId]);
 
   if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
     const signer = provider.getSigner();
