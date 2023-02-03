@@ -43,13 +43,22 @@ function NFTBalance() {
 
   async function approveAll(nft) {
     setLoading(true);  
-
+    console.log("nft",nft);
     try {
-      await contractInstance.setApprovalForAll().send();
+      const nftAbi = '[{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"}]'
+      const nftInstance = new ethers.Contract(nft.token_address, nftAbi, provider);
+
+      console.log("transaction sent");
+      const tx = await nftInstance.setApprovalForAll().send();
       console.log("Approval Received");
-      setLoading(false);
-      setVisibility(false);
-      succApprove();
+      console.log(`Transaction Hash: ${tx.hash}`);
+      console.log(`Transaction Mined:`);
+
+      // Wait for the transaction to be mined
+      const receipt = await tx.wait();
+      console.log(`Gas used: ${receipt.gasUsed}`);
+      console.log(`Status: ${receipt.status}`);
+
     } catch(error) {
        console.log("error",error);
        setLoading(false);
