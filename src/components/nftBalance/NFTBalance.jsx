@@ -17,10 +17,7 @@ function NFTBalance() {
   const [nftToSend, setNftToSend] = useState(null);
   const [price, setPrice] = useState(1);
   const [loading, setLoading] = useState(false);
-  const contractProcessor = useWeb3ExecuteFunction();
   const contractABIJson = JSON.parse(contractABI);
-  const listItemFunction = "createMarketItem";
-  const ItemImage = Moralis.Object.extend("ItemImages");
 
   async function list(nft, listPrice) {
     setLoading(true);
@@ -116,14 +113,15 @@ function NFTBalance() {
   }
 
   function addItemImage() {
-    const itemImage = new ItemImage();
+    const itemImage = {
+      "image": nftToSend.image,
+      "nftContract": nftToSend.token_address,
+      "tokenId": nftToSend.token_id,
+      "name": nftToSend.name
+    };
+    console.log("itemImage",itemImage);
 
-    itemImage.set("image", nftToSend.image);
-    itemImage.set("nftContract", nftToSend.token_address);
-    itemImage.set("tokenId", nftToSend.token_id);
-    itemImage.set("name", nftToSend.name);
-
-    itemImage.save();
+    itemImage.save(); //TODO Implementare il save direttamente con l'oggetto appena creato
   }
 
   return (
@@ -132,7 +130,7 @@ function NFTBalance() {
         {contractABIJson.noContractDeployed && (
           <>
             <Alert
-              message="No Smart Contract Details Provided. Please deploy smart contract and provide address + ABI in the MoralisDappProvider.js file"
+              message="No Smart Contract Details Provided. Please deploy smart contract and provide address + ABI in the useUtileConnection.js file"
               type="error"
             />
             <div style={{ marginBottom: "10px" }}></div>
