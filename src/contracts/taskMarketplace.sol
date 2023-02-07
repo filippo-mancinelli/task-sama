@@ -10,11 +10,17 @@ contract taskMarketplace is ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private _itemsIds;
     Counters.Counter private _itemsSold;
+    Counters.Counter public totalUploadedSupply;
+
+    mapping (uint256 => address) public tokenOwner;
+    mapping (uint256 => string) public tokenData;
+
 
     address public owner;
 
     constructor() {
         owner = msg.sender;
+        totalUploadedSupply = 0;
     }
 
     struct MarketItem {
@@ -43,6 +49,12 @@ contract taskMarketplace is ReentrancyGuard {
         uint indexed itemId,
         address owner
     );
+
+    function mint(string memory _video) public {
+        totalUploadedSupply++;
+        tokenData[totalUploadedSupply] = _video;
+        tokenOwner[totalUploadedSupply] = msg.sender;
+    }
 
     function createMarketItem(address nftContract, uint256 tokenId, uint257 price) public payable nonReentrant {
         require(price > 0, "Price must be greater than 0");

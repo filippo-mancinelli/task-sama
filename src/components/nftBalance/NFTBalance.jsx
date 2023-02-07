@@ -24,7 +24,7 @@ function NFTBalance() {
     const p = listPrice * ("1e" + 18);
 
     try{
-      await contractInstance.listItemFunction(nft.token_address, nft.token_id, String(p)).send();
+      await contractInstance.createMarketItem(nft.token_address, nft.token_id, String(p)).send();
       console.log("success");
       setLoading(false);
       setVisibility(false);
@@ -121,7 +121,7 @@ function NFTBalance() {
     };
     console.log("itemImage",itemImage);
 
-    itemImage.save(); //TODO Implementare il save direttamente con l'oggetto appena creato
+    //itemImage.save(); TODO Implementare il save direttamente con l'oggetto appena creato, save to DB (https://v1docs.moralis.io/moralis-dapp/database/objects)
   }
 
   return (
