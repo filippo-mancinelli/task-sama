@@ -31,6 +31,7 @@ contract taskMarketplace is ReentrancyGuard {
         address payable owner;
         uint256 price;
         bool sold;
+        string ipfsHash;
     }
 
     mapping(uint256 =>  MarketItem) private idToMarketItem;
