@@ -1,0 +1,16 @@
+.account {
+    height: "42px";
+    padding: "0 15px";
+    display: "flex";
+    justify-content: "center";
+    align-items: "center";
+    width: "fit-content";
+    border-radius: "12px";
+    background-color: "rgb(244, 244, 244)";
+    cursor: "pointer"
+}
+
+.text {
+    color: "#21BF96";
+    margin-right: "5px"
+}
