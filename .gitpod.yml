@@ -1,4 +1,13 @@
+image:
+  file: .gitpod.Dockerfile
+
 tasks:
-  - name: install dependencies
-    before: echo '🛠️ Installing dependencies... '
-    init: npm install
+  - name: Install Ganache
+    command: |
+      echo "🛠️ Installing Ganache globally..."
+      npm install ganache --global
+  
+  - name: Run npm install
+    command: |
+      echo "🛠️ Running npm install..."
+      npm install
