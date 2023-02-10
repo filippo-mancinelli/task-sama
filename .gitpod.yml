@@ -2,11 +2,17 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
+
+  - name: Install Truffle
+    command: |
+      echo "🛠️ Installing Truffle globally..."
+      npm install truffle --global
+  
   - name: Install Ganache
     command: |
       echo "🛠️ Installing Ganache globally..."
       npm install ganache --global
-  
+
   - name: Run npm install
     command: |
       echo "🛠️ Running npm install..."

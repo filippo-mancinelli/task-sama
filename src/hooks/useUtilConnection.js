@@ -3,9 +3,11 @@ import { networkConfigs } from '../helpers/networks';
 
 export const useUtilConnection = () => {
 
-  const provider = ((window.ethereum != null) ? new ethers.providers.Web3Provider(window.ethereum) : ethers.providers.getDefaultProvider());
-  const contractABI = [ "JSONZ" ]; //TODO
-  const contractAddress = "0x..."; //TODO
+  // const provider = ((window.ethereum != null) ? new ethers.providers.Web3Provider(window.ethereum) : ethers.providers.getDefaultProvider());
+  const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');  //Ganache
+
+  const contractABI = [ "JSONZ" ]; //TODO remix/truffle
+  const contractAddress = "0x..."; //TODO remix/truffle
   const contractInstance = new ethers.Contract(contractAddress, contractABI, (isConnected(provider) ?  provider : null));
 
   const isConnected = () => {
