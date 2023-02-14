@@ -5,5 +5,3 @@ tasks:
 
   - name: Run npm install
     before: npm install && echo "🎉 Dependencies installed"
-    init: npm install truffle --global && echo "🎉 Truffle installed"
-    command: npm install ganache --global && echo "🎉 Ganache installed"

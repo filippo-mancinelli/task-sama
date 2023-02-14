@@ -13,7 +13,6 @@ import Navbar from './components/navbar/Navbar';
 import NFTBalance from "./components/nftBalance/NFTBalance";
 import NFTTokenIds from "./components/nftTokenIds/NFTTokenIds";
 import NFTMarketTransactions from "./components/nftMarketTransactions/NFTMarketTransactions";
-import SearchCollections from "./components/searchCollections/SearchCollections";
 import './App.css';
 import { ethers } from 'ethers';
 //import "antd/dist/antd.css"; //??
