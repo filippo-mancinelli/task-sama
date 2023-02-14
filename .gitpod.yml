@@ -4,20 +4,14 @@ image:
 tasks:
 
   - name: Install Truffle
-    init: |
-      echo "🛠️ Installing Truffle globally..." 
-      npm install truffle --global 
-      echo "🎉 Truffle installed"
+    command: |
+      npm install truffle --global && echo "🎉 Truffle installed"
   
   - name: Install Ganache
-    init: |
-      echo "🛠️ Installing Ganache globally..." 
-      npm install ganache --global  
-      echo "🎉 Ganache installed"
+    command: |
+      npm install ganache --global && echo "🎉 Ganache installed"
 
   - name: Run npm install
-    init: |
-      echo "🛠️ Running npm install..."
-      npm install  
-      echo "🎉 Dependencies installed"
+    command: |
+      npm install && echo "🎉 Dependencies installed"
 
