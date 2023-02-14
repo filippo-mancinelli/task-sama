@@ -3,19 +3,7 @@ image:
 
 tasks:
 
-  - name: Install Truffle
-    command: |
-      npm install truffle --global && echo "🎉 Truffle installed"
-  
-  - name: Install Ganache
-    command: |
-      npm install ganache --global && echo "🎉 Ganache installed"
-
   - name: Run npm install
-    command: |
-      npm install && echo "🎉 Dependencies installed"
-
-  - name: Compile smart contracts
-    command: |
-      cd truffle 
-      truffle compile 
+    before: npm install && echo "🎉 Dependencies installed"
+    init: npm install truffle --global && echo "🎉 Truffle installed"
+    command: npm install ganache --global && echo "🎉 Ganache installed"
