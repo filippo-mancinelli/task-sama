@@ -1,4 +1,21 @@
+image:
+  file: .gitpod.Dockerfile
+
 tasks:
-  - name: install dependencies
-    before: echo '🛠️ Installing dependencies... '
-    init: npm install
+
+  - name: Install Truffle
+    command: |
+      npm install truffle --global && echo "🎉 Truffle installed"
+  
+  - name: Install Ganache
+    command: |
+      npm install ganache --global && echo "🎉 Ganache installed"
+
+  - name: Run npm install
+    command: |
+      npm install && echo "🎉 Dependencies installed"
+
+  - name: Compile smart contracts
+    command: |
+      cd truffle 
+      truffle compile 
