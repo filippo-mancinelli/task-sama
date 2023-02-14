@@ -15,3 +15,7 @@ tasks:
     command: |
       npm install && echo "🎉 Dependencies installed"
 
+  - name: Compile smart contracts
+    command: |
+      cd truffle 
+      truffle compile 
