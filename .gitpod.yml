@@ -5,15 +5,16 @@ tasks:
 
   - name: Install Truffle
     command: |
-      echo "🛠️ Installing Truffle globally..."
-      npm install truffle --global
+      echo "🛠️ Installing Truffle globally..." &&
+      npm install truffle --global && echo "🎉 Truffle installed"
   
   - name: Install Ganache
     command: |
-      echo "🛠️ Installing Ganache globally..."
-      npm install ganache --global
+      echo "🛠️ Installing Ganache globally..." &&
+      npm install ganache --global  && echo "🎉 Ganache installed"
 
   - name: Run npm install
     command: |
-      echo "🛠️ Running npm install..."
-      npm install
+      echo "🛠️ Running npm install..." &&
+      npm install  && echo "🎉 Dependencies installed"
+

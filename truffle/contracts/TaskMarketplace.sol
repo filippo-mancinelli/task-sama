@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract taskMarketplace is ReentrancyGuard {
+contract TaskMarketplace is ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private _itemsIds;
     Counters.Counter private _itemsSold;
@@ -49,10 +49,10 @@ contract taskMarketplace is ReentrancyGuard {
         address owner
     );
 
-    function mint(string memory _video) public {
+    function mint(string memory _ipfsHash) public {
         require(msg.sender == owner, "Only the owner of the marketplace can mint the NFT of this video");
         totalUploadedSupply.increment();
-        tokenData[totalUploadedSupply.current()] = _video;
+        tokenData[totalUploadedSupply.current()] = _ipfsHash;
         tokenOwner[totalUploadedSupply.current()] = msg.sender;
     }
 

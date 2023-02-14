@@ -3,7 +3,8 @@ import { networkConfigs } from '../helpers/networks';
 
 export const useUtilConnection = () => {
 
-  // const provider = ((window.ethereum != null) ? new ethers.providers.Web3Provider(window.ethereum) : ethers.providers.getDefaultProvider());
+  //const provider = ((window.ethereum != null) ? new ethers.providers.Web3Provider(window.ethereum) : ethers.providers.getDefaultProvider());
+  //const provider = new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/e595556a6f02441e809bc933758ab52a');  //Infura
   const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');  //Ganache
 
   const contractABI = [ "JSONZ" ]; //TODO remix/truffle
