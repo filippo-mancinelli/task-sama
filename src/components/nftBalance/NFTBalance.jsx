@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import { Card, Image, Tooltip, Modal, Input, Alert, Spin, Button } from "antd";
-import { useNFTBalance } from "hooks/useNFTBalance";
+import { useNFTBalance } from "../../hooks/useNFTBalance";
 import { FileSearchOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { getExplorer } from "helpers/networks";
+import { getExplorer } from "../../helpers/networks";
 import { useUtilConnection } from "../../hooks/useUtilConnection";
 const { Meta } = Card;
 
 
 function NFTBalance() {
-  const { NFTBalance, fetchSuccess } = useNFTBalance();
-  const { chainId, contractAddress, contractABI, contractInstance } = useUtilConnection();
+  const { NFTBalance, fetchSuccess } = useNFTBalance();  //Array of NFT objects, true/false check if objects successfuly fetched
+  const { provider, contractAddress, contractABI, contractInstance, getChainId } = useUtilConnection();
   console.log("contractInstance",contractInstance);
-  const [visible, setVisibility] = useState(false);
-  const [nftToSend, setNftToSend] = useState(null);
+  const [visible, setVisibility] = useState(false);  //Modal visibility
+  const [nftToSend, setNftToSend] = useState(null);  //NFT object
   const [price, setPrice] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);    //used for the "Spin" antd
   const contractABIJson = JSON.parse(contractABI);
+  const chainId =  getChainId(provider);
 
   async function list(nft, listPrice) {
     setLoading(true);

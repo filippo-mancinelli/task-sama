@@ -1,19 +1,15 @@
 import { ethers } from 'ethers';
 import { networkConfigs } from '../helpers/networks';
+import { useContext } from 'react';
+import { EthereumContext } from '../App';
 
 export const useUtilConnection = () => {
-
-  //const provider = ((window.ethereum != null) ? new ethers.providers.Web3Provider(window.ethereum) : ethers.providers.getDefaultProvider());
-  //const provider = new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/e595556a6f02441e809bc933758ab52a');  //Infura
-  const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');  //Ganache
-
-  const contractABI = [ "JSONZ" ]; //TODO remix/truffle
-  const contractAddress = "0x..."; //TODO remix/truffle
-  const contractInstance = new ethers.Contract(contractAddress, contractABI, (isConnected(provider) ?  provider : null));
+  //the provider instance must be defined in the App root component, in this way the same provider instance can be shared between all children components.
+  const { provider, contractABI, contractNftABI, contractAddress, contractInstance } = useContext(EthereumContext);
 
   const isConnected = () => {
     if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
-        const isConnected = true;
+        let isConnected = true;
     } 
     return isConnected;
   }  
@@ -72,5 +68,5 @@ export const useUtilConnection = () => {
     }
   }
 
-  return { provider, contractABI, contractAddress, contractInstance, isConnected, connect, disconnect, getSigner, getChainId, getWalletAddress, switchNetwork };
+  return { provider, contractABI, contractNftABI, contractAddress, contractInstance, isConnected, connect, disconnect, getSigner, getChainId, getWalletAddress, switchNetwork };
 };
