@@ -6,21 +6,19 @@ import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/tok
 import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
 
 
-contract taskMarketplace is ReentrancyGuard {
+contract TaskMarketplace is ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private _itemsIds;
     Counters.Counter private _itemsSold;
-    Counters.Counter public totalUploadedSupply;
 
-    mapping (uint256 => address) public tokenOwner;
-    mapping (uint256 => string) public tokenData;
+    
 
-
+    address public allowedNFTCollection = 0x1234567890123456789012345678901234567890; // taskSama NFT collection address
     address public owner;
 
     constructor() {
         owner = msg.sender;
-        totalUploadedSupply = 0;
+
     }
 
     struct MarketItem {
@@ -51,14 +49,9 @@ contract taskMarketplace is ReentrancyGuard {
         address owner
     );
 
-    function mint(string memory _video) public {
-        totalUploadedSupply++;
-        tokenData[totalUploadedSupply] = _video;
-        tokenOwner[totalUploadedSupply] = msg.sender;
-    }
-
-    function createMarketItem(address nftContract, uint256 tokenId, uint257 price) public payable nonReentrant {
+    function createMarketItem(address nftContract, uint256 tokenId, uint256 price) public payable nonReentrant {
         require(price > 0, "Price must be greater than 0");
+        require(nftContract == allowedNFTCollection, "Only NFTs from the TaskSama collection can be listed");
 
         _itemsIds.increment();
         uint256 itemId = _itemsIds.current();

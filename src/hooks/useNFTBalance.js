@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useIPFS } from "./useIPFS";
 import { useUtilConnection } from "./useUtilConnection";
+import { ethers } from "ethers";
 
 export const useNFTBalance = (options) => {
   const { provider, contractNftABI, getChainId, getSigner, getWalletAddress } = useUtilConnection();
@@ -45,10 +46,10 @@ export const useNFTBalance = (options) => {
           }
         }
       }
-      setNFTBalance(NFTs);
+      setNFTBalance(NFTBalance);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokens]);
+  }, [NFTBalance]);
 
 
   async function getOwnedNFTs(tokenAddress, address) {
@@ -65,5 +66,5 @@ export const useNFTBalance = (options) => {
   }
   
 
-  return { getNFTBalance, NFTBalance, fetchSuccess, error, isLoading };
+  return { NFTBalance };
 };
