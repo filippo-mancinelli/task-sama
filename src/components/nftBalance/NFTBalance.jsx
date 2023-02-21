@@ -10,7 +10,7 @@ const { Meta } = Card;
 
 function NFTBalance() {
   const { NFTBalance, fetchSuccess } = useNFTBalance();  //Array of NFT objects, true/false check if objects successfuly fetched
-  const { provider, contractAddress, contractABI, contractInstance, getChainId } = useUtilConnection();
+  const { provider, contractABI, contractInstance, getChainId } = useUtilConnection();
   console.log("contractInstance",contractInstance);
   const [visible, setVisibility] = useState(false);  //Modal visibility
   const [nftToSend, setNftToSend] = useState(null);  //NFT object

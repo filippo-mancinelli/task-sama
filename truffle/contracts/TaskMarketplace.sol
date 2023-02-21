@@ -5,20 +5,20 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
+
 contract TaskMarketplace is ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private _itemsIds;
     Counters.Counter private _itemsSold;
-    Counters.Counter public totalUploadedSupply;
 
-    mapping (uint256 => address) public tokenOwner;
-    mapping (uint256 => string) public tokenData;
+    
 
-
+    address public allowedNFTCollection = 0x1234567890123456789012345678901234567890; // taskSama NFT collection address
     address public owner;
 
     constructor() {
         owner = msg.sender;
+
     }
 
     struct MarketItem {
@@ -41,7 +41,8 @@ contract TaskMarketplace is ReentrancyGuard {
         address seller,
         address owner,
         uint256 price,
-        bool sold
+        bool sold,
+        string ipfsHash
     );
 
     event MarketItemSold (
@@ -49,15 +50,9 @@ contract TaskMarketplace is ReentrancyGuard {
         address owner
     );
 
-    function mint(string memory _ipfsHash) public {
-        require(msg.sender == owner, "Only the owner of the marketplace can mint the NFT of this video");
-        totalUploadedSupply.increment();
-        tokenData[totalUploadedSupply.current()] = _ipfsHash;
-        tokenOwner[totalUploadedSupply.current()] = msg.sender;
-    }
-
-    function createMarketItem(address nftContract, uint256 tokenId, uint256 price, string memory ipfsHash) public payable nonReentrant {
+    function createMarketItem(address nftContract, uint256 tokenId, uint256 price, string calldata ipfsHash) public payable nonReentrant {
         require(price > 0, "Price must be greater than 0");
+        require(nftContract == allowedNFTCollection, "Only NFTs from the TaskSama collection can be listed");
 
         _itemsIds.increment();
         uint256 itemId = _itemsIds.current();
@@ -82,7 +77,8 @@ contract TaskMarketplace is ReentrancyGuard {
             msg.sender,
             address(0),
             price,
-            false
+            false,
+            ipfsHash
         );
     }
 
@@ -106,17 +102,15 @@ contract TaskMarketplace is ReentrancyGuard {
 
     function fetchMarketItems() public view returns (MarketItem[] memory) {
         uint itemCount = _itemsIds.current();
-        uint unsoldItemCount = _itemsIds.current() - _itemsSold.current();
+        uint unsoldItemCount = itemCount - _itemsSold.current();
         uint currentIndex = 0;
 
         MarketItem[] memory items = new MarketItem[](unsoldItemCount);
         for (uint i = 0; i < itemCount; i++) {
-            if (idToMarketItem[i + 1].owner == address(0)) {
-                uint currentId = i + 1;
-                MarketItem storage currentItem = idToMarketItem[currentId];
-                items[currentIndex] = currentItem;
-                currentIndex += 1;
-            }
+            uint currentId = i + 1;
+            MarketItem storage currentItem = idToMarketItem[currentId];
+            items[currentIndex] = currentItem;
+            currentIndex +=1;
         }
         return items;
     }

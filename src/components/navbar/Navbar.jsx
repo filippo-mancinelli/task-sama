@@ -8,8 +8,8 @@ import logo from '../../assets/logo.svg';
 const Navbar = () => {
 
   const { connect, isConnected } = useUtilConnection();
-  const [toggleMenu, setToggleMenu]  = useState(false);   //toggleMenu -> il menu è visibile?
-
+  
+  
   return (
     <div className='navbar'>
 
@@ -24,7 +24,7 @@ const Navbar = () => {
 
         <div className='navbar-links_connect'>
           <button type='button' onClick={connect}>Connect</button>
-       </div> //TODO cambia pulsante isConnected or not
+       </div> 
        
     </div>
   )

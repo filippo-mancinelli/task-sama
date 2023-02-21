@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract TaskSama.sol {
+contract TaskVideos {
     using Counters for Counters.Counter;
     Counters.Counter public totalSupply;
     mapping (uint256 => address) public tokenOwner;
@@ -14,12 +14,11 @@ contract TaskSama.sol {
 
     constructor() {
         owner = msg.sender;
-        totalSupply = 0;
     }
 
     function mint(string memory _video) public {
-        totalSupply++;
-        tokenData[totalSupply] = _video;
-        tokenOwner[totalSupply] = msg.sender;
+        totalSupply.increment();
+        tokenData[totalSupply.current()] = _video;
+        tokenOwner[totalSupply.current()] = msg.sender;
     }
 }

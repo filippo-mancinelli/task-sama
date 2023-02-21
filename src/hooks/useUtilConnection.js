@@ -5,22 +5,34 @@ import { EthereumContext } from '../App';
 
 export const useUtilConnection = () => {
   //the provider instance must be defined in the App root component, in this way the same provider instance can be shared between all children components.
-  const { provider, contractABI, contractNftABI, contractAddress, contractInstance } = useContext(EthereumContext);
+  const { provider, taskMarketplaceABI, taskVideosABI, tasksABI, taskMarketplaceContractInstance, taskVideosContractInstance, tasksContractInstance } = useContext(EthereumContext);
 
-  const isConnected = () => {
-    if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
-        let isConnected = true;
-    } 
+  const isConnected = async () => {
+    let isConnected = false;
+    //console.log(window.ethereum)
+    if (!window.ethereum.isMetamask) {
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        if (accounts.length > 0) {
+          isConnected = true;
+          console.log("User is already connected.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.log("MetaMask is not installed.");
+    }
     return isConnected;
   }  
 
   const connect = async () => { 
-    if(!isConnected()){
-      await provider.send("eth_requestAccounts", []) 
+    if(!(await isConnected())){
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      console.log("provider",provider);
+      console.log("signer",getSigner(provider));
+      console.log("walletaddress",getWalletAddress(getSigner(provider)));
     }
-    console.log("provider",provider);
-    console.log("signer",getSigner(provider));
-    console.log("walletaddress",getWalletAddress(getSigner(provider)));
   }
 
   const disconnect = async (provider) => {
@@ -68,5 +80,5 @@ export const useUtilConnection = () => {
     }
   }
 
-  return { provider, contractABI, contractNftABI, contractAddress, contractInstance, isConnected, connect, disconnect, getSigner, getChainId, getWalletAddress, switchNetwork };
+  return { provider, taskMarketplaceABI, taskVideosABI, tasksABI, taskMarketplaceContractInstance, taskVideosContractInstance, tasksContractInstance, isConnected, connect, disconnect, getSigner, getChainId, getWalletAddress, switchNetwork };
 };

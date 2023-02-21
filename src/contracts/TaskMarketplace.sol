@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 
 contract TaskMarketplace is ReentrancyGuard {
@@ -35,13 +35,14 @@ contract TaskMarketplace is ReentrancyGuard {
     mapping(uint256 =>  MarketItem) private idToMarketItem;
 
     event MarketItemCreated (
-        uint indexed itemId;
-        address indexed nftContract;
-        uint256 indexed tokenId;
-        address seller;
-        address owner;
-        uint256 price;
-        bool sold;
+        uint indexed itemId,
+        address indexed nftContract,
+        uint256 indexed tokenId,
+        address seller,
+        address owner,
+        uint256 price,
+        bool sold,
+        string ipfsHash
     );
 
     event MarketItemSold (
@@ -49,7 +50,7 @@ contract TaskMarketplace is ReentrancyGuard {
         address owner
     );
 
-    function createMarketItem(address nftContract, uint256 tokenId, uint256 price) public payable nonReentrant {
+    function createMarketItem(address nftContract, uint256 tokenId, uint256 price, string calldata ipfsHash) public payable nonReentrant {
         require(price > 0, "Price must be greater than 0");
         require(nftContract == allowedNFTCollection, "Only NFTs from the TaskSama collection can be listed");
 
@@ -60,10 +61,11 @@ contract TaskMarketplace is ReentrancyGuard {
             itemId,
             nftContract,
             tokenId,
-            msg.sender,  //seller
-            address(0), //owner, address(0) is a null contract with no balance or code
+            payable(msg.sender),  //seller
+            payable(address(0)), //owner, address(0) is a null contract with no balance or code
             price,
-            false
+            false,
+            ipfsHash
         );
 
         IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
@@ -75,7 +77,8 @@ contract TaskMarketplace is ReentrancyGuard {
             msg.sender,
             address(0),
             price,
-            false
+            false,
+            ipfsHash
         );
     }
 
@@ -94,7 +97,7 @@ contract TaskMarketplace is ReentrancyGuard {
         idToMarketItem[itemId].seller.transfer(msg.value);  //the 'seller' is receiving the ethers (msg.value), from the contract call (buyer).
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId); //this transfers the ownership from the taskMarketplace contract to the buyer
         _itemsSold.increment();
-        idToMarketItem[_itemsId].sold = true;
+        idToMarketItem[itemId].sold = true;
     }
 
     function fetchMarketItems() public view returns (MarketItem[] memory) {
@@ -104,7 +107,7 @@ contract TaskMarketplace is ReentrancyGuard {
 
         MarketItem[] memory items = new MarketItem[](unsoldItemCount);
         for (uint i = 0; i < itemCount; i++) {
-            uint currentid = i + 1;
+            uint currentId = i + 1;
             MarketItem storage currentItem = idToMarketItem[currentId];
             items[currentIndex] = currentItem;
             currentIndex +=1;
