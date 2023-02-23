@@ -1,0 +1,8 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "taskSama server :D",
+  "main": "index.js",
+  "author": "maronno3",
+  "license": "MIT"
+}
