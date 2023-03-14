@@ -1,7 +1,0 @@
-image:
-  file: .gitpod.Dockerfile
-
-tasks:
-
-  - name: Run npm install
-    before: npm install && echo "🎉 Dependencies installed"
