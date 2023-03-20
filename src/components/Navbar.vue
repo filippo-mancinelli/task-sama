@@ -1,14 +1,12 @@
 <script setup>
-import Navbar from './components/Navbar.vue'
+
 </script>
 
 <template>
-  <Navbar />
+<button class="btn">Button</button>
 
-  
 </template>
 
 <style scoped>
-
 
 </style>
