@@ -1,16 +1,23 @@
-<script>
-export default {
-  data() {
-    return {
-      isConnected: false,
-    };
-  },
-  computed: {
-    buttonText() {
-      return this.isConnected? 'Connected' : 'Connect';
+<script setup>
+import { useConnectionStore } from '../stores/useConnectionStore'
+import { reactive } from 'vue'
+import { storeToRefs } from 'pinia'
+
+const ConnectionStore = useConnectionStore();
+
+    const state = reactive({
+      isConnected: storeToRefs(ConnectionStore),
+      count: 0
+    });
+
+    function getButtonText() {
+      console.log("state",state.isConnected)
+      return state.isConnected? 'Connected' : 'Connect';
     }
-  }
-};
+
+    function connect() {
+      
+    }
 </script>
 
 <template>
@@ -24,7 +31,7 @@ export default {
   </div>
   <div class="flex-none">
 
-    <li><button class="btn bg-orange-500" @click="connect">{{buttonText}}</button></li>
+    <li><button class="btn bg-orange-500" @click="connect">{{getButtonText()}}</button></li>
 
   </div>
 </div>
