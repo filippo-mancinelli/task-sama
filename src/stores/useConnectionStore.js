@@ -10,7 +10,7 @@ export const useConnectionStore = defineStore('connection', {
         provider: null,
         signer: null,
         walletAddress: null,
-        isConnected: false,
+        isConnected: JSON.parse(localStorage.getItem('isConnected')),
         contractABI: [ "JSONZ" ], //TODO remix/truffle
         contractAddress: "0x...", //TODO remix/truffle
         contractInstance: null
@@ -29,21 +29,8 @@ export const useConnectionStore = defineStore('connection', {
           () => this.isConnected,
           (newValue) => {
             console.log('isConnected changed:', newValue);
-          }
-        );
-      },
-
-      async connect() { 
-        if(!this.isConnected){
-          if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
-            await this.setProvider();
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-          }
-        } else {
-          this.setSigner();
-          this.setWalletAddress()
-        }
-
+          });
+        
         window.ethereum.on('accountsChanged', (accounts) => {
           if (accounts.length > 0) {
             this.isConnected = true;
@@ -51,10 +38,20 @@ export const useConnectionStore = defineStore('connection', {
             this.isConnected = false;
           }
         });
-    
-        console.log("provider",this.provider);
-        console.log("signer",this.signer);
-        console.log("walletaddress",this.walletAddress);
+      },
+
+      async connect() { 
+        if(!this.isConnected){
+          if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
+            await this.setProvider();
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            console.log("this.isConnected",this.isConnected);
+            if(this.isConnected){
+              this.setSigner();
+              this.setWalletAddress()    
+            }
+          }
+        } 
       },
 
       async setProvider() {

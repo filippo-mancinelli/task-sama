@@ -1,14 +1,12 @@
 <script setup>
 import { useConnectionStore } from '../stores/useConnectionStore'
 import { reactive } from 'vue'
-import { storeToRefs } from 'pinia'
+import { computed } from '@vue/reactivity';
 
 const connectionStore = useConnectionStore();
 
-    const state = reactive({
-      isConnected: storeToRefs(connectionStore),
-      count: 0
-    });
+    //not strictly necessary since pinia variables by default are reactive
+    const isConnected = computed(() => { return connectionStore.isConnected})
 
     function connect() {
       connectionStore.connect();
@@ -27,7 +25,7 @@ const connectionStore = useConnectionStore();
   <div class="flex-none">
 
     <li>
-      <button v-if="!connectionStore.isConnected" @click="connect" class="btn bg-orange-500" >Connect</button>
+      <button v-if="!isConnected" @click="connect" class="btn bg-orange-500" >Connect</button>
       <button v-else class="btn bg-black text-white">Connected</button>
     </li>
     
