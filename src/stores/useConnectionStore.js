@@ -10,7 +10,7 @@ export const useConnectionStore = defineStore('connection', {
         provider: null,
         signer: null,
         walletAddress: null,
-        isConnected: JSON.parse(localStorage.getItem('isConnected')),
+        isConnected: JSON.parse(localStorage.getItem('isConnected')) || false,
         contractABI: [ "JSONZ" ], //TODO remix/truffle
         contractAddress: "0x...", //TODO remix/truffle
         contractInstance: null

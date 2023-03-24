@@ -1,6 +1,5 @@
 <script setup>
 import { useConnectionStore } from './stores/useConnectionStore';
-import { onMounted, onUnmounted } from 'vue';
 import Navbar from './components/Navbar.vue'
 import Home from './components/Home.vue';
 
@@ -8,10 +7,6 @@ import Home from './components/Home.vue';
 const connectionStore = useConnectionStore();
 connectionStore.initConnectionWatcher();
 
-onUnmounted(() => {
-  //persist the connection state across refreshes
-  localStorage.setItem('isConnected', JSON.stringify(connectionStore.isConnected))
-});
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup>
 import { useConnectionStore } from '../stores/useConnectionStore'
-import { reactive } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { computed } from '@vue/reactivity';
 
 const connectionStore = useConnectionStore();
@@ -11,6 +11,15 @@ const connectionStore = useConnectionStore();
     function connect() {
       connectionStore.connect();
     }
+
+  onMounted(() => {
+    connectionStore.initConnectionWatcher();
+  });
+
+  onUnmounted(() => {
+    //persist the connection state across refreshes
+    localStorage.setItem('isConnected', JSON.stringify(connectionStore.isConnected))
+  });
 </script>
 
 <template>

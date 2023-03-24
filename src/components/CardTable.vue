@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import _ from 'lodash';
 import Card from './Card.vue';
 
@@ -18,7 +18,7 @@ const cards = ref([
 
 const searchQuery = ref("");
 const sortOrder = ref("id");
-
+const sortDirection = ref("asc");
 
 const filteredCards = computed(() => {
     let results = cards.value;
@@ -35,9 +35,9 @@ const filteredCards = computed(() => {
     }
 
     if (sortOrder.value === "id") {
-        results = _.sortBy(results, ["id"]);
+        results = _.orderBy(results, ["id"], [sortDirection.value]);
     } else if (sortOrder.value === "price") {
-        results = _.sortBy(results, ["price"]);
+        results = _.orderBy(results, ["price"], [sortDirection.value]);
     }
 
     return results;
@@ -45,20 +45,29 @@ const filteredCards = computed(() => {
 
 const sortCards = () => {
     if (sortOrder.value === "id") {
-      cards.value = _.sortBy(cards.value, ["id"]);
+      cards.value = _.orderBy(cards.value, ["id"], [sortDirection.value]);
     } else if (sortOrder.value === "price") {
-      cards.value = _.sortBy(cards.value, ["price"]);
+      cards.value = _.orderBy(cards.value, ["price"], [sortDirection.value]);
     }
 };
+
+const toggleSortDirection = () => {
+  sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
+
+};
+
 </script>
 
 <template>
     <div class="flex items-center px-40 space-x-2">
-    <input type="text" v-model="searchQuery" class="w-full py-2 pl-3 pr-10 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search cards...">
-    <select v-model="sortOrder" @change="sortCards" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
-        <option value="id" class="hover:bg-orange-200">Sort by ID</option>
-        <option value="price">Sort by Price</option>
-    </select>
+      <input type="text" v-model="searchQuery" class="w-full py-2 pl-3 pr-10 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search cards...">
+      <select v-model="sortOrder" @change="sortCards" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+          <option value="id" class="hover:bg-orange-200">Sort by ID</option>
+          <option value="price">Sort by Price</option>
+      </select>
+      <button @click="toggleSortDirection" class="ml-2 px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+        {{ sortDirection === 'asc' ? 'Ascending' : 'Descending'}}
+      </button>
     </div>
 
   
