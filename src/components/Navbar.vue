@@ -14,7 +14,7 @@ const connectionStore = useConnectionStore();
 </script>
 
 <template>
-  <div class="navbar sticky bg-base-100">
+  <div class="navbar sticky px-40 bg-base-100">
   <div class="flex-1 border-solid border-2 border-black rounded-full bg-orange-100">
     <a class="btn btn-ghost normal-case text-2xl">Task Sama</a>
     <ul class="menu menu-horizontal px-1">
@@ -24,7 +24,7 @@ const connectionStore = useConnectionStore();
   </div>
   <div class="flex-none">
 
-    <li>
+    <li class="list-none px-5">
       <button v-if="!isConnected" @click="connect" class="btn bg-orange-500" >Connect</button>
       <button v-else class="btn bg-black text-white">Connected</button>
     </li>
@@ -36,5 +36,10 @@ const connectionStore = useConnectionStore();
 </template>
 
 <style scoped>
-
+.btn-ghost:hover,
+    .btn-ghost.btn-active {
+    --tw-border-opacity: 0;
+    background-color: transparent;
+    --tw-bg-opacity: 0.2;
+}
 </style>

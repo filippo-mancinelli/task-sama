@@ -2,6 +2,7 @@
 import { useConnectionStore } from './stores/useConnectionStore';
 import { onMounted, onUnmounted } from 'vue';
 import Navbar from './components/Navbar.vue'
+import Home from './components/Home.vue';
 
 //watches for changes in the user's metamask connection
 const connectionStore = useConnectionStore();
@@ -15,7 +16,7 @@ onUnmounted(() => {
 
 <template>
   <Navbar />
-
+  <Home />
 
 </template>
 

@@ -23,7 +23,6 @@ export const useNativeBalance = (options) => {
       };
       setBalance(balances);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balance]);
 
   return { balance, nativeName };

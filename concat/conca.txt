@@ -1,0 +1,374 @@
+
+
+/* File: ../src/App.vue */
+
+<script setup>
+import { useConnectionStore } from './stores/useConnectionStore';
+import { onMounted, onUnmounted } from 'vue';
+import Navbar from './components/Navbar.vue'
+import Home from './components/Home.vue';
+
+//watches for changes in the user's metamask connection
+const connectionStore = useConnectionStore();
+connectionStore.initConnectionWatcher();
+
+onUnmounted(() => {
+  //persist the connection state across refreshes
+  localStorage.setItem('isConnected', JSON.stringify(connectionStore.isConnected))
+});
+</script>
+
+<template>
+  <Navbar />
+  <Home />
+
+</template>
+
+<style scoped>
+
+
+</style>
+
+
+/* File: ../src/components/Card.vue */
+
+<script setup>
+
+</script>
+
+<template>
+<div class="card w-96 bg-base-100 shadow-xl">
+  <figure><img src="/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg" alt="Shoes" /></figure>
+  <div class="card-body">
+    <h2 class="card-title">
+      Shoes!
+      <div class="badge badge-secondary">NEW</div>
+    </h2>
+    <p>If a dog chews shoes whose shoes does he choose?</p>
+    <div class="card-actions justify-end">
+      <div class="badge badge-outline">Fashion</div> 
+      <div class="badge badge-outline">Products</div>
+    </div>
+  </div>
+</div>
+</template>
+
+<style scoped>
+</style>
+
+/* File: ../src/components/Hero.vue */
+
+<script setup>
+
+</script>
+
+<template>
+<div class="hero min-h-min">
+  <div class="hero-content text-center">
+    <div class="max-w-md">
+      <h1 class="text-5xl font-bold">Welcome</h1>
+      <p class="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
+      <button class="btn btn-primary">Get Started</button>
+    </div>
+  </div>
+</div>
+</template>
+
+<style>
+
+</style>
+
+/* File: ../src/components/Home.vue */
+
+<script setup>
+import Card from './Card.vue';
+import Hero from './Hero.vue';
+
+
+</script>
+
+<template>
+
+<Hero />
+<Card />
+
+</template>
+
+<style scoped>
+</style>
+
+/* File: ../src/components/Navbar.vue */
+
+<script setup>
+import { useConnectionStore } from '../stores/useConnectionStore'
+import { reactive } from 'vue'
+import { computed } from '@vue/reactivity';
+
+const connectionStore = useConnectionStore();
+
+    //not strictly necessary since pinia variables by default are reactive
+    const isConnected = computed(() => { return connectionStore.isConnected})
+
+    function connect() {
+      connectionStore.connect();
+    }
+</script>
+
+<template>
+  <div class="navbar sticky bg-base-100">
+  <div class="flex-1 border-solid border-2 border-black rounded-full bg-orange-100">
+    <a class="btn btn-ghost normal-case text-2xl">Task Sama</a>
+    <ul class="menu menu-horizontal px-1">
+      <li><a class=" hover:bg-orange-300 text-xl">Home</a></li>
+      <li><a class="hover:bg-orange-300 text-xl">Tasks</a></li>
+    </ul>
+  </div>
+  <div class="flex-none">
+
+    <li>
+      <button v-if="!isConnected" @click="connect" class="btn bg-orange-500" >Connect</button>
+      <button v-else class="btn bg-black text-white">Connected</button>
+    </li>
+    
+
+  </div>
+</div>
+
+</template>
+
+<style scoped>
+.btn-ghost:hover,
+    .btn-ghost.btn-active {
+    --tw-border-opacity: 0;
+    background-color: transparent;
+    --tw-bg-opacity: 0.2;
+}
+</style>
+
+
+/* File: ../src/helpers/formatters.js */
+
+export const n6 = new Intl.NumberFormat("en-us", {
+    style: "decimal",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 6,
+  });
+  export const n4 = new Intl.NumberFormat("en-us", {
+    style: "decimal",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 4,
+  });
+  
+  export const c2 = new Intl.NumberFormat("en-us", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  
+  /**
+   * Returns a string of form "abc...xyz"
+   * @param {string} str string to string
+   * @param {number} n number of chars to keep at front/end
+   * @returns {string}
+   */
+  export const getEllipsisTxt = (str, n = 6) => {
+    if (str) {
+      return `${str.substr(0, n)}...${str.substr(str.length - n, str.length)}`;
+    }
+    return "";
+  };
+  
+  export const tokenValue = (value, decimals) => (decimals ? value / Math.pow(10, decimals) : value);
+  
+  /**
+   * Return a formatted string with the symbol at the end
+   * @param {number} value integer value
+   * @param {number} decimals number of decimals
+   * @param {string} symbol token symbol
+   * @returns {string}
+   */
+  export const tokenValueTxt = (value, decimals, symbol) => `${n4.format(tokenValue(value, decimals))} ${symbol}`;
+
+/* File: ../src/helpers/networks.js */
+
+export const networkConfigs = {
+    "0x1": {
+      currencySymbol: "ETH",
+      blockExplorerUrl: "https://etherscan.io/",
+      wrapped: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    },
+    "0x3": {
+      currencySymbol: "ETH",
+      blockExplorerUrl: "https://ropsten.etherscan.io/",
+    },
+    "0x4": {
+      currencySymbol: "ETH",
+      blockExplorerUrl: "https://kovan.etherscan.io/",
+    },
+    "0x2a": {
+      currencySymbol: "ETH",
+      blockExplorerUrl: "https://rinkeby.etherscan.io/",
+    },
+    "0x5": {
+      currencySymbol: "ETH",
+      blockExplorerUrl: "https://goerli.etherscan.io/",
+    },
+    "0x539": {
+      chainName: "Local Chain",
+      currencyName: "ETH",
+      currencySymbol: "ETH",
+      rpcUrl: "http://127.0.0.1:7545",
+    },
+    "0xa86a": {
+      chainId: 43114,
+      chainName: "Avalanche Mainnet",
+      currencyName: "AVAX",
+      currencySymbol: "AVAX",
+      rpcUrl: "https://api.avax.network/ext/bc/C/rpc",
+      blockExplorerUrl: "https://cchain.explorer.avax.network/",
+    },
+    "0x38": {
+      chainId: 56,
+      chainName: "Smart Chain",
+      currencyName: "BNB",
+      currencySymbol: "BNB",
+      rpcUrl: "https://bsc-dataseed.binance.org/",
+      blockExplorerUrl: "https://bscscan.com/",
+      wrapped: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    },
+    "0x61": {
+      chainId: 97,
+      chainName: "Smart Chain - Testnet",
+      currencyName: "BNB",
+      currencySymbol: "BNB",
+      rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      blockExplorerUrl: "https://testnet.bscscan.com/",
+    },
+    "0x89": {
+      chainId: 137,
+      chainName: "Polygon Mainnet",
+      currencyName: "MATIC",
+      currencySymbol: "MATIC",
+      rpcUrl: "https://rpc-mainnet.maticvigil.com/",
+      blockExplorerUrl: "https://explorer-mainnet.maticvigil.com/",
+      wrapped: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    },
+    "0x13881": {
+      chainId: 80001,
+      chainName: "Mumbai",
+      currencyName: "MATIC",
+      currencySymbol: "MATIC",
+      rpcUrl: "https://rpc-mumbai.matic.today/",
+      blockExplorerUrl: "https://mumbai.polygonscan.com/",
+    },
+  };
+  
+  export const getNativeByChain = (chain) =>
+    networkConfigs[chain]?.currencySymbol || "NATIVE";
+  
+  export const getChainById = (chain) => networkConfigs[chain]?.chainId || null;
+  
+  export const getExplorer = (chain) => networkConfigs[chain]?.blockExplorerUrl;
+  
+  export const getWrappedNative = (chain) =>
+    networkConfigs[chain]?.wrapped || null;
+
+/* File: ../src/main.js */
+
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import App from './App.vue'
+import './style.css'
+
+const pinia = createPinia()
+const app = createApp(App)
+app.use(pinia)
+
+createApp(App).mount('#app')
+
+
+/* File: ../src/stores/useConnectionStore.js */
+
+import { ethers } from 'ethers';
+import { Web3Provider } from '@ethersproject/providers';
+import { networkConfigs } from '../helpers/networks';
+import { defineStore } from 'pinia'
+import { watch } from 'vue';
+
+export const useConnectionStore = defineStore('connection', {
+    
+    state: () => ({ 
+        provider: null,
+        signer: null,
+        walletAddress: null,
+        isConnected: JSON.parse(localStorage.getItem('isConnected')),
+        contractABI: [ "JSONZ" ], //TODO remix/truffle
+        contractAddress: "0x...", //TODO remix/truffle
+        contractInstance: null
+    }),
+
+    getters: {
+      getProvider: (state) => state.provider,
+      getContractABI: (state) => state.contractABI,
+      getContractAddress: (state) => state.contractAddress,
+      getContractInstance: (state) => state.contractInstance,
+    },
+
+    actions: {
+      initConnectionWatcher() {
+        watch(
+          () => this.isConnected,
+          (newValue) => {
+            console.log('isConnected changed:', newValue);
+          });
+        
+        if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
+          window.ethereum.on('accountsChanged', (accounts) => {
+            if (accounts.length > 0) {
+              this.isConnected = true;
+            } else {
+              this.isConnected = false;
+            }
+          });        
+        } 
+      },
+
+      async connect() { 
+        if(!this.isConnected){
+          if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
+            await this.setProvider();
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            
+            //at this point, initConnectionWatcher listener should have updated already isConnected
+            if(this.isConnected){
+              this.setSigner();
+              this.setWalletAddress()    
+            }
+          }
+        } 
+      },
+
+      async setProvider() {
+        this.provider = new Web3Provider(window.ethereum);
+        //this.provider = new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/e595556a6f02441e809bc933758ab52a');  //Infura
+        //provider = new ethers.providers.JsonRpcProvider('http://localhost:8545'),  //Ganache
+
+      },
+
+      async setSigner() {
+        if(this.isConnected) {
+          this.signer = this.provider.getSigner();
+        }
+        console.log("signer", this.signer);
+      },
+
+      async setWalletAddress() {
+        if(this.isConnected && this.signer != null){
+          this.walletAddress = this.signer.getAddress().then((address) => {return address});
+        }
+        console.log("walletAddress", this.walletAddress);
+      }
+    },
+  })
+  

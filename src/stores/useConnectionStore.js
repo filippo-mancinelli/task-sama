@@ -31,13 +31,15 @@ export const useConnectionStore = defineStore('connection', {
             console.log('isConnected changed:', newValue);
           });
         
-        window.ethereum.on('accountsChanged', (accounts) => {
-          if (accounts.length > 0) {
-            this.isConnected = true;
-          } else {
-            this.isConnected = false;
-          }
-        });
+        if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
+          window.ethereum.on('accountsChanged', (accounts) => {
+            if (accounts.length > 0) {
+              this.isConnected = true;
+            } else {
+              this.isConnected = false;
+            }
+          });        
+        } 
       },
 
       async connect() { 
@@ -45,7 +47,8 @@ export const useConnectionStore = defineStore('connection', {
           if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
             await this.setProvider();
             await window.ethereum.request({ method: 'eth_requestAccounts' });
-            console.log("this.isConnected",this.isConnected);
+            
+            //at this point, initConnectionWatcher listener should have updated already isConnected
             if(this.isConnected){
               this.setSigner();
               this.setWalletAddress()    
