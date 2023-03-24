@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import _ from 'lodash';
 import Card from './Card.vue';
 
@@ -11,7 +11,6 @@ const cards = ref([
     { id: 3, title: "Card 3", description: "Description 3", price: 30 },
     { id: 4, title: "Card 4", description: "Description 4", price: 40 },
     { id: 5, title: "Card 5", description: "Description 5", price: 50 },
-    { id: 2, title: "Card 2", description: "Description 2", price: 20 },
 
     // Add more cards
 ]);
@@ -73,7 +72,7 @@ const toggleSortDirection = () => {
   
     <div class="card-table px-40 mt-10">
       <div
-        v-for="(cardRow, index) in _.chunk(filteredCards, 4)"
+        v-for="(cardRow, index) in _.chunk(filteredCards, 3)"
         :key="index"
         class="flex space-x-3 mb-4"
       >
@@ -83,6 +82,7 @@ const toggleSortDirection = () => {
           :title="card.title"
           :description="card.description"
           :price="card.price"
+          class="bg-white text-black"
         />
       </div>
 

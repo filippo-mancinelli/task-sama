@@ -6,7 +6,7 @@ import CardTable from './CardTable.vue';
 
 <template>
 
-<Hero />
+<Hero class="text-black"/>
 <CardTable />
 
 </template>
