@@ -17,7 +17,8 @@
     "lodash": "^4.17.21",
     "pinia": "^2.0.33",
     "truffle": "^5.8.1",
-    "vue": "^3.2.45"
+    "vue": "^3.2.45",
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.9",

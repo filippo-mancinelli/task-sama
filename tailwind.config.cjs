@@ -8,7 +8,10 @@ module.exports = {
     extend: {
       fontFamily: {
         'roboto': ['"Roboto Mono"']
-      }
+      },
+      backgroundImage: (theme) => ({
+        'background-image': "url('/src/assets/background.jpg')",
+      }),
     },
   },
   plugins: [
