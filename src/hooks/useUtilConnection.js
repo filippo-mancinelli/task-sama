@@ -8,9 +8,10 @@ export const useUtilConnection = () => {
   //const provider = new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/e595556a6f02441e809bc933758ab52a');  //Infura
   const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');  //Ganache
 
-  const contractABI = [ "JSONZ" ]; //TODO remix/truffle
-  const contractAddress = "0x..."; //TODO remix/truffle
+  const contractABI = fetch("../helpers/TasksABI.json").then(response => {return response});
+  const contractAddress = "0xf8c41575cb56654c6098cd7fe3f36984c3b4b0c0"; // ganache generated
   const contractInstance = new ethers.Contract(contractAddress, contractABI, (isConnected(provider) ?  provider : null));
+  const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
   const isConnected = () => {
     if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){

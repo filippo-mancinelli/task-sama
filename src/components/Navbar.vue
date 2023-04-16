@@ -15,12 +15,9 @@ const connectionStore = useConnectionStore();
     
   onMounted(() => {
     connectionStore.initConnectionWatcher();
+    connectionStore.checkConnection();
   });
 
-  onUnmounted(() => {
-    //persist the connection state across refreshes
-    localStorage.setItem('isConnected', JSON.stringify(connectionStore.isConnected))
-  });
 </script>
 
 <template>

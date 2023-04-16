@@ -1,32 +1,32 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useConnectionStore } from '../stores/useConnectionStore';
+import Task from './Task.vue';
 import _ from 'lodash';
-import Card from './Card.vue';
 
-// Sample card data
-const cards = ref([
-    // Add card objects here with properties like id, title, description, and price
-    { id: 1, title: "Card 1", description: "Description 1", price: 10 },
-    { id: 2, title: "Card 2", description: "Description 2", price: 20 },
-    { id: 3, title: "Card 3", description: "Description 3", price: 30 },
-    { id: 4, title: "Card 4", description: "Description 4", price: 40 },
-    { id: 5, title: "Card 5", description: "Description 5", price: 50 },
+const connectionStore = useConnectionStore();
 
-    // Add more cards
+
+const tasks = ref([
+    { id: 1, title: "Task 1", description: "Description 1", reward: 10 },
+    { id: 2, title: "Task 2", description: "Description 2", reward: 20 },
+    { id: 3, title: "Task 3", description: "Description 3", reward: 30 },
+    { id: 4, title: "Task 4", description: "Description 4", reward: 40 },
+    { id: 5, title: "Task 5", description: "Description 5", reward: 50 },
 ]);
 
 const searchQuery = ref("");
 const sortOrder = ref("id");
 const sortDirection = ref("asc");
 
-const filteredCards = computed(() => {
-    let results = cards.value;
+const filteredTasks = computed(() => {
+    let results = tasks.value;
 
     if (searchQuery.value) {
-        results = _.filter(results, (card) => {
+        results = _.filter(results, (task) => {
             return (
-                card.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                card.description
+                task.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                task.description
                 .toLowerCase()
                 .includes(searchQuery.value.toLowerCase())
             );
@@ -42,11 +42,11 @@ const filteredCards = computed(() => {
     return results;
 });
 
-const sortCards = () => {
+const sortTasks = () => {
     if (sortOrder.value === "id") {
-      cards.value = _.orderBy(cards.value, ["id"], [sortDirection.value]);
+      tasks.value = _.orderBy(tasks.value, ["id"], [sortDirection.value]);
     } else if (sortOrder.value === "price") {
-      cards.value = _.orderBy(cards.value, ["price"], [sortDirection.value]);
+      tasks.value = _.orderBy(tasks.value, ["price"], [sortDirection.value]);
     }
 };
 
@@ -63,8 +63,8 @@ const toggleSortDirection = () => {
 </div>
 
     <div class="flex items-center px-40 space-x-2 mt-10">
-      <input type="text" v-model="searchQuery" class="w-full py-2 pl-3 pr-10 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search cards...">
-      <select v-model="sortOrder" @change="sortCards" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+      <input type="text" v-model="searchQuery" class="w-full py-2 pl-3 pr-10 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search tasks...">
+      <select v-model="sortOrder" @change="sortTasks" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
           <option value="id" class="hover:bg-orange-200">Sort by ID</option>
           <option value="price">Sort by Price</option>
       </select>
@@ -76,16 +76,16 @@ const toggleSortDirection = () => {
   
     <div class="card-table px-40 mt-10">
       <div
-        v-for="(cardRow, index) in _.chunk(filteredCards, 3)"
+        v-for="(taskRow, index) in _.chunk(filteredTasks, 3)"
         :key="index"
         class="flex space-x-3 mb-4"
       >
-      <div v-for="card in cardRow">
-        <Card
-          :id="card.id"
-          :title="card.title"
-          :description="card.description"
-          :price="card.price"
+      <div v-for="task in taskRow">
+        <Task
+          :id="task.id"
+          :title="task.title"
+          :description="task.description"
+          :price="task.price"
           class="bg-white text-black"
         />
       </div>

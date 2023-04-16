@@ -2,7 +2,7 @@
   "name": "my-project",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,12 +11,16 @@
   "dependencies": {
     "@ethersproject/contracts": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
+    "@openzeppelin/contracts": "^4.8.3",
+    "@truffle/hdwallet-provider": "^2.1.9",
     "daisyui": "^2.51.4",
+    "dotenv": "^16.0.3",
     "ethers": "^6.1.0",
     "ganache": "^7.7.7",
     "lodash": "^4.17.21",
     "pinia": "^2.0.33",
     "truffle": "^5.8.1",
+    "truffle-contract-schema": "^3.0.13",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },

@@ -7,7 +7,7 @@ const props = defineProps([
   'id',
   'title',
   'description',
-  'price'
+  'reward'
 ]);
 
 </script>
@@ -22,7 +22,7 @@ const props = defineProps([
     </h2>
     <p>{{ props?.description }}</p>
     <div class="card-actions justify-end">
-      <div class="badge badge-outline">Price: {{ props?.pri }}</div> 
+      <div class="badge badge-outline">Reward: {{ props?.reward }}</div> 
       <div class="badge badge-outline">Products</div>
     </div>
   </div>
