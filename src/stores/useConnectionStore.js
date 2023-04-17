@@ -12,8 +12,8 @@ export const useConnectionStore = defineStore('connection', {
         signer: null,
         walletAddress: null,
         isConnected: false,
-        contractABI: fetch("src/helpers/TasksABI.json").then(response => response.json()).then(data => data),
-        contractAddress: "0xf32A3C01266E78DC95Bf52CC73bCE78e7AEa86e1", //ganache generated
+        contractABI: null, //fetch("../helpers/TasksABI.json").then(response => {return response}),
+        contractAddress: "0xf8c41575cb56654c6098cd7fe3f36984c3b4b0c0", //ganache generated
         contractInstance: null,
     }),
 
