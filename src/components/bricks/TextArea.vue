@@ -2,19 +2,10 @@
 </script>
 
 <template>
-    <div class="form-control w-full max-w-xs py-2">
+    <div class="form-control py-2">
         <label class="label">
-            <span class="label-text text-lg"><slot name="input-title">Default title</slot></span>
+            <span class="label-text text-lg"><slot name="text-area">Default text-area</slot></span>
         </label>
-
-        <input type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs border-orange-400" />
+        <textarea class="textarea textarea-warning border-orange-400 outline-orange-400 w-full" placeholder="Tell participants what to do..."> </textarea>
     </div>
 </template>
-
-<style>
-.input:focus {
-    outline: 2px solid hsla(var(--bc) / 0.2);
-    outline-offset: 2px;
-    outline-color: orange;
-}
-</style>

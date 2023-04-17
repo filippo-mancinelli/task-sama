@@ -1,8 +1,9 @@
 <script setup>
 import Modal from './Modal.vue';
+import TextInput from './bricks/TextInput.vue';
 import TextArea from './bricks/TextArea.vue';
 import ImageUpload from './bricks/ImageUpload.vue';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
 const showModal = ref(false);
 
@@ -15,8 +16,10 @@ function openModal() {
 <Modal :showModal="showModal">
   <template v-slot:title> Create a new Task </template>
   <template v-slot:content>
-    <TextArea><template v-slot:input-title>Task title:</template></TextArea>
+    <TextInput><template v-slot:text-input>Task title:</template></TextInput>
+    <TextArea><template v-slot:text-area>Task description:</template></TextArea>
     <ImageUpload />
+    <div class="flex justify-center"><button @click="createTask" class="btn bg-orange-400 mt-2 w-40">Create</button></div>
   </template>
 </Modal>
 
