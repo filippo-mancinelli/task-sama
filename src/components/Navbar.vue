@@ -13,10 +13,11 @@ const connectionStore = useConnectionStore();
     }
 
     
-  onMounted(() => {
-    connectionStore.initConnectionWatcher();
-    connectionStore.checkConnection();
-  });
+    onMounted(() => {
+      connectionStore.initABI();
+      connectionStore.initConnectionWatcher();
+      connectionStore.checkConnection();
+    });
 
 </script>
 

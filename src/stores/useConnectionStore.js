@@ -12,18 +12,13 @@ export const useConnectionStore = defineStore('connection', {
         signer: null,
         walletAddress: null,
         isConnected: false,
-        contractABI: null, //fetch("../helpers/TasksABI.json").then(response => {return response}),
-        contractAddress: "0xf8c41575cb56654c6098cd7fe3f36984c3b4b0c0", //ganache generated
+        contractABI: null,
+        contractAddress: "0x4Bf7250D7a9edeE52A9C2AE74534AC2cC4fF8E81", //ganache generated
         contractInstance: null,
     }),
 
     onMounted() {
-      watch(
-        () => this.contractABI.value, 
-        (oldABI, newABI) => {
-          console.log("contractABI old: ${oldABI} contractABI new: ${newABI}")
-        }
-      )
+
     },
 
     getters: {
@@ -34,6 +29,24 @@ export const useConnectionStore = defineStore('connection', {
     },
   
     actions: {
+      initABI(){
+        watch(
+          () => this.contractABI, 
+          (oldABI, newABI) => {
+            console.log("contractABI old:", oldABI)
+            console.log("contractABI new:", newABI)
+          }
+        );
+
+        fetch("./src/helpers/TasksABI.json").then(response => {
+          response.json();
+        }).then(data => {
+          this.contractABI = data; 
+          console.log("data",data)
+          console.log("this.contractABI",this.contractABI)
+        });
+      },
+
       initConnectionWatcher() {
         watch(
           () => this.isConnected,
@@ -68,9 +81,9 @@ export const useConnectionStore = defineStore('connection', {
       async connect() { 
         if(!this.isConnected){
           if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
-            await this.setProvider();
             await window.ethereum.request({ method: 'eth_requestAccounts' });
-            
+            await this.setProvider();
+
             //at this point, initConnectionWatcher listener should have updated already isConnected
             if(this.isConnected){
               this.setSigner();
@@ -83,15 +96,17 @@ export const useConnectionStore = defineStore('connection', {
       //if the user is connected we use metamask as provider, else we use infura/ganache, and then create the contract istance 
       async setProvider() {
         if(this.isConnected) {
-          provider = new Web3Provider(window.ethereum);
+          this.provider = new Web3Provider(window.ethereum);
         } else {
-          //provider = new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/e595556a6f02441e809bc933758ab52a');  //Infura
-          provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');  //Ganache
+          //this.provider = new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/e595556a6f02441e809bc933758ab52a');  //Infura
+          //this.provider = ethers.getDefaultProvider('moonbeam'); //Default provider, moonbeam mainnet
+          this.provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');  //ganache
         }
         
-        if(provider != 'undefined') {
-          contractInstance = new ethers.Contract(contractAddress, TasksABI, provider);
-          console.log("contractInstance",contractInstance)
+        if(this.provider != 'undefined') {
+          console.log("ABI",this.contractABI)
+          this.contractInstance = new ethers.Contract(this.contractAddress, this.contractABI, this.provider);
+          console.log("contractInstance",this.contractInstance)
         }
       },
 
