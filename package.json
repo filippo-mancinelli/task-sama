@@ -17,9 +17,10 @@
     "dotenv": "^16.0.3",
     "ethers": "^6.1.0",
     "ganache": "^7.7.7",
+    "ganache-cli": "^6.12.2",
     "lodash": "^4.17.21",
     "pinia": "^2.0.33",
-    "truffle": "^5.8.1",
+    "truffle": "^5.8.2",
     "truffle-contract-schema": "^3.0.13",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"

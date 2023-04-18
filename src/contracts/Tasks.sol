@@ -70,7 +70,7 @@ contract Tasks is ERC721, Ownable {
         emit TaskCompleted(_taskId, _winner);
     }
 
-    function _isParticipant(uint256 _taskId, address _participant) private view returns (bool) {
+    function _isParticipant(uint256 _taskId, address _participant) public view returns (bool) {
         for (uint256 i = 0; i < tasks[_taskId].participants.length; i++) {
             if (tasks[_taskId].participants[i] == _participant) {
                 return true;
@@ -79,11 +79,15 @@ contract Tasks is ERC721, Ownable {
         return false;
     }
 
-    function _isCompleted(uint256 _taskId) private view returns (bool) {
+    function _isCompleted(uint256 _taskId) public view returns (bool) {
         return taskCompleted[_taskId];
     }
 
-    function _isOwner(uint256 _taskId, address walletCheck) private view returns (bool) {
+    function _isOwner(uint256 _taskId, address walletCheck) public view returns (bool) {
         return tasks[_taskId].owner == walletCheck;
+    }
+
+    function _getTasks() public view returns (Task[] memory) {
+        return tasks;
     }
 }
