@@ -3,6 +3,7 @@ import Modal from './Modal.vue';
 import TextInput from './bricks/TextInput.vue';
 import TextArea from './bricks/TextArea.vue';
 import ImageUpload from './bricks/ImageUpload.vue';
+import TokenAmount from './bricks/TokenAmount.vue';
 import { ref } from 'vue';
 
 const showModal = ref(false);
@@ -19,6 +20,7 @@ function openModal() {
     <TextInput><template v-slot:text-input>Task title:</template></TextInput>
     <TextArea><template v-slot:text-area>Task description:</template></TextArea>
     <ImageUpload />
+    <TokenAmount /> 
     <div class="flex justify-center"><button @click="createTask" class="btn bg-orange-400 mt-2 w-40">Create</button></div>
   </template>
 </Modal>
