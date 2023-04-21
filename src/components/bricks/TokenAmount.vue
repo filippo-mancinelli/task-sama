@@ -5,5 +5,5 @@ import NumberInput from './NumberInput.vue';
 
 <template>
 <!--stuff TODO-->
-<NumberInput />
+<NumberInput> <template v-slot:title><slot name="title">Default tokenAmount title</slot></template> </NumberInput>
 </template>

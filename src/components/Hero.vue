@@ -20,7 +20,11 @@ function openModal() {
     <TextInput><template v-slot:text-input>Task title:</template></TextInput>
     <TextArea><template v-slot:text-area>Task description:</template></TextArea>
     <ImageUpload />
-    <TokenAmount /> 
+    <div class="flex flex-nowrap just">
+      <div class="w-1/4">
+        <TokenAmount><template v-slot:title>Reward amount:</template></TokenAmount> 
+      </div>
+    </div>
     <div class="flex justify-center"><button @click="createTask" class="btn bg-orange-400 mt-2 w-40">Create</button></div>
   </template>
 </Modal>

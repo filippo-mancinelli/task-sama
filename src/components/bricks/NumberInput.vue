@@ -7,10 +7,10 @@ import { ref } from 'vue';
 
 <template>
     <div class="form-control py-2">
-      <label for="amount" class="block text-sm font-medium text-gray-700"><slot name="title">Default title</slot></label>
+      <label for="amount" class="label-text text-base"><slot name="title">Default title</slot></label>
       <div class="mt-1">
         <input type="number" id="amount" name="amount" v-model="amount" pattern="\d*"
-          class="shadow-sm focus:ring-orange-400 focus:border-orange-400 block w-full sm:text-sm border-orange-400 rounded-md">
+          class="shadow-sm p-2 focus:ring-orange-400 focus:border-orange-400 block w-full sm:text-sm border-orange-400 rounded-md">
       </div>
     </div>
   </template>

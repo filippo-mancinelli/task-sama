@@ -2,7 +2,7 @@
 </script>
 
 <template>
-    <div class="form-control py-2">
+    <div class="flex form-control py-2">
         <label class="label">
             <span class="label-text text-lg"><slot name="text-area">Default text-area</slot></span>
         </label>
