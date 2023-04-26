@@ -1,0 +1,5 @@
+    <!-- POPUP EXAMPLE
+    <div class="flex">
+      <Popup @show-popup="(res) => showPopup = res" :showPopup="showPopup" :messageType="messageType"> <template v-slot:message>{{message}}</template></Popup>
+    </div>
+    -->

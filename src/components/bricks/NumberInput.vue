@@ -9,8 +9,8 @@ import { ref } from 'vue';
     <div class="form-control py-2">
       <label for="amount" class="label-text text-base"><slot name="title">Default title</slot></label>
       <div class="mt-1">
-        <input type="number" id="amount" name="amount" v-model="amount" pattern="\d*"
-          class="shadow-sm p-2 focus:ring-orange-400 focus:border-orange-400 block w-full sm:text-sm border-orange-400 rounded-md">
+        <input type="number" id="amount" name="amount" v-model="amount" pattern="\d*" min="0"
+        class="shadow-sm p-2 block w-full sm:text-sm focus:ring-orange-400 focus:border-orange-400 border border-orange-400 outline-orange-400 outline-offset-4 rounded-md ">
       </div>
     </div>
   </template>
@@ -19,4 +19,5 @@ import { ref } from 'vue';
   textarea:invalid {
     border-color: red; /* change the border color when the input is not valid */
   }
+
   </style>

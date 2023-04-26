@@ -122,6 +122,11 @@ export const useConnectionStore = defineStore('connection', {
           this.walletAddress = this.signer.getAddress().then((address) => {return address});
         }
         console.log("walletAddress", this.walletAddress);
+      },
+
+      async callContractFunction(functionName, args){
+        const result = await this.contractInstance[functionName](...args);
+        return result
       }
     },
   })
