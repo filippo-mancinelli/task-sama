@@ -1,23 +1,22 @@
 <script setup>
 import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/vue/24/solid';
-import { computed, defineEmits, ref, watch } from 'vue';
+import { defineEmits, ref, watch } from 'vue';
 
 const props = defineProps(['showModal', 'modalType']);
 const emits = defineEmits(['closeModal']);
-const showModalRef = ref(props.showModal);
+const showModalRef = ref('');
 const modalClass = ref('');
 
-const showModalComputed = computed(()=>{ return props.showModal });
-const modalTypeComputed = computed(()=>{ return props.modalType });
-
-watch(showModalComputed, () => {
-    showModalRef.value = !showModalRef.value;
+watch(()=>props.showModal, (newValue, oldValue) => {
+    showModalRef.value = newValue;
     console.log("showModal: ", showModalRef.value);
+    console.log("props.showModal: ", props.showModal);
 });
 
-watch(modalTypeComputed, (value) => {
-    console.log("value",value)
-    switch(value) {
+
+watch(()=>props.modalType, (newValue, oldValue) => {
+    console.log("newValue",newValue);
+    switch(newValue) {
         case '':
             modalClass.value = 'bg-orange-100';
             break;
@@ -31,6 +30,7 @@ watch(modalTypeComputed, (value) => {
     console.log("type: ", modalClass.value);
 });
 
+
 function closeModal(){
     showModalRef.value = false;
     console.log(showModalRef.value)
@@ -40,7 +40,9 @@ function closeModal(){
 </script>
 
 <template>
-    <div v-if="showModalRef.value" class="w-full ">
+        <button v-if="showModalRef">AAAAAAAAAAAAAAAAAAAAAAA</button>
+
+    <div v-if="showModal" class="w-full ">
         <div class="modal">
             <div :class="`modal-box w-3/4 h-auto relative flex flex-col ${modalClass.value}`">
                 <button @click="closeModal" class="btn btn-sm btn-circle absolute right-2 top-2 bg-orange-400 border-orange-400">✕</button>
