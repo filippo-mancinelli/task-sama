@@ -9,7 +9,7 @@ import { useConnectionStore } from '../stores/useConnectionStore';
 
 const showModal = ref(false);
 const showModalResult = ref(false);
-const messageType = ref('');
+const modalType = ref('');
 const message = ref('');
 
 function openModal() {
@@ -17,20 +17,20 @@ function openModal() {
 }
 
 function createTask(_title, _description, _imageURI, _reward) {
-  messageType.value = 'success';
+  modalType.value = 'success';
   message.value = 'carl';
   showModalResult.value = true;
 
   if(useConnectionStore.isConnected){
     useConnectionStore.callContractFunction(_title, _description, _imageURI, _reward)
     .then(response => {
-      messageType.value = 'success';
+      modalType.value = 'success';
       message.value = 'Task created successfully!';
       showModalResult.value = true;
       showModal.value = false;
     })
     .catch(error => {
-      messageType.value = 'danger';
+      modalType.value = 'danger';
       message.value = 'Error creating task: ' + error;
       showModalResult.value = true;
       console.log("errore Nella creazione del task: ", error)} );
@@ -39,7 +39,7 @@ function createTask(_title, _description, _imageURI, _reward) {
 </script>
 
 <template>
-<Modal @close-modal="showModal = false" :showModal="showModal">
+<Modal @close-modal="showModal = false" :showModal="showModal" :modalType="''">
   <template v-slot:title> Create a new Task </template>
   <template v-slot:content>
     <TextInput><template v-slot:text-input>Task title:</template></TextInput>
@@ -61,8 +61,9 @@ function createTask(_title, _description, _imageURI, _reward) {
   </template>
 </Modal>
 
-<Modal @close-modal="showModalResult = false" :showModal="showModalResult" :modalType="messageType">
-
+<Modal @close-modal="showModalResult = false" :showModal="showModalResult" :modalType="modalType">
+<template v-slot:title></template>
+<template v-slot:content>{{ message }}</template>
 </Modal>
 
 <div id="home" class="hero my-20 ">

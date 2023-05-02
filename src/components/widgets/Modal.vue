@@ -17,29 +17,55 @@ watchEffect(() => {
             modalClass.value = 'bg-red-500';
             break;
     }
-    console.log("watcheffect",modalClass.value)
 });
 
 </script>
 
-<template>  <div v-if="modalType == 'success'">AAAAAAAAAAAAAA</div>
-        <div v-if="showModal" class="w-full ">
+<template> 
+<Teleport to="body">
+    <Transition name="fade">
+        <div v-if="showModal" class="w-full">
             <div class="modal" :class="{ 'modal-open': showModal }">
-                <div :class="`modal-box w-3/4 h-auto relative flex flex-col ${modalClass.value}`">
+                <div class="modal-box w-3/4 h-auto relative flex flex-col justify-center">
                     <button @click="$emit('closeModal')" class="btn btn-sm btn-circle absolute right-2 top-2 bg-orange-400 border-orange-400">✕</button>
-                    <div v-if="modalType !== ''" class="py-2">
-                        <CheckCircleIcon v-if="modalType == 'success'" class="h-6 w-6 text-white" />
-                        <ExclamationCircleIcon v-if="modalType == 'danger'" class="h-6 w-6 text-white" />
+                    
+                    <div v-if="modalType !== ''" class="py-4 flex justify-center rounded-lg" :class="modalClass">
+                        <CheckCircleIcon v-if="modalType == 'success'" class="h-14 w-14 text-white" />
+                        <ExclamationCircleIcon v-if="modalType == 'danger'" class="h-14 w-14 text-white" />
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold"><slot name="title">Default title</slot></h3>
+                        <h3 class="text-lg font-bold mt-2">
+                            <span v-if="modalType == 'success'">Success!</span>
+                            <span v-else-if="modalType == 'danger'">Error!</span>
+                            <span v-else>
+                                <slot name="title">Default title</slot>
+                            </span>
+                        </h3>
                     </div>
                     <slot name="content">Default content</slot>
+
+                    <div class="flex justify-end">
+                        <button v-if="modalType !==''" @click="$emit('closeModal')" class="btn w-20 h-10 bg-orange-400">Ok</button>
+                    </div>
                 </div>
             </div>
         </div>
+    </Transition>
+</Teleport>
+
 </template>
 
 <style scoped>
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+
+.fade-enter-from,
+.fade-leave-to{
+  opacity: 0;
+}
+
 
 </style>

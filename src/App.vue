@@ -10,7 +10,7 @@ connectionStore.initConnectionWatcher();
 </script>
 
 <template>
-  <div class="bg-background-image ">
+  <div class="bg-background-image z-10">
     
     <Navbar class=" text-black" />
 
