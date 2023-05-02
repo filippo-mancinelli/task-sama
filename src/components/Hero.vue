@@ -14,11 +14,10 @@ const message = ref('');
 
 function openModal() {
   showModal.value = true;
-  console.log(showModal.value)
 }
 
 function createTask(_title, _description, _imageURI, _reward) {
-  messageType.value = 'danger';
+  messageType.value = 'success';
   message.value = 'carl';
   showModalResult.value = true;
 
@@ -40,7 +39,7 @@ function createTask(_title, _description, _imageURI, _reward) {
 </script>
 
 <template>
-<Modal @show-modal="(res) => showModal.value = res" :showModal="showModal" :modalType="success">
+<Modal @close-modal="showModal = false" :showModal="showModal">
   <template v-slot:title> Create a new Task </template>
   <template v-slot:content>
     <TextInput><template v-slot:text-input>Task title:</template></TextInput>
@@ -62,7 +61,7 @@ function createTask(_title, _description, _imageURI, _reward) {
   </template>
 </Modal>
 
-<Modal @show-modal="(res) => showModalResult.value = res" :showModal="showModalResult" :modalType="success">
+<Modal @close-modal="showModalResult = false" :showModal="showModalResult" :modalType="messageType">
 
 </Modal>
 
