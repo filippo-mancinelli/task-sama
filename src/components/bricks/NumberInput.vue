@@ -12,11 +12,12 @@ watchEffect(() => {
 
 
 <template>
-    <div class="form-control py-2">
+    <div class="form-control">
       <label for="amount" class="label-text text-base"><slot name="title">Default title</slot></label>
-      <div class="mt-1">
+      <div class="flex mt-1">
         <input type="number" id="amount" name="amount" v-model="amount" pattern="\d*" min="0"
-        class="shadow-sm p-2 block w-full sm:text-sm focus:ring-orange-400 focus:border-orange-400 border border-orange-400 outline-orange-400 outline-offset-4 rounded-md ">
+        class="shadow-sm w-full mr-2 sm:text-sm focus:ring-orange-400 focus:border-orange-400 border border-orange-400 outline-orange-400 outline-offset-4 rounded-md ">
+        <span class="mt-1"> <slot name="currency"> </slot> </span>
       </div>
     </div>
   </template>

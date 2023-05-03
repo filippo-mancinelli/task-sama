@@ -4,8 +4,6 @@ import { useArgStore } from '../../stores/useArgStore'
 import { watchEffect, ref } from 'vue';
 import { TrashIcon } from "@heroicons/vue/24/solid"
 
-
-
 const argStore = useArgStore();
 
 const uploadedFile = ref({
@@ -75,8 +73,8 @@ watchEffect(() => {
             <TrashIcon v-if="uploadedFile.size > 0" @click="deleteFile" class="h-10 w-10 mt-3 ml-2 text-stone-600"/>
           </Transition>
         </form>
+        <Error :showError="showError"> <template v-slot:error> {{ errorMessage }} </template> </Error>
     </div>
-      <Error v-if="showError"> <template v-slot:error> {{ errorMessage }} </template> </Error>
       
     <!--
     <div v-if="uploadedFile.file">

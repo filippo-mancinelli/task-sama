@@ -4,7 +4,7 @@ export const useArgStore = defineStore('arguments', {
 
     state: () => ({
         //similar hashMap
-        arguments: {}
+        arguments: {  }
     }),
 
     getters: {

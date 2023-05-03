@@ -4,18 +4,22 @@ import TextInput from './bricks/TextInput.vue';
 import TextArea from './bricks/TextArea.vue';
 import ImageUpload from './bricks/ImageUpload.vue';
 import TokenAmount from './bricks/TokenAmount.vue';
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useArgStore } from '../stores/useArgStore';
 
 const connectionStore = useConnectionStore();
 const argStore = useArgStore();
 
-
 const showModal = ref(false);
 const showModalResult = ref(false);
 const modalType = ref('');
 const message = ref('');
+
+const showAreaError = ref(false);
+const showInputError = ref(false);
+const showTokenError = ref(false);
+
 
 function openModal() {
   showModal.value = true;
@@ -23,8 +27,15 @@ function openModal() {
 
 function createTask(_title, _description, _imageURI, _reward) {
   console.log(argStore.getArguments)
-  if(argStore.getArguments) {
-
+  if(argStore.getArguments.textArea == '' || argStore.getArguments.textInput == '' || argStore.getArguments.numberInput == '') {
+    if(argStore.getArguments.textArea == '') 
+    showAreaError.value = true;
+    
+    if(argStore.getArguments.textInput == '') 
+      showInputError.value = true;
+    
+    if(argStore.getArguments.numberInput == '') 
+      showTokenError.value = true;
   } else if(connectionStore.isConnected){
      connectionStore.callContractFunction(_title, _description, _imageURI, _reward)
       .then(response => {
@@ -41,18 +52,25 @@ function createTask(_title, _description, _imageURI, _reward) {
       } );
   }
 }
+
+watchEffect(() => {
+  argStore.getArguments.textArea !== '' ? showAreaError.value = false : 'doNothing';
+  argStore.getArguments.textInput !== '' ? showInputError.value = false : 'doNothing';
+  argStore.getArguments.numberInput !== '' ? showTokenError.value = false : 'doNothing';
+});
+
 </script>
 
 <template>
 <Modal @close-modal="showModal = false" :showModal="showModal" :modalType="''">
   <template v-slot:title> Create a new Task </template>
   <template v-slot:content>
-    <TextInput><template v-slot:text-input>Task title:</template></TextInput>
-    <TextArea><template v-slot:text-area>Task description:</template></TextArea>
+    <TextInput :showError="showInputError" :errorMessage="'Title cannot be empty.'"><template v-slot:text-input>Task title:</template></TextInput>
+    <TextArea :showError="showAreaError" :errorMessage="'Description cannot be empty.'"><template v-slot:text-area>Task description:</template></TextArea>
     <ImageUpload />
     <div class="flex flex-nowrap just">
       <div class="w-1/4">
-        <TokenAmount><template v-slot:title>Reward amount:</template></TokenAmount> 
+        <TokenAmount :showError="showTokenError" :errorMessage="'Reward cannot be empty.'"><template v-slot:title>Reward amount:</template></TokenAmount> 
       </div>
     </div>
 
