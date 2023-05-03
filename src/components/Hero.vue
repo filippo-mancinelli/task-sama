@@ -6,6 +6,11 @@ import ImageUpload from './bricks/ImageUpload.vue';
 import TokenAmount from './bricks/TokenAmount.vue';
 import { ref } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
+import { useArgStore } from '../stores/useArgStore';
+
+const connectionStore = useConnectionStore();
+const argStore = useArgStore();
+
 
 const showModal = ref(false);
 const showModalResult = ref(false);
@@ -17,24 +22,24 @@ function openModal() {
 }
 
 function createTask(_title, _description, _imageURI, _reward) {
-  modalType.value = 'success';
-  message.value = 'carl';
-  showModalResult.value = true;
+  console.log(argStore.getArguments)
+  if(argStore.getArguments) {
 
-  if(useConnectionStore.isConnected){
-    useConnectionStore.callContractFunction(_title, _description, _imageURI, _reward)
-    .then(response => {
-      modalType.value = 'success';
-      message.value = 'Task created successfully!';
-      showModalResult.value = true;
-      showModal.value = false;
-    })
-    .catch(error => {
-      modalType.value = 'danger';
-      message.value = 'Error creating task: ' + error;
-      showModalResult.value = true;
-      console.log("errore Nella creazione del task: ", error)} );
-  } 
+  } else if(connectionStore.isConnected){
+     connectionStore.callContractFunction(_title, _description, _imageURI, _reward)
+      .then(response => {
+        modalType.value = 'success';
+        message.value = 'Task created successfully!';
+        showModalResult.value = true;
+        showModal.value = false;
+      })
+      .catch(error => {
+        modalType.value = 'danger';
+        message.value = 'Error creating task: ' + error;
+        showModalResult.value = true;
+        console.log("errore Nella creazione del task: ", error)
+      } );
+  }
 }
 </script>
 

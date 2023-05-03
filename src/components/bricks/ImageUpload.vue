@@ -1,6 +1,12 @@
 <script setup>
-import { ref } from 'vue';
 import Error from './Error.vue';
+import { useArgStore } from '../../stores/useArgStore'
+import { watchEffect, ref } from 'vue';
+import { TrashIcon } from "@heroicons/vue/24/solid"
+
+
+
+const argStore = useArgStore();
 
 const uploadedFile = ref({
   name: '',
@@ -10,10 +16,10 @@ const uploadedFile = ref({
 });
 
 const showError = ref(false);
+const errorMessage = ref('');
 
 function onFileChange(event) {
   const file = event.target.files[0];
-  console.log("file",file.type == 'image/jpeg')
 
   if (file && file.type == 'image/jpeg') {
       uploadedFile.value.name = file.name
@@ -22,23 +28,56 @@ function onFileChange(event) {
       uploadedFile.value.date = new Date()
       showError.value = false;
     } else {
+      if(file.type !== 'image/jpeg'){
+        errorMessage.value = 'File format must be jpeg or png.';
+      }
+      if(file.size > 2000000) {
+        errorMessage.value = 'File size must be under 2 MB.';
+      }
       showError.value = true;
     }
   }
 
-function formatDate(){
+function deleteFile() {
+  uploadedFile.value = {
+    name: '',
+    size: 0,
+    file: null,
+    date: new Date()
+  }
+  document.getElementById("myForm").reset();
+}
+
+function formatDate() {
 
 }
+
+watchEffect(() => {
+    argStore.pushArg({ 
+      key: 'file', 
+      value: {
+        fileName: uploadedFile.value.name,
+        size: uploadedFile.value.size,
+        file: uploadedFile.value.file,
+        date: uploadedFile.value.date
+      }
+    });
+});
 
 </script>
 
 <template>
     <div class="py-2">
       <span class="label-text text-lg ">Upload an image: </span>
-      <input type="file" class="file-input file-input-bordered w-full mt-2" @change="onFileChange" />
+        <form id="myForm" class="flex">
+          <input type="file" class="file-input file-input-bordered w-full mt-2" @change="onFileChange">
+          <Transition name="trash">
+            <TrashIcon v-if="uploadedFile.size > 0" @click="deleteFile" class="h-10 w-10 mt-3 ml-2 text-stone-600"/>
+          </Transition>
+        </form>
     </div>
-      <Error v-if="showError"> <template v-slot:error> File format must be jpeg or png. </template> </Error>
-
+      <Error v-if="showError"> <template v-slot:error> {{ errorMessage }} </template> </Error>
+      
     <!--
     <div v-if="uploadedFile.file">
       <p>Selected file: {{ uploadedFile.name }}</p>
@@ -53,4 +92,15 @@ function formatDate(){
 .file-input::file-selector-button {
     background-color: rgb(251 146 60);
 }
+
+.trash-enter-active,
+.trash-leave-active {
+  transition: opacity 0.3s;
+}
+
+.trash-enter-from,
+.trash-leave-to {
+  opacity: 0;
+}
+
 </style>

@@ -34,7 +34,7 @@ function openModal(){
           <label @click="openModal" class="btn btn-primary w-30 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
           Participate
           <HandRaisedIcon class="h-6 w-6 pl-2 " />
-        </label>J
+        </label>
         </div>
       </div>
     </div>

@@ -1,7 +1,13 @@
 <script setup>
-import { ref } from 'vue';
-    const amount = ref('');
+import { useArgStore } from '../../stores/useArgStore'
+import { watchEffect, ref } from 'vue';
 
+const argStore = useArgStore();
+const amount = ref('');
+
+watchEffect(() => {
+    argStore.pushArg({ key: 'numberInput', value: amount.value });
+});
 </script>
 
 

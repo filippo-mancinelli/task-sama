@@ -1,4 +1,14 @@
 <script setup>
+import { useArgStore } from '../../stores/useArgStore'
+import { watchEffect, ref } from 'vue';
+
+const argStore = useArgStore();
+const value = ref('');
+
+watchEffect(() => {
+    argStore.pushArg({ key: 'textArea', value: value.value });
+});
+
 </script>
 
 <template>
@@ -6,6 +16,6 @@
         <label class="label">
             <span class="label-text text-lg"><slot name="text-area">Default text-area</slot></span>
         </label>
-        <textarea class="textarea textarea-warning border-orange-400 outline-orange-400 w-full" placeholder="Tell participants what to do..."> </textarea>
+        <textarea v-model="value" class="textarea textarea-warning placeholder:text-base border-orange-400 outline-orange-400 w-full" placeholder="Tell participants what to do..."> </textarea>
     </div>
 </template>

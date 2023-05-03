@@ -3,7 +3,6 @@ import { Web3Provider } from '@ethersproject/providers';
 import { networkConfigs } from '../helpers/networks';
 import { defineStore } from 'pinia'
 import { watch } from 'vue';
-import { onMounted } from 'vue';
 
 export const useConnectionStore = defineStore('connection', {
 
@@ -16,10 +15,6 @@ export const useConnectionStore = defineStore('connection', {
         contractAddress: "0x4Bf7250D7a9edeE52A9C2AE74534AC2cC4fF8E81", //ganache generated
         contractInstance: null,
     }),
-
-    onMounted() {
-
-    },
 
     getters: {
       getProvider: (state) => state.provider,
