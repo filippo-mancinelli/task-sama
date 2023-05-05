@@ -1,6 +1,6 @@
 <script setup>
 import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/vue/24/solid';
-import { ref, watchEffect } from 'vue';
+import { ref, watchEffect, onMounted } from 'vue';
 
 const props = defineProps(['showModal', 'modalType']);
 const modalClass = ref('');
@@ -11,10 +11,10 @@ watchEffect(() => {
             modalClass.value = 'bg-orange-100';
             break;
         case 'success':
-            modalClass.value = 'bg-green-300';
+            modalClass.value = 'bg-green-200';
             break;
         case 'danger':
-            modalClass.value = 'bg-red-500';
+            modalClass.value = 'bg-red-200';
             break;
     }
 });
@@ -30,11 +30,14 @@ watchEffect(() => {
                     <button @click="$emit('closeModal')" class="btn btn-sm btn-circle absolute right-2 top-2 bg-orange-400 border-orange-400">✕</button>
                     
                     <div v-if="modalType !== ''" class="py-4 flex justify-center rounded-lg" :class="modalClass">
-                        <CheckCircleIcon v-if="modalType == 'success'" class="h-14 w-14 text-white" />
-                        <ExclamationCircleIcon v-if="modalType == 'danger'" class="h-14 w-14 text-white" />
+                        <div v-if="modalType == 'success'" id="lottie-container"></div>
+                        <!--<CheckCircleIcon v-if="modalType == 'success'" class="h-14 w-14 text-white" /> static icon -->
+                        <lottie-player v-if="modalType == 'success'" src="src/assets/task-complete-tick.json" mode="bounce" background="transparent"  speed="1"  style="width: 100px; height: 100px;" loop autoplay></lottie-player>
+                        <!--<ExclamationCircleIcon v-if="modalType == 'danger'" class="h-14 w-14 text-white" />  static icon -->
+                        <lottie-player v-if="modalType == 'danger'" src="https://assets6.lottiefiles.com/packages/lf20_qpwbiyxf.json" mode="bounce" background="transparent"  speed="1"  style="width: 100px; height: 100px;" loop autoplay></lottie-player>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold mt-2">
+                        <h3 class="text-lg font-bold my-2">
                             <span v-if="modalType == 'success'">Success!</span>
                             <span v-else-if="modalType == 'danger'">Error!</span>
                             <span v-else>

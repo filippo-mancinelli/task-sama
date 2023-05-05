@@ -44,7 +44,7 @@ function createTask() {
       showTokenError.value = true;
   } else if(connectionStore.isConnected){
      const {_file, _reward, _description, _title} = argStore.getArguments;
-     connectionStore.callContractFunction({_title,  _description, URI: _file.URI, _reward}) //TODO URI ???
+     connectionStore.callContractFunction('createTask', {_title,  _description, URI: _file.URI, _reward}) //TODO URI ???
       .then(response => {
         modalType.value = 'success';
         message.value = 'Task created successfully!';

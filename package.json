@@ -23,6 +23,7 @@
     "ganache-cli": "^6.12.2",
     "laravel-vue-pagination": "^2.1.0",
     "lodash": "^4.17.21",
+    "lottie-web": "^5.11.0",
     "pinia": "^2.0.33",
     "truffle": "^5.8.2",
     "truffle-contract-schema": "^3.0.13",
