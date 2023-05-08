@@ -1,6 +1,5 @@
 <script setup>
 import { useConnectionStore } from '../stores/useConnectionStore'
-import { onMounted, onUnmounted } from 'vue'
 import { computed } from '@vue/reactivity';
 
 const connectionStore = useConnectionStore();
@@ -11,13 +10,6 @@ const connectionStore = useConnectionStore();
     function connect() {
       connectionStore.connect();
     }
-
-    
-    onMounted(() => {
-      connectionStore.initABI();
-      connectionStore.initConnectionWatcher();
-      connectionStore.checkConnection();
-    });
 
 </script>
 

@@ -4,7 +4,7 @@ import { networkConfigs } from '../helpers/networks';
 import { defineStore } from 'pinia'
 import { watch } from 'vue';
 
-export const useConnectionStore = defineStore('connection', {
+export const useConnectionStore = defineStore('metamaskConnection', {
 
     state: () => ({ 
         provider: null,
