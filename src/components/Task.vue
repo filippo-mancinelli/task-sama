@@ -1,12 +1,15 @@
 <script setup>
 import Modal from './widgets/Modal.vue';
+import FileUpload from './bricks/FileUpload.vue';
 import { HandRaisedIcon } from '@heroicons/vue/24/solid';
 import { ref } from 'vue'
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useArgStore } from '../stores/useArgStore';
+import { usePopupStore } from '../stores/usePopupStore';
 
 const connectionStore = useConnectionStore();
 const argStore = useArgStore();
+const popupStore = usePopupStore();
 
 const props = defineProps([
   'id',
@@ -19,35 +22,31 @@ const showModal1 = ref(false);
 const showModal2 = ref(false);
 
 const modalType = ref('');
-
+const message = ref('');
 
 function openModal() {
   showModal1.value = true;
 }
 
 function participateTask() {
-  ////////////////////////////
-  modalType.value = 'danger';
-  showModal2.value = true;
-  ///////////////////////////
-
   if(connectionStore.isConnected){
      console.log("args", argStore.getArguments)
 
-     const {name, video, message } = argStore.getArguments;
-     connectionStore.callContractFunction('participate', {_title,  _description, message}) //TODO URI ???
+     const { name, video, walletAddress } = argStore.getArguments;
+     connectionStore.callContractFunction('participate', {name,  video, walletAddress}) //TODO URI ???
       .then(response => {
         modalType.value = 'success';
-        message.value = 'Task created successfully!';
-        showModalResult.value = true;
-        showModal.value = false;
+        message.value = 'You sent your participation!';
+        showModal2.value = true;
+        showModal1.value = false;
       })
       .catch(error => {
         modalType.value = 'danger';
-        message.value = 'Error creating task: ' + error;
-        showModalResult.value = true;
-        console.log("errore Nella creazione del task: ", error)
+        message.value = 'Error sending participation: ' + error;
+        showModal2.value = true;
       } );
+  } else {
+      popupStore.setPopup(true, 'danger', 'You need to connect your wallet first');
   }
 }
 
@@ -83,7 +82,9 @@ function participateTask() {
     <span class="text-lg">├─ <span class="italic"> {{ reward }} GLMR </span> </span>
     <div class="my-2" />
 
-    <div class="flex justify-end">
+    <FileUpload :upload-type="'video'" />
+
+    <div class="flex flex-col items-end">
     <label @click="participateTask" class="btn btn-primary w-25 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
           Participate
           <HandRaisedIcon class="h-6 w-6 pl-2" />
@@ -93,7 +94,9 @@ function participateTask() {
   </template>
 </Modal>
 
-<Modal @close-modal="showModal2 = false" :showModal="showModal2" :modalType="modalType"></Modal>
+<Modal @close-modal="showModal2 = false" :showModal="showModal2" :modalType="modalType">
+<template v-slot:content> {{ message }}</template>
+</Modal>
 
 
   </template>

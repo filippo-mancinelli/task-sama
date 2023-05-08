@@ -1,10 +1,11 @@
 <script setup>
 import Error from './Error.vue';
 import { useArgStore } from '../../stores/useArgStore'
-import { watchEffect, ref } from 'vue';
+import { watchEffect, ref, defineProps } from 'vue';
 import { TrashIcon } from "@heroicons/vue/24/solid"
 
 const argStore = useArgStore();
+const props = defineProps(['uploadType']);
 
 const uploadedFile = ref({
   name: '',
@@ -19,7 +20,8 @@ const errorMessage = ref('');
 function onFileChange(event) {
   const file = event.target.files[0];
 
-  if (file && file.type == 'image/jpeg') {
+  if(props.uploadType == 'image') {
+    if (file && file.type == 'image/jpeg') {
       uploadedFile.value.name = file.name
       uploadedFile.value.size = file.size
       uploadedFile.value.file = file
@@ -34,6 +36,25 @@ function onFileChange(event) {
       }
       showError.value = true;
     }
+  } else if(props.uploadType == 'video') {
+    console.log("failll", file)
+    if (file && (file.type == 'video/mp4' || file.type == 'video/webm')) {
+      uploadedFile.value.name = file.name
+      uploadedFile.value.size = file.size
+      uploadedFile.value.file = file
+      uploadedFile.value.date = new Date()
+      showError.value = false;
+    } else {
+      if(file.type !== 'image/jpeg'){
+        errorMessage.value = 'File format must be mp4 or mkv.';
+      }
+      if(file.size > 15000000) {
+        errorMessage.value = 'File size must be under 10 MB.';
+      }
+      showError.value = true;
+    }
+  }
+
   }
 
 function deleteFile() {
@@ -66,7 +87,7 @@ watchEffect(() => {
 
 <template>
     <div class="py-2">
-      <span class="label-text text-lg ">Upload an image: </span>
+      <span class="label-text text-lg ">Upload {{ props.uploadType == 'image' ? 'an image:' : 'a video' }}  </span>
         <form id="myForm" class="flex">
           <input type="file" class="file-input file-input-bordered w-full mt-2" @change="onFileChange">
           <Transition name="trash">

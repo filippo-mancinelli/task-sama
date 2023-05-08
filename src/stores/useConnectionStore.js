@@ -3,6 +3,8 @@ import { Web3Provider } from '@ethersproject/providers';
 import { networkConfigs } from '../helpers/networks';
 import { defineStore } from 'pinia'
 import { watch } from 'vue';
+import TasksABI from "../helpers/TasksABI.json";
+
 
 export const useConnectionStore = defineStore('connection', {
 
@@ -11,7 +13,7 @@ export const useConnectionStore = defineStore('connection', {
         signer: null,
         walletAddress: null,
         isConnected: false,
-        contractABI: null,
+        contractABI: TasksABI,
         contractAddress: "0x4Bf7250D7a9edeE52A9C2AE74534AC2cC4fF8E81", //ganache generated
         contractInstance: null,
     }),
@@ -24,24 +26,6 @@ export const useConnectionStore = defineStore('connection', {
     },
   
     actions: {
-      initABI(){
-        watch(
-          () => this.contractABI, 
-          (oldABI, newABI) => {
-            console.log("contractABI old:", oldABI)
-            console.log("contractABI new:", newABI)
-          }
-        );
-
-        fetch("./src/helpers/TasksABI.json").then(response => {
-          response.json();
-        }).then(data => {
-          this.contractABI = data; 
-          console.log("data",data)
-          console.log("this.contractABI",this.contractABI)
-        });
-      },
-
       initConnectionWatcher() {
         watch(
           () => this.isConnected,

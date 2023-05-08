@@ -2,7 +2,7 @@
 import Modal from './widgets/Modal.vue';
 import TextInput from './bricks/TextInput.vue';
 import TextArea from './bricks/TextArea.vue';
-import ImageUpload from './bricks/ImageUpload.vue';
+import FileUpload from './bricks/FileUpload.vue';
 import TokenAmount from './bricks/TokenAmount.vue';
 import { ref, watchEffect, onMounted } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
@@ -85,7 +85,7 @@ onMounted(() => {
   <template v-slot:content>
     <TextInput :showError="showInputError" :errorMessage="'Title cannot be empty.'"><template v-slot:text-input>Task title:</template></TextInput>
     <TextArea :showError="showAreaError" :errorMessage="'Description cannot be empty.'"><template v-slot:text-area>Task description:</template></TextArea>
-    <ImageUpload />
+    <FileUpload :uploadType="'image'" />
     <div class="flex flex-nowrap just">
       <div class="w-1/3">
         <TokenAmount :showError="showTokenError" :errorMessage="'Reward cannot be empty.'"><template v-slot:title>Reward amount:</template></TokenAmount> 

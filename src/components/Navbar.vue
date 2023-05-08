@@ -14,7 +14,6 @@ const connectionStore = useConnectionStore();
 
     
     onMounted(() => {
-      connectionStore.initABI();
       connectionStore.initConnectionWatcher();
       connectionStore.checkConnection();
     });
