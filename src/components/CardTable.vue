@@ -1,19 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useVideoStore } from '../stores/useVideoStore';
 import _ from 'lodash';
 import Card from './Card.vue';
 
-// Sample card data
-const cards = ref([
-    // Add card objects here with properties like id, title, description, and reward
-    { id: 1, title: "Card 1", description: "Description 1", reward: 10 },
-    { id: 2, title: "Card 2", description: "Description 2", reward: 20 },
-    { id: 3, title: "Card 3", description: "Description 3", reward: 30 },
-    { id: 4, title: "Card 4", description: "Description 4", reward: 40 },
-    { id: 5, title: "Card 5", description: "Description 5", reward: 50 },
-
-    // Add more cards
-]);
+const videoStore = useVideoStore();
 
 const searchQuery = ref("");
 const sortOrder = ref("id");

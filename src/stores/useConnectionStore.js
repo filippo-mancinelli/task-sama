@@ -30,7 +30,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         watch(
           () => this.isConnected,
           (newValue) => {
-            console.log('isConnected changed:', newValue);
+            //console.log('isConnected changed:', newValue);
           });
         
         if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
@@ -83,9 +83,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         }
         
         if(this.provider != 'undefined') {
-          console.log("ABI",this.contractABI)
+          //console.log("ABI",jsonParse(this.contractABI))
           this.contractInstance = new ethers.Contract(this.contractAddress, this.contractABI, this.provider);
-          console.log("contractInstance",this.contractInstance)
         }
       },
 
@@ -93,14 +92,12 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         if(this.isConnected) {
           this.signer = this.provider.getSigner();
         }
-        console.log("signer", this.signer);
       },
 
       async setWalletAddress() {
         if(this.isConnected && this.signer != null){
           this.walletAddress = this.signer.getAddress().then((address) => {return address});
         }
-        console.log("walletAddress", this.walletAddress);
       },
 
       async callContractFunction(functionName, params){
@@ -109,4 +106,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       }
     },
   })
+
+  function jsonParse(object) {
+    return JSON.parse(JSON.stringify(object));
+  }
   

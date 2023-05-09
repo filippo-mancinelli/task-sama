@@ -20,7 +20,7 @@ export const useVideoStore = defineStore('videoNFTs', {
                     const { tokenId, ...details } = video;
                     this.videoMetadata.set(tokenId, details);                   
                 })
-                console.log("videoMetadata",this.videoMetadata)
+                console.log("videoMetadata", jsonParse(Object.fromEntries(this.videoMetadata)))
             }).catch(error => {
                 console.error('Error fetching metaData: ',error);
             });
@@ -38,3 +38,8 @@ export const useVideoStore = defineStore('videoNFTs', {
     }
 
 });
+
+function jsonParse(object) {
+    return JSON.parse(JSON.stringify(object));
+}
+  

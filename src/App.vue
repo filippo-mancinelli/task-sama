@@ -13,6 +13,7 @@ onMounted(() => {
       connectionStore.initConnectionWatcher();
       connectionStore.checkConnection();
       videoStore.initVideoMetadata();
+      videoStore.initLikes();
 });
 
 </script>

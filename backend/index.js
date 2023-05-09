@@ -3,7 +3,7 @@ const cors = require('@koa/cors');
 const MongoClient = require('mongodb').MongoClient;
 
 const app = new Koa();
-const mongoUrl = 'mongodb://localhost:27017'; 
+const mongoUrl = 'mongodb://localhost:27017';  
 const dbName = 'tasksama';
 
 let db;
@@ -22,6 +22,8 @@ let db;
 //Fetch all videos metadata - cardTable.vue
 app.use(async (ctx, next) => {
   if (ctx.request.path === '/getAllVideos') {
+    console.log("Chiamata: 'http://localhost:3000/getAllVideos'", )
+
     const collection = db.collection('videos');
 
     // Query to find all documents in the "videos" collection
@@ -31,19 +33,22 @@ app.use(async (ctx, next) => {
       message: 'All documents in the videos collection',
       data: documents,
     };
-  } else {
-    ctx.status = 404;
+  } 
+  await next();
+
+  if (ctx.status === 404) {
     ctx.body = {
       message: 'Not found',
     };
   }
 
-  await next();
 });
 
 //Fetch only the mapping between video and likes. The projection argument explicit which field to include/exclude.
 app.use(async (ctx, next) => {
   if(ctx.request.path === '/getLikes') {
+    console.log("Chiamata: 'http://localhost:3000/getLikes'", )
+
     const collection = db.collection('videos');
     const documents = await collection.find({}, {projection: {_id: 0, tokenId: 1, likes: 1}}).toArray();
     console.log("docsLikes", documents);
@@ -51,14 +56,14 @@ app.use(async (ctx, next) => {
       message: 'likes to video',
       data: documents,
     };
-  } else {
-    ctx.status = 404;
+  } 
+  await next();
+
+  if (ctx.status === 404) {
     ctx.body = {
       message: 'Not found',
     };
   }
-
-  await next();
 });
 
 app.use(cors());
