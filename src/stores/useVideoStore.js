@@ -1,9 +1,12 @@
 import { defineStore } from 'pinia'
+import axios from 'axios';
+
 
 export const useVideoStore = defineStore('videoNFTs', {
 
     state: () => ({
-        likesToNFT: new Map()
+        videoMetadata: new Map(), //fetch from blockchain
+        likesToVideo: new Map() //fetch from backend
     }),
 
     getters: {
@@ -11,9 +14,27 @@ export const useVideoStore = defineStore('videoNFTs', {
     },
 
     actions: {
-        async initLikes() {
-            //DB fetch mapping likes
+        async initVideoMetadata() {
+            axios.get('http://localhost:3000/getAllVideos').then(response => {
+                response.data.data.forEach((video) => {
+                    const { tokenId, ...details } = video;
+                    this.videoMetadata.set(tokenId, details);                   
+                })
+                console.log("videoMetadata",this.videoMetadata)
+            }).catch(error => {
+                console.error('Error fetching metaData: ',error);
+            });
+            
         },
+
+        async initLikes() {
+            axios.get('http://localhost:3000/getLikes').then(response => {
+                this.likesToVideo = response.data.data;
+            }).catch(error => {
+                console.error('Error fetching likes: ',error);
+            });
+        },
+        
     }
 
 });

@@ -1,3 +1,6 @@
+###START MONGODB SERVER###
+sudo mongod --bind_ip_all --dbpath ~/data/db
+
 -Insert a new document:
 
 db.media.insertOne({

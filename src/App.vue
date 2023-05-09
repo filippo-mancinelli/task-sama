@@ -10,10 +10,9 @@ const connectionStore = useConnectionStore();
 const videoStore = useVideoStore();
 
 onMounted(() => {
-      connectionStore.initABI();
       connectionStore.initConnectionWatcher();
       connectionStore.checkConnection();
-      videoStore.initLikes();
+      videoStore.initVideoMetadata();
 });
 
 </script>
