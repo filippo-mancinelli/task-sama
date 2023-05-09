@@ -1,33 +1,49 @@
 <script setup>
-import { HandRaisedIcon } from '@heroicons/vue/24/solid';
+import { getCurrentInstance, ref } from 'vue';
 
-//props are not reactive by default, if you need to make them reactive you need to "copy" these props into a reactive/computed object.
+//TODO: txhash, address, like/dislike,
+const { ctx } = getCurrentInstance();
+const like = ref(false); //todo
 const props = defineProps([
   'id',
   'title',
   'description',
-  'reward'
+  'reward',
+  'creatorAddress',
+  'winnerAddress',
+  'txhash',
+  'likeCount'
 ]);
+
+function likeButton() {
+  playLikeAnimation();
+  like.value = !like.value;
+}
+
+function playLikeAnimation(){
+  if(like.value){
+     ctx.$refs.lottiePlayer.stop();
+  } else {
+    ctx.$refs.lottiePlayer.play();
+    setTimeout(function(){ ctx.$refs.lottiePlayer.pause(); },1500)
+  }
+}
 
 </script>
 
 <template>
 <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
   <figure><img src="https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427" alt="Shoes" /></figure>
-  <div class="card-body">
+  <div class="card-body gap-1">
     <h2 class="card-title">
       {{ title }}   #{{ id  }}
       <div class="badge badge-secondary">NEW</div>
     </h2>
     <p>{{ description }}</p>
-    <div class="card-actions ">
-      <div class="badge badge-outline py-6 pr-4 text-lg">Reward:    <span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
-      <div class="">
-        <label @click="openModal" class="btn btn-primary w-30 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
-        Participate
-        <HandRaisedIcon class="h-6 w-6 pl-2 " />
-      </label>
-      </div>
+    <div class="flex items-center"> 
+      <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ reward }} GLMR</span></p> 
+      <lottie-player class="relative left-5 bottom-0.5 align-top hover:cursor-pointer" ref="lottiePlayer" src="src/assets/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;" @click="likeButton"></lottie-player>
+      <span>345</span>
     </div>
   </div>
 </div>

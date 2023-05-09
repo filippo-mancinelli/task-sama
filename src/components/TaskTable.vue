@@ -59,7 +59,7 @@ const toggleSortDirection = () => {
 
 <template>
 <div id="tasks" class="my-10 content-center">
-  <p class="text-center text-6xl font-extrabold text-black drop-shadow-lg drop-shadow-orange-500">Tasks</p>
+  <p class="text-center text-6xl font-extrabold text-black drop-shadow-lg drop-shadow-orange-500">Tasks to do</p>
 </div>
 
     <div class="flex items-center px-40 space-x-2 mt-10">

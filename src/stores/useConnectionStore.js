@@ -6,7 +6,7 @@ import { watch } from 'vue';
 import TasksABI from "../helpers/TasksABI.json";
 
 
-export const useConnectionStore = defineStore('connection', {
+export const useConnectionStore = defineStore('metamaskConnection', {
 
     state: () => ({ 
         provider: null,

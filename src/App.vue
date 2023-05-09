@@ -1,15 +1,20 @@
 <script setup>
 import { useConnectionStore } from './stores/useConnectionStore';
-import { usePopupStore } from './stores/usePopupStore';
+import { useVideoStore } from './stores/useVideoStore';
+import { onMounted } from 'vue';
 import Navbar from './components/Navbar.vue'
 import Home from './components/Home.vue';
 import Popup from './components/widgets/Popup.vue';
 
 const connectionStore = useConnectionStore();
-const popupStore = usePopupStore();
+const videoStore = useVideoStore();
 
-//watches for changes in the user's metamask connection
-connectionStore.initConnectionWatcher();
+onMounted(() => {
+      connectionStore.initABI();
+      connectionStore.initConnectionWatcher();
+      connectionStore.checkConnection();
+      videoStore.initLikes();
+});
 
 </script>
 
