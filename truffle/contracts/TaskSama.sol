@@ -15,12 +15,12 @@ contract TaskSama is ERC721, Ownable {
         string description;
         string ipfsUrl;
         uint256 rewardEarned;
-        address[] participants;
         address winner;
         uint256 timestamp;
     }
 
     mapping(uint256 => Video) private _videoWinner;
+    mapping(uint256 => address[]) private _participants;
 
     constructor() ERC721("TaskSama", "TSK") { }
 
@@ -34,7 +34,6 @@ contract TaskSama is ERC721, Ownable {
             description: description,
             ipfsUrl: ipfsUrl,
             rewardEarned: rewardEarned,
-            participants: participants,
             winner: recipient,
             timestamp: block.timestamp // Set the current timestamp
         });

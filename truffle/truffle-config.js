@@ -65,8 +65,8 @@ module.exports = {
     // options below to some value.
     //
     development: {
-      host: "127.0.0.1",
-      port: 8545,
+      host: "127.0.0.1", //"172.23.64.1",
+      port: 8545,  //7545
       network_id: "*", // Accept any network ID
     },    
     //

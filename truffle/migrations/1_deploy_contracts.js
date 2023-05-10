@@ -1,9 +1,5 @@
-const Tasks = artifacts.require("Tasks");
-const TaskSama = artifacts.require("TaskSama");
+const SimpleStorage = artifacts.require("SimpleStorage");
 
-module.exports = async function(deployer) {
-  deployer.deploy(TaskSama);
-  const taskSamaContract = await TaskSama.deployed();
-
-  await deployer.deploy(Tasks, taskSamaContract.address);
+module.exports = async function (deployer) {
+  deployer.deploy(SimpleStorage);
 };
