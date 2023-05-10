@@ -4,7 +4,12 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+interface ITasksSamaContract {
+    function mintVideoNFT(address recipient, string calldata title, string calldata description, string calldata ipfsUrl, uint256 rewardEarned, address[] calldata participants) external returns (uint256);
+}
+
 contract Tasks is ERC721, Ownable {
+    
     struct Task {
         uint256 tokenId;
         address owner;
@@ -16,17 +21,20 @@ contract Tasks is ERC721, Ownable {
         address winner;
     }
 
+    ITasksSamaContract private _taskSamaContract;
     Task[] public tasks;
 
     mapping(uint256 => bool) public taskExists;
     mapping(uint256 => bool) public taskCompleted;
 
-    uint256 public minimumReward = 0; // Minimum reward is 5 GLMR tokens
+    uint256 public minimumReward = 5 * 10 ** 18; // Minimum reward is 5 GLMR tokens
 
     event TaskCreated(uint256 indexed taskId, address owner, string title, string description, string imageURI, uint256 reward);
     event TaskCompleted(uint256 indexed taskId, address winner);
 
-    constructor() ERC721("Tasks", "TASK") {}
+    constructor(address taskSamaContractAddress) ERC721("Tasks", "TASK") {
+        _taskSamaContract = ITasksSamaContract(taskSamaContractAddress);
+    }
 
     function createTask(string memory _title, string memory _description, string memory _imageURI, uint256 _reward) public {
         require(_reward >= minimumReward, "Reward is too low");
@@ -57,7 +65,7 @@ contract Tasks is ERC721, Ownable {
         tasks[_taskId].participants.push(msg.sender);
     }
 
-    function chooseWinner(uint256 _taskId, address _winner) public onlyOwner {
+    function chooseWinner(uint256 _taskId, address _winner, string memory ipfsUrl) public {
         require(taskExists[_taskId], "Task does not exist");
         require(!_isCompleted(_taskId), "Task is already completed");
         require(_isParticipant(_taskId, _winner), "Winner did not participate");
@@ -66,12 +74,15 @@ contract Tasks is ERC721, Ownable {
         tasks[_taskId].winner = _winner;
         taskCompleted[_taskId] = true;
 
-        _transfer(address(this), _winner, _taskId);
+        //transfer the reward to the winner
+        _transfer(address(this), _winner, _taskId); 
+         //mints the video NFT
+        _taskSamaContract.mintVideoNFT(_winner, tasks[_taskId].title, tasks[_taskId].description, ipfsUrl, tasks[_taskId].reward, tasks[_taskId].participants);
 
         emit TaskCompleted(_taskId, _winner);
     }
 
-    function _isParticipant(uint256 _taskId, address _participant) private view returns (bool) {
+    function _isParticipant(uint256 _taskId, address _participant) public view returns (bool) {
         for (uint256 i = 0; i < tasks[_taskId].participants.length; i++) {
             if (tasks[_taskId].participants[i] == _participant) {
                 return true;
@@ -80,11 +91,15 @@ contract Tasks is ERC721, Ownable {
         return false;
     }
 
-    function _isCompleted(uint256 _taskId) private view returns (bool) {
+    function _isCompleted(uint256 _taskId) public view returns (bool) {
         return taskCompleted[_taskId];
     }
 
-    function _isOwner(uint256 _taskId, address walletCheck) private view returns (bool) {
+    function _isOwner(uint256 _taskId, address walletCheck) public view returns (bool) {
         return tasks[_taskId].owner == walletCheck;
+    }
+
+    function _getTasks() public view returns (Task[] memory) {
+        return tasks;
     }
 }

@@ -1,6 +1,6 @@
 <script setup>
 import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/vue/24/solid';
-import { ref, watchEffect, onMounted } from 'vue';
+import { ref, watchEffect } from 'vue';
 
 const props = defineProps(['showModal', 'modalType']);
 const modalClass = ref('');

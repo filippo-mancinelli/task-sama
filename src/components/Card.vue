@@ -1,25 +1,36 @@
 <script setup>
-import { getCurrentInstance, ref } from 'vue';
-
+import { getCurrentInstance, ref, watch, onMounted } from 'vue';
+import { useVideoStore } from '../stores/useVideoStore';
+import { useConnectionStore } from '../stores/useConnectionStore';
+import { storeToRefs } from 'pinia';
+import { usePopupStore } from '../stores/usePopupStore';
 
 //TODO: txhash, address, like/dislike,
+const { like: updatelike } = useVideoStore();
+const { likesToVideo } = storeToRefs(useVideoStore());
 const { ctx } = getCurrentInstance();
-const like = ref(false); //todo
+
 const props = defineProps([
-  'id',
+  'tokenId',
   'title',
   'description',
   'reward',
   'creatorAddress',
   'winnerAddress',
-  'txhash',
-  'likeCount'
+  'txhash'
 ]);
 
+const like = ref(false); //TODO
+const likeCount = ref(0) //TODO
 
-function likeButton() {
-  playLikeAnimation();
-  like.value = !like.value;
+async function likeButton() {
+  if(useConnectionStore().isConnected) {
+    playLikeAnimation();
+    like.value = !like.value;
+    likeCount.value = await updatelike(props.tokenId, like.value, useConnectionStore().walletAddress)
+  } else {
+    usePopupStore().setPopup(true, 'alert', 'Connect your wallet before liking videos!');
+  }
 }
 
 function playLikeAnimation(){
@@ -35,6 +46,14 @@ function playLikeAnimation(){
   }
 }
 
+onMounted(() => {
+  //we must watch for changes in the likesToVideo mapping BEFORE we make the call to the backend 
+  watch(() => likesToVideo.value, (newValue, oldValue) => {
+    likeCount.value = likesToVideo.value.get(props.tokenId);
+  }, { deep: true });
+
+  useVideoStore().initLikes();
+});
 </script>
 
 <template>
@@ -42,14 +61,14 @@ function playLikeAnimation(){
   <figure><img src="https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427" alt="Shoes" /></figure>
   <div class="card-body gap-1 p-5">
     <h2 class="card-title">
-      {{ title }}   #{{ id  }}
+      {{ title }}   #{{ tokenId  }}
       <div class="badge badge-secondary">NEW</div>
     </h2>
     <p>{{ description }}</p>
     <div class="flex  items-center"> 
       <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ reward }} GLMR</span></p> 
       <lottie-player class="relative h-8 resize left-4 bottom-0.5 align-top hover:cursor-pointer" ref="lottiePlayer" src="src/assets/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;" @click="likeButton"></lottie-player>
-      <span>345</span>
+      <span>{{ likeCount }}</span>
     </div>
   </div>
 </div>

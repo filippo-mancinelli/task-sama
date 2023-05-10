@@ -3,9 +3,11 @@ import { ref, computed } from 'vue';
 import { useVideoStore } from '../stores/useVideoStore';
 import _ from 'lodash';
 import Card from './Card.vue';
+import { storeToRefs } from 'pinia';
 
 const videoStore = useVideoStore();
 
+const { videoMetadata: cards } = storeToRefs(videoStore)
 const searchQuery = ref("");
 const sortOrder = ref("id");
 const sortDirection = ref("asc");
@@ -73,7 +75,7 @@ const toggleSortDirection = () => {
       >
       <div v-for="card in cardRow">
         <Card
-          :id="card.id"
+          :tokenId="card.tokenId"
           :title="card.title"
           :description="card.description"
           :reward="card.reward"
