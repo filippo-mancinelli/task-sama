@@ -23,6 +23,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       getContractABI: (state) => state.contractABI,
       getContractAddress: (state) => state.contractAddress,
       getContractInstance: (state) => state.contractInstance,
+      getWalletAddress: (state) => state.walletAddress
     },
   
     actions: {
@@ -30,7 +31,11 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         watch(
           () => this.isConnected,
           (newValue) => {
-            //console.log('isConnected changed:', newValue);
+            if(newValue == true) {
+              this.setProvider();
+              this.setSigner();
+              this.setWalletAddress();
+            }
           });
         
         if(typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')){
@@ -53,8 +58,11 @@ export const useConnectionStore = defineStore('metamaskConnection', {
             await this.setProvider();
             await this.setSigner();
             await this.setWalletAddress();
+            return this.walletAddress;
           }
+          return null;
         }
+        return null;
       },
       
       async connect() { 
@@ -83,7 +91,6 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         }
         
         if(this.provider != 'undefined') {
-          //console.log("ABI",jsonParse(this.contractABI))
           this.contractInstance = new ethers.Contract(this.contractAddress, this.contractABI, this.provider);
         }
       },
@@ -96,7 +103,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
 
       async setWalletAddress() {
         if(this.isConnected && this.signer != null){
-          this.walletAddress = this.signer.getAddress().then((address) => {return address});
+          this.walletAddress = await this.signer.getAddress();
         }
       },
 

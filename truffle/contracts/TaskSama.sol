@@ -20,7 +20,7 @@ contract TaskSama is ERC721, Ownable {
     }
 
     mapping(uint256 => Video) private _videoWinner;
-    mapping(uint256 => address[]) private _participants;
+    address[] private _participants;
 
     constructor() ERC721("TaskSama", "TSK") { }
 
@@ -29,6 +29,9 @@ contract TaskSama is ERC721, Ownable {
         uint256 newTokenId = _tokenIdCounter.current();
 
         _mint(recipient, newTokenId);
+
+        _participants = participants;
+
         _videoWinner[newTokenId] = Video({
             title: title,
             description: description,

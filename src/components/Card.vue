@@ -7,7 +7,7 @@ import { usePopupStore } from '../stores/usePopupStore';
 
 //TODO: txhash, address, like/dislike,
 const { like: updatelike } = useVideoStore();
-const { likesToVideo } = storeToRefs(useVideoStore());
+const { totalLikesPerVideo } = storeToRefs(useVideoStore());
 const { ctx } = getCurrentInstance();
 
 const props = defineProps([
@@ -47,12 +47,19 @@ function playLikeAnimation(){
 }
 
 onMounted(() => {
-  //we must watch for changes in the likesToVideo mapping BEFORE we make the call to the backend 
-  watch(() => likesToVideo.value, (newValue, oldValue) => {
-    likeCount.value = likesToVideo.value.get(props.tokenId);
+  //we must watch for changes in the totalLikesPerVideo mapping BEFORE we make the call to the backend 
+  watch(() => totalLikesPerVideo.value, (newValue, oldValue) => {
+    likeCount.value = totalLikesPerVideo.value.get(props.tokenId);
   }, { deep: true });
 
-  useVideoStore().initLikes();
+  useConnectionStore().checkConnection().then(res => { //res is the connected wallet address
+    useVideoStore().initLikes(res).then(likedVideoMapping => {
+      if(likedVideoMapping.get(props.tokenId) == true) {
+        like.value = true;
+        ctx.$refs.lottiePlayer.seek("70%")
+      }
+    });
+  })
 });
 </script>
 

@@ -27,7 +27,7 @@ contract Tasks is ERC721, Ownable {
     mapping(uint256 => bool) public taskExists;
     mapping(uint256 => bool) public taskCompleted;
 
-    uint256 public minimumReward = 5 * 10 ** 18; // Minimum reward is 5 GLMR tokens
+    uint256 public minimumReward = 5 * 10 ** 18; // Minimum reward is 5 GLMR tokens //900
 
     event TaskCreated(uint256 indexed taskId, address owner, string title, string description, string imageURI, uint256 reward);
     event TaskCompleted(uint256 indexed taskId, address winner);
@@ -36,8 +36,8 @@ contract Tasks is ERC721, Ownable {
         _taskSamaContract = ITasksSamaContract(taskSamaContractAddress);
     }
 
-    function createTask(string memory _title, string memory _description, string memory _imageURI, uint256 _reward) public {
-        require(_reward >= minimumReward, "Reward is too low");
+    function createTask(string memory _title, string memory _description, string memory _imageURI) public payable {
+        require(msg.value >= minimumReward, "Reward is too low");
 
         Task memory newTask = Task({
             tokenId: tasks.length,
@@ -45,7 +45,7 @@ contract Tasks is ERC721, Ownable {
             title: _title,
             description: _description,
             imageURI: _imageURI,
-            reward: _reward,
+            reward: msg.value,
             participants: new address[](0),
             winner: address(0)
         });
@@ -55,7 +55,7 @@ contract Tasks is ERC721, Ownable {
         _mint(msg.sender, newTask.tokenId);
         taskExists[newTask.tokenId] = true;
 
-        emit TaskCreated(newTask.tokenId, msg.sender, _title, _description, _imageURI, _reward);
+        emit TaskCreated(newTask.tokenId, msg.sender, _title, _description, _imageURI, msg.value);
     }
 
     function participate(uint256 _taskId) public {
