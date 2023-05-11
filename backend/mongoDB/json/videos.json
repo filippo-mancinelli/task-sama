@@ -8,5 +8,23 @@
   "format": "video/mp4",
   "size": 10000,
   "tokenId": 1,
-  "likes": 230
+  "likes": 270,
+  "likeWallets": [
+    "0x1ABC7154748D1CE5144478CDEB574AE244B939B5",
+    "0x5b53abb048acDd146D5788e72A2a173aAF3990C5"
+  ]
+},{
+  "_id": {
+    "$oid": "645a77929a3f180988baa8c4"
+  },
+  "name": "bird.mp4",
+  "path": "~/task-sama/backend/mongoDB/contents/videos/bird.mp4",
+  "uploadDate": "2023-05-05",
+  "format": "video/mp4",
+  "size": 4000,
+  "tokenId": 2,
+  "likes": 514,
+  "likeWallets": [
+    "0xC67DB0dF922238979DA0fD00D46016E8Ae14ceCb"
+  ]
 }]

@@ -33,13 +33,11 @@ export const useVideoStore = defineStore('videoNFTs', {
                     this.totalLikesPerVideo.set(video.tokenId, video.likes);
                     this.walletsLikesPerVideo.set(video.tokenId, video.likeWallets);
 
-                    if(walletAddress !== null){
-                        video.likeWallets.forEach(wallet => {
-                            if(walletAddress == wallet) {
-                                this.userLikedVideos.set(video.tokenId, true)
-                            }
-                        })
-                    }
+                    video.likeWallets.forEach(wallet => {
+                        if(walletAddress == wallet) {
+                            this.userLikedVideos.set(video.tokenId, true)
+                        }
+                    })
                 });
                 return this.userLikedVideos;
             }).catch(error => {

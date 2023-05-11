@@ -46,20 +46,38 @@ function playLikeAnimation(){
   }
 }
 
+//check if the user is connected and then sets the mapping of likes he has on videos
+function setLikesMapping() {
+  useConnectionStore().checkConnection().then(res => { //res is the connected wallet address
+      useVideoStore().initLikes(res).then(likedVideoMapping => {
+      if(likedVideoMapping.get(props.tokenId) == true) {
+        like.value = true;
+        ctx.$refs.lottiePlayer.seek("70%")
+      } else if(likedVideoMapping.get(props.tokenId) == false) {
+        like.value = false;
+        ctx.$refs.lottiePlayer.seek("10%")
+      }
+      });
+  })
+}
+
 onMounted(() => {
   //we must watch for changes in the totalLikesPerVideo mapping BEFORE we make the call to the backend 
   watch(() => totalLikesPerVideo.value, (newValue, oldValue) => {
     likeCount.value = totalLikesPerVideo.value.get(props.tokenId);
   }, { deep: true });
 
-  useConnectionStore().checkConnection().then(res => { //res is the connected wallet address
-    useVideoStore().initLikes(res).then(likedVideoMapping => {
-      if(likedVideoMapping.get(props.tokenId) == true) {
-        like.value = true;
-        ctx.$refs.lottiePlayer.seek("70%")
-      }
-    });
-  })
+  setLikesMapping();
+
+  watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
+    if(newValue == false) {
+      like.value = false;
+      ctx.$refs.lottiePlayer.seek("10%")
+      setLikesMapping();
+    } else if(newValue == true) {
+      setLikesMapping();
+    }
+  });
 });
 </script>
 
