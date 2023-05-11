@@ -50,13 +50,10 @@ function playLikeAnimation(){
 function setLikesMapping() {
   useConnectionStore().checkConnection().then(res => { //res is the connected wallet address
       useVideoStore().initLikes(res).then(likedVideoMapping => {
-      if(likedVideoMapping.get(props.tokenId) == true) {
-        like.value = true;
-        ctx.$refs.lottiePlayer.seek("70%")
-      } else if(likedVideoMapping.get(props.tokenId) == false) {
-        like.value = false;
-        ctx.$refs.lottiePlayer.seek("10%")
-      }
+        if(likedVideoMapping.get(props.tokenId) == true) {
+          like.value = true;
+          ctx.$refs.lottiePlayer.seek("70%")
+        }
       });
   })
 }
@@ -72,8 +69,7 @@ onMounted(() => {
   watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
     if(newValue == false) {
       like.value = false;
-      ctx.$refs.lottiePlayer.seek("10%")
-      setLikesMapping();
+      ctx.$refs.lottiePlayer.seek("10%");
     } else if(newValue == true) {
       setLikesMapping();
     }
