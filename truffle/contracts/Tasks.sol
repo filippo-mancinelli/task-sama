@@ -27,7 +27,7 @@ contract Tasks is ERC721, Ownable {
     mapping(uint256 => bool) public taskExists;
     mapping(uint256 => bool) public taskCompleted;
 
-    uint256 public minimumReward = 5 * 10 ** 18; // Minimum reward is 5 GLMR tokens //900
+    uint256 public minimumReward = 10 ether; // Minimum reward is 5 GLMR tokens //900
 
     event TaskCreated(uint256 indexed taskId, address owner, string title, string description, string imageURI, uint256 reward);
     event TaskCompleted(uint256 indexed taskId, address winner);
@@ -60,6 +60,7 @@ contract Tasks is ERC721, Ownable {
 
     function participate(uint256 _taskId) public {
         require(taskExists[_taskId], "Task does not exist");
+        require(tasks[_taskId].owner != msg.sender, "You cannot participate in your own task");
         require(!_isParticipant(_taskId, msg.sender), "Already participated");
 
         tasks[_taskId].participants.push(msg.sender);
@@ -68,14 +69,14 @@ contract Tasks is ERC721, Ownable {
     function chooseWinner(uint256 _taskId, address _winner, string memory ipfsUrl) public {
         require(taskExists[_taskId], "Task does not exist");
         require(!_isCompleted(_taskId), "Task is already completed");
-        require(_isParticipant(_taskId, _winner), "Winner did not participate");
+        require(_isParticipant(_taskId, _winner), "The user chosen did not participate");
         require(_isOwner(_taskId, msg.sender));
 
         tasks[_taskId].winner = _winner;
         taskCompleted[_taskId] = true;
 
         //transfer the reward to the winner
-        _transfer(address(this), _winner, _taskId); 
+        _transfer(address(this), _winner, tasks[_taskId].reward); 
          //mints the video NFT
         _taskSamaContract.mintVideoNFT(_winner, tasks[_taskId].title, tasks[_taskId].description, ipfsUrl, tasks[_taskId].reward, tasks[_taskId].participants);
 
