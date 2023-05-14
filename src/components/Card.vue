@@ -20,8 +20,8 @@ const props = defineProps([
   'txhash'
 ]);
 
-const like = ref(false); //TODO
-const likeCount = ref(0) //TODO
+const like = ref(false);
+const likeCount = ref(0)
 
 async function likeButton() {
   if(useConnectionStore().isConnected) {
@@ -49,12 +49,20 @@ function playLikeAnimation(){
 //check if the user is connected and then sets the mapping of likes he has on videos
 function setLikesMapping() {
   useConnectionStore().checkConnection().then(res => { //res is the connected wallet address
+    if(res !== null) {
       useVideoStore().initLikes(res).then(likedVideoMapping => {
         if(likedVideoMapping.get(props.tokenId) == true) {
-          like.value = true;
-          ctx.$refs.lottiePlayer.seek("70%")
+            like.value = true;
+            ctx.$refs.lottiePlayer.seek("70%");
+        } else {
+          like.value = false;
+          ctx.$refs.lottiePlayer.seek("10%");
         }
       });
+    } else {
+        like.value = false;
+        ctx.$refs.lottiePlayer.seek("10%");
+    }
   })
 }
 
@@ -67,14 +75,10 @@ onMounted(() => {
   setLikesMapping();
 
   watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
-    if(newValue == false) {
-      like.value = false;
-      ctx.$refs.lottiePlayer.seek("10%");
-    } else if(newValue == true) {
-      setLikesMapping();
-    }
+    setLikesMapping();
   });
 });
+
 </script>
 
 <template>

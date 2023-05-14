@@ -33,11 +33,15 @@ export const useVideoStore = defineStore('videoNFTs', {
                     this.totalLikesPerVideo.set(video.tokenId, video.likes);
                     this.walletsLikesPerVideo.set(video.tokenId, video.likeWallets);
 
-                    video.likeWallets.forEach(wallet => {
-                        if(walletAddress == wallet) {
-                            this.userLikedVideos.set(video.tokenId, true)
-                        }
-                    })
+                    //if the array is empty (no one liked the video) we map the current user like to false. Otherwise we iterate 
+                    //the array of likes to check if the current user is present, and in case, set its mapping to true.
+                    if(video.likeWallets.length > 0) {
+                        video.likeWallets.forEach(wallet => {
+                            this.userLikedVideos.set(video.tokenId, walletAddress == wallet ? true : false);
+                        })
+                    } else {
+                        this.userLikedVideos.set(video.tokenId, false);
+                    }
                 });
                 return this.userLikedVideos;
             }).catch(error => {

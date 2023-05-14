@@ -18,12 +18,15 @@ module.exports = async function (deployer) {
   await tasks.createTask('TITLE 4', 'DESC 4', 'IPFS 4', { value: web3.utils.toWei("20", "ether") });
   await tasks.createTask('TITLE 5', 'DESC 5', 'IPFS 5', { value: web3.utils.toWei("25", "ether") });
 
+  //change accounts and participate to tasks
+  
 };
 
 
 
-
 /*
-0x3B81545c92198D8C3fFBC8d36a2D6cfEbeaeB93C tasksama
-0xcA637194F109032560983498e2c0ee11847a6f0f tasks
+
+const tasksama = await TaskSama.at("0xdBC0e92de46BAC416cE40e04098C047922588886");
+const tasks = await Tasks.at("0x8a800458F062dbEAbA9ACFA6d4b604f7Ba1E12CC");
+
 */ 

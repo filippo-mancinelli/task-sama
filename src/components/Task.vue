@@ -20,9 +20,10 @@ const props = defineProps([
 
 const showModal1 = ref(false);
 const showModal2 = ref(false);
-
 const modalType = ref('');
 const message = ref('');
+
+
 
 function openModal() {
   showModal1.value = true;
