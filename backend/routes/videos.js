@@ -9,7 +9,7 @@ const { connectToDatabase } = require('../db');
 
 router.get('/initVideoMetadata', async (ctx, next) => {
   if (ctx.request.path === '/initVideoMetadata') {
-    console.log("############################## 'http://localhost:3000/initVideoMetadata'", )
+    console.log("\n ####################################### \n 'http://localhost:3000/initVideoMetadata' \n ####################################### \n ")
 
     const db = await connectToDatabase();
     const collection = db.collection('videos');
@@ -20,7 +20,7 @@ router.get('/initVideoMetadata', async (ctx, next) => {
       message: 'All documents in the videos collection',
       data: documents,
     };
-  } 
+  }
   await next();
 
   if (ctx.status === 404) {

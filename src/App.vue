@@ -12,7 +12,6 @@ const videoStore = useVideoStore();
 onMounted(() => {
       connectionStore.initConnectionWatcher();
       connectionStore.checkConnection();
-      videoStore.initVideoMetadata();
 });
 
 </script>

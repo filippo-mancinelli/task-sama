@@ -17,11 +17,8 @@ export const useVideoStore = defineStore('videoNFTs', {
 
     actions: {
         async initVideoMetadata() {
-            axios.get('http://localhost:3000/initVideoMetadata').then(response => {
-                this.videoMetadata = response.data.data;
-            }).catch(error => {
-                console.error('Error fetching metaData: ',error);
-            });
+            //fetch from blockchain
+            
         },
 
 

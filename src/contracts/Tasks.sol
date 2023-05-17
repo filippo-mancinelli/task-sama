@@ -66,7 +66,7 @@ contract Tasks is ERC721, Ownable {
         tasks[_taskId].participants.push(msg.sender);
     }
 
-    function chooseWinner(uint256 _taskId, address _winner, string memory ipfsUrl) public {
+    function chooseWinner(uint256 _taskId, address payable _winner, string memory ipfsUrl) public {
         require(_taskExists(_taskId), "Task does not exist");
         require(!_isCompleted(_taskId), "Task is already completed");
         require(_isParticipant(_taskId, _winner), "The user chosen did not participate");
@@ -75,8 +75,8 @@ contract Tasks is ERC721, Ownable {
         tasks[_taskId].winner = _winner;
         taskCompleted[_taskId] = true;
 
-        //transfer the reward to the winner
-        _transfer(address(this), _winner, tasks[_taskId].reward); 
+        //transfer the reward from the contract balance to the winner
+        _winner.transfer(tasks[_taskId].reward * 1 wei); 
          //mints the video NFT
         _taskSamaContract.mintVideoNFT(_winner, tasks[_taskId].title, tasks[_taskId].description, ipfsUrl, tasks[_taskId].reward, tasks[_taskId].participants);
 
@@ -104,15 +104,21 @@ contract Tasks is ERC721, Ownable {
         return tasks[_taskId].owner == walletCheck;
     }
 
-    function _isParticipating(uint256 _taskId, address walletCheck) public view returns (bool) {
-        return tasks[_taskId].owner == walletCheck;
-    }
-
     function _getTasks() public view returns (Task[] memory) {
         return tasks;
     }
 
     function _getTask(uint256 _taskId) public view returns (Task memory) {
         return tasks[_taskId];
+    }
+    
+    function _getParticipantsOf(uint256 _taskId) public view returns (address[] memory) {
+        return tasks[_taskId].participants;
+    }
+    
+    function _getWinnerOf(uint256 _taskId) public view returns (address) {
+        require(!_isCompleted(_taskId), "This task doesn't have a winner yet");
+        
+        return tasks[_taskId].winner;
     }
 }

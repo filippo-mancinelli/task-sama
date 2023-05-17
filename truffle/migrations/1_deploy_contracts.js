@@ -47,18 +47,14 @@ module.exports = async function (deployer) {
      res[0].returnValues.taskId, res[0].returnValues.winner);
   })
 
-
   // check 
-  await tasks._isCompleted(1);
-  await tasks._isCompleted(2);
-
-  await tasks._getTasks();
+  console.log(await tasksama.getVideos())
 
 
   /*
   //contract instances
-  const tasksama = await TaskSama.at("0xF2D776AddACEe7D1f1ce52ce49d34BdF24200b94");
-  const tasks = await Tasks.at("0xBCc8A9F8Ca5c41Ba2A16Bd2eD10CAA7171b93e13");
+  const tasksama = await TaskSama.at("0x82a94BddBE33106df382cED744445904E9d8AC5E");
+  const tasks = await Tasks.at("0xEA2840327c56E23C4279E7e0e7dEBCDc7D45e0D5");
   */
 
   /* 

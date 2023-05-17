@@ -16,37 +16,45 @@ contract TaskSama is ERC721, Ownable {
         string ipfsUrl;
         uint256 rewardEarned;
         address winner;
+        address[] participants;
         uint256 timestamp;
     }
 
-    mapping(uint256 => Video) private _videoWinner;
-    address[] private _participants;
+    mapping(uint256 => Video) private tasksama;
 
     constructor() ERC721("TaskSama", "TSK") { }
 
-    function mintVideoNFT(address recipient, string memory title, string memory description, string memory ipfsUrl, uint256 rewardEarned, address[] memory participants) public onlyOwner returns (uint256) {
+    function mintVideoNFT(address recipient, string memory title, string memory description, string memory ipfsUrl, uint256 rewardEarned, address[] memory participants) public returns (uint256) {
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
 
         _mint(recipient, newTokenId);
 
-        _participants = participants;
-
-        _videoWinner[newTokenId] = Video({
+        tasksama[newTokenId] = Video({
             title: title,
             description: description,
             ipfsUrl: ipfsUrl,
             rewardEarned: rewardEarned,
             winner: recipient,
+            participants: participants,
             timestamp: block.timestamp // Set the current timestamp
         });
 
         return newTokenId;
     }
 
+    
+    function getVideos() public view returns (Video memory) {
+        return tasksama;
+    }
 
-    function getVideoData(uint256 tokenId) public view returns (Video memory) {
+    function getVideo(uint256 tokenId) public view returns (Video memory) {
         require(_exists(tokenId), "Token ID does not exist");
-        return _videoWinner[tokenId];
+        return tasksama[tokenId];
+    }
+
+    function getParticipants(uint256 tokenId) public view returns (Video memory) {
+        require(_exists(tokenId), "Token ID does not exist");
+        return tasksama[tokenId];
     }
 }

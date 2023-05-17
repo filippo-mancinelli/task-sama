@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useVideoStore } from '../stores/useVideoStore';
 import _ from 'lodash';
 import Card from './Card.vue';
@@ -47,6 +47,10 @@ const toggleSortDirection = () => {
   sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
 
 };
+
+onMounted(() => {
+  videoStore.initVideoMetadata();
+});
 
 </script>
 
