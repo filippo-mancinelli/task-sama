@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 truffle/build/contracts/
+truffle/build/contracts/Address.json
+bin/src/contracts/TaskSama.abi
+bin/src/contracts/TaskSama.bin
+bin/src/contracts/TaskSama-solc-output.json
+bin/src/contracts/TaskSama.json

@@ -34,7 +34,7 @@ async function likeButton() {
 }
 
 function playLikeAnimation(){
-  if(like.value){
+  if(like.value) {
      ctx.$refs.lottiePlayer.stop();
   } else {
     ctx.$refs.lottiePlayer.seek("20%") 
@@ -60,6 +60,7 @@ function setLikesMapping() {
         }
       });
     } else {
+        useVideoStore().initLikes(null);
         like.value = false;
         ctx.$refs.lottiePlayer.seek("10%");
     }

@@ -16,19 +16,21 @@ contract TaskSama is ERC721, Ownable {
         string ipfsUrl;
         uint256 rewardEarned;
         address winner;
-        address[] participants;
         uint256 timestamp;
     }
 
     mapping(uint256 => Video) private _videoWinner;
+    address[] private _participants;
 
     constructor() ERC721("TaskSama", "TSK") { }
 
-    function mintVideoNFT(address recipient, string memory title, string memory description, string memory ipfsUrl, uint256 rewardEarned, address[] memory participants) public returns (uint256) {
+    function mintVideoNFT(address recipient, string memory title, string memory description, string memory ipfsUrl, uint256 rewardEarned, address[] memory participants) public onlyOwner returns (uint256) {
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
 
         _mint(recipient, newTokenId);
+
+        _participants = participants;
 
         _videoWinner[newTokenId] = Video({
             title: title,
@@ -36,7 +38,6 @@ contract TaskSama is ERC721, Ownable {
             ipfsUrl: ipfsUrl,
             rewardEarned: rewardEarned,
             winner: recipient,
-            participants: participants,
             timestamp: block.timestamp // Set the current timestamp
         });
 
@@ -45,11 +46,6 @@ contract TaskSama is ERC721, Ownable {
 
 
     function getVideoData(uint256 tokenId) public view returns (Video memory) {
-        require(_exists(tokenId), "Token ID does not exist");
-        return _videoWinner[tokenId];
-    }
-
-    function getParticipants(uint256 tokenId) public view returns (Video memory) {
         require(_exists(tokenId), "Token ID does not exist");
         return _videoWinner[tokenId];
     }
