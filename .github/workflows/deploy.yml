@@ -1,0 +1,38 @@
+name: Update Docker Container
+
+on:
+  push:
+    branches:
+      - main
+      - test
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Connect to VPS
+        uses: appleboy/ssh-action@v0.4.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          # Add any additional SSH options if required
+
+          # Stop and remove the existing container, then pull latest image, then run it with parameters
+          # Adjust the image name, ports, and other parameters as needed
+          script: |
+            docker stop my-container
+            docker rm my-container
+            docker pull your-docker-image:latest
+            docker run -d --name my-container -p 80:80 your-docker-image:latest
+            
