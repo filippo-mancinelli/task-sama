@@ -18,7 +18,6 @@ export const useVideoStore = defineStore('videoNFTs', {
     actions: {
         async initVideoMetadata() {
             //fetch from blockchain
-            
         },
 
 

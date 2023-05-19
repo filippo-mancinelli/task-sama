@@ -53,8 +53,8 @@ module.exports = async function (deployer) {
 
   /*
   //contract instances
-  const tasksama = await TaskSama.at("0x82a94BddBE33106df382cED744445904E9d8AC5E");
-  const tasks = await Tasks.at("0xEA2840327c56E23C4279E7e0e7dEBCDc7D45e0D5");
+  const tasksama = await TaskSama.at("0xF59BaD8377f94da4b3243c0bF412B2cc86f35599");
+  const tasks = await Tasks.at("0xC609b2B24dd1e0B316BE3656d15E25c89d2539d0");
   */
 
   /* 

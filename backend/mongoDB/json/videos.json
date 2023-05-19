@@ -8,10 +8,9 @@
   "format": "video/mp4",
   "size": 10000,
   "tokenId": 1,
-  "likes": 270,
+  "likes": 267,
   "likeWallets": [
-    "0x1ABC7154748D1CE5144478CDEB574AE244B939B5",
-    "0x5b53abb048acDd146D5788e72A2a173aAF3990C5"
+    "0x1ABC7154748D1CE5144478CDEB574AE244B939B5"
   ]
 },{
   "_id": {
@@ -23,8 +22,9 @@
   "format": "video/mp4",
   "size": 4000,
   "tokenId": 2,
-  "likes": 514,
+  "likes": 512,
   "likeWallets": [
-    "0xC67DB0dF922238979DA0fD00D46016E8Ae14ceCb"
+    "0xC67DB0dF922238979DA0fD00D46016E8Ae14ceCb",
+    "0x5b53abb048acDd146D5788e72A2a173aAF3990C5"
   ]
 }]
