@@ -1,17 +1,17 @@
 name: Update Docker Container
 
+# "push" events includes "merge" events from test into main
 on:
   push:
     branches:
       - main
-      - test
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout/fetch Repository 
         uses: actions/checkout@v2
 
       - name: Set up SSH
@@ -33,6 +33,6 @@ jobs:
           script: |
             docker stop my-container
             docker rm my-container
-            docker pull your-docker-image:latest
-            docker run -d --name my-container -p 80:80 your-docker-image:latest
+            docker pull task-sama:latest
+            docker run -d --name task-sama-production -p 3000:3000 task-sama:latest
             
