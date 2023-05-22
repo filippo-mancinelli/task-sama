@@ -32,9 +32,9 @@ jobs:
           # Stop and remove the existing container, then pull latest image, then run it with parameters
           # Adjust the image name, ports, and other parameters as needed
           script: |
-            docker stop my-container
-            docker rm my-container
-            docker pull task-sama:latest
-            docker run -d --name task-sama-production -p 3000:3000 -p 27017:27017 task-sama:latest
+            sudo docker stop task-sama
+            sudo docker rm task-sama
+            sudo docker pull task-sama:latest
+            sudo docker run -d --name task-sama-production -p 3000:3000 -p 27017:27017 task-sama:latest
 
             
