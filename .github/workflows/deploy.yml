@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout/fetch Repository 
         uses: actions/checkout@v2
-
+        
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -34,5 +34,6 @@ jobs:
             docker stop my-container
             docker rm my-container
             docker pull task-sama:latest
-            docker run -d --name task-sama-production -p 3000:3000 task-sama:latest
+            docker run -d --name task-sama-production -p 3000:3000 -p 27017:27017 task-sama:latest
+
             
