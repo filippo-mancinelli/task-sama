@@ -9,7 +9,7 @@ RUN git clone https://github.com/filippo-mancinelli/task-sama.git
 
 # Set the working directory 
 WORKDIR /task-sama/backend
- 
+  
 # Install dependencies
 RUN npm install
 
