@@ -29,11 +29,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           password: ${{ secrets.VPS_PASSWORD }}
 
-          # Stop and remove the existing container, then pull latest image, then run it with parameters
-          script: |
-            docker stop task-sama-backend
-            docker rm task-sama-backend
-            docker pull task-sama-backend:latest
-            docker run -d --name task-sama-backend -p 3000:3000 task-sama-backend:latest
+        # Stop and remove the existing container, then pull latest image, then run it with parameters
+      - name: Replace container
+        run: |
+          docker stop task-sama-backend
+          docker rm task-sama-backend
+          docker pull task-sama-backend:latest
+          docker run -d --name task-sama-backend -p 3000:3000 task-sama-backend:latest
 
             
