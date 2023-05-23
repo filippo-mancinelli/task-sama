@@ -21,20 +21,18 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Connect to VPS
+        # Stop and remove the existing container, then pull latest image, then run it with parameters
+      - name: Replace container
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
           password: ${{ secrets.VPS_PASSWORD }}
-
-        # Stop and remove the existing container, then pull latest image, then run it with parameters
-      - name: Replace container
-        run: |
-          docker stop task-sama-backend
-          docker rm task-sama-backend
-          docker pull task-sama-backend:latest
-          docker run -d --name task-sama-backend -p 3000:3000 task-sama-backend:latest
+          port: 22
+          run: |
+            docker stop crosta/ts-backend:latest
+            docker rm crosta/ts-backend:latest
+            docker pull crosta/ts-backend:latest
+            docker run -d --name crosta/ts-backend:latest -p 3000:3000 crosta/ts-backend:latest
 
             
