@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'backend/**'
 
 jobs:
   deploy:
@@ -27,14 +29,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           password: ${{ secrets.VPS_PASSWORD }}
 
-          # Add any additional SSH options if required
-
           # Stop and remove the existing container, then pull latest image, then run it with parameters
-          # Adjust the image name, ports, and other parameters as needed
           script: |
-            sudo docker stop task-sama
-            sudo docker rm task-sama
-            sudo docker pull task-sama:latest
-            sudo docker run -d --name task-sama-production -p 3000:3000 -p 27017:27017 task-sama:latest
+            docker stop task-sama-backend
+            docker rm task-sama-backend
+            docker pull task-sama-backend:latest
+            docker run -d --name task-sama-backend -p 3000:3000 task-sama-backend:latest
 
             
