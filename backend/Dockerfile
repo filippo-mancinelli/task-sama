@@ -1,9 +1,6 @@
 # Specify the base image
 FROM node:19
 
-# specify the data directory as a volume to persist data outside the container for mongodb
-VOLUME ["/data/db"] 
-
 # Clone repo code
 RUN git clone https://github.com/filippo-mancinelli/task-sama.git
 
