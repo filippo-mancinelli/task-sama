@@ -10,10 +10,10 @@ WORKDIR /task-sama/backend
 # Install dependencies
 RUN npm install
  
-# Expose ports
+# Expose ports 
 EXPOSE 3000
  
 # Start the backend
 CMD ["node", "index.js"]  
-
+ 
  
