@@ -1,4 +1,4 @@
-name: Update Docker Container
+name: Deploy backend container
 
 # "push" events includes "merge" events from test into main
 on:
