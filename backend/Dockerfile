@@ -5,7 +5,7 @@ FROM node:19
 RUN git clone https://github.com/filippo-mancinelli/task-sama.git
 
 # Copy configuration file
-COPY /.env /task-sama
+COPY .env /task-sama
 
 # Set the working directory 
 WORKDIR /task-sama/backend
