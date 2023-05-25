@@ -46,6 +46,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          context: .
           file: /backend/Dockerfile
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ts-backend:latest
           
