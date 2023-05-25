@@ -1,3 +1,11 @@
+# The process of deploying the backend container to the remote VPS consists of these steps:
+# - the job start whenever we push any changes regarding the backend folder in the main branch
+# - checkout repo into the runner
+# - create .env file into the runner using github secrets
+# - copy .env file using SCP
+# - ssh into vps and replace container (the container will take care of cloning the repo at the latest changes in main branch)
+# - ssh into vps and copy the .env file from the vps host into the project folder inside the running container
+
 name: Deploy backend container
 
 # "push" events includes "merge" events from test into main
@@ -16,13 +24,28 @@ jobs:
       - name: Checkout/fetch Repository 
         uses: actions/checkout@v3
 
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@v1.3.0
+        with:
+          envkey_MONGO_URL: ${{ secrets.MONGO_URL }}
+          some_other_variable: foobar
+
+      - name: copy .env via SCP
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: ".env"
+          target: /home/carl/configurations/
+
       - name: Replace container
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          #password: ${{ secrets.VPS_PASSWORD }}
           port: 22
           script: |
             PASSWORD="${{ secrets.VPS_PASSWORD }}"
@@ -31,5 +54,17 @@ jobs:
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker pull crosta/ts-backend:latest
             echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 3000:3000 crosta/ts-backend:latest
-
+            
+      - name: copy .env from vps host to backend container
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            PASSWORD="${{ secrets.VPS_PASSWORD }}"
+            echo "${PASSWORD}" | sudo -S docker cp /home/carl/configurations/.env backend:/.env
+            
+            
             
