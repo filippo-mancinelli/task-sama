@@ -30,16 +30,25 @@ jobs:
           envkey_MONGO_URL: ${{ secrets.MONGO_URL }}
           some_other_variable: foobar
 
-      - name: copy .env via SCP
-        uses: appleboy/scp-action@v0.1.4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          source: ".env"
-          target: /home/carl/configurations/
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          file: /backend/Dockerfile
+          tags: ${DOCKERHUB_USERNAME}/ts-backend:latest
+          
       - name: Replace container
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -54,18 +63,6 @@ jobs:
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker pull crosta/ts-backend:latest
             echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 3000:3000 crosta/ts-backend:latest
-            
-      - name: copy .env from vps host to backend container and restart it
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            PASSWORD="${{ secrets.VPS_PASSWORD }}"
-            echo "${PASSWORD}" | sudo -S docker cp /home/carl/configurations/.env backend:task-sama/.env
-            echo "${PASSWORD}" | sudo -S docker restart backend
 
             
             
