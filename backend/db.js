@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 
 const mongoUrl = process.env.MONGO_URL;
-const dbName = 'tasksama';
+const dbName = 'task-sama';
 
 let db;
 
