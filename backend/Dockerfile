@@ -10,7 +10,7 @@ COPY .env /task-sama
 # Set the working directory 
 WORKDIR /task-sama/backend
   
-# Install dependencies
+# Install dependencies 
 RUN npm install 
    
 # Expose ports  
