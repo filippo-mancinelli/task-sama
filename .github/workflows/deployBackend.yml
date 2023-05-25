@@ -47,7 +47,7 @@ jobs:
         with:
           push: true
           file: /backend/Dockerfile
-          tags: ${DOCKERHUB_USERNAME}/ts-backend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ts-backend:latest/ts-backend:latest
           
       - name: Replace container
         uses: appleboy/ssh-action@v0.1.10
