@@ -13,7 +13,7 @@ RUN npm install
 # Expose ports 
 EXPOSE 3000
  
-# Start the backend
+# Start the backend 
 CMD ["node", "index.js"] 
  
  
