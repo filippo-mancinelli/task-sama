@@ -11,7 +11,7 @@ COPY .env /task-sama
 WORKDIR /task-sama/backend
   
 # Install dependencies
-RUN npm install
+RUN npm install 
    
 # Expose ports  
 EXPOSE 3000
