@@ -26,50 +26,29 @@ module.exports = async function (deployer) {
   await tasks.participate(3, {from: accounts[3]});
   await tasks.participate(4, {from: accounts[4]});
 
-
+  console.log("########### ACCOUNTS #############",accounts)
+  
   // choose winners
   await tasks.chooseWinner(1, accounts[1], 'ipfsWIN');
   await tasks.chooseWinner(2, accounts[3], 'ipfsWIN');
 
-  // listen to events emitted
-  let options = {
-    filter: {
-        value: ['1000', '1337']    //Only get events where transfer value was 1000 or 1337
-    },
-    fromBlock: 'pending',                  //Number || "earliest" || "pending" || "latest"
-    toBlock: 'latest'
-  };
-  tasks.getPastEvents('TaskCompleted', options)
-  .then(res => {
-    console.log("\n ####################################################################### \n " +
-    "Winner chosen for task: %s is %s" +
-    "\n ####################################################################### \n ",
-     res[0].returnValues.taskId, res[0].returnValues.winner);
-  })
-
   // check 
   console.log(await tasksama.getVideos())
 
-
-  /*
-  //contract instances
-  const tasksama = await TaskSama.at("0xF59BaD8377f94da4b3243c0bF412B2cc86f35599");
-  const tasks = await Tasks.at("0xC609b2B24dd1e0B316BE3656d15E25c89d2539d0");
-  */
-
-  /* 
-  //test send funds
-  const accounts = await web3.eth.getAccounts()
-  const sender = accounts[0]
-  const receiver = accounts[1]
-  const amount = web3.utils.toWei("200", "ether")
-  await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
-  */
 };
 
-
-
 /*
+//contract instances
+const tasksama = await TaskSama.at("0xF59BaD8377f94da4b3243c0bF412B2cc86f35599");
+const tasks = await Tasks.at("0xC609b2B24dd1e0B316BE3656d15E25c89d2539d0");
+
+//test send funds
+const accounts = await web3.eth.getAccounts()
+const sender = accounts[0]
+const receiver = accounts[1]
+const amount = web3.utils.toWei("200", "ether")
+await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
+
 ### Get the list of available accounts:
 web3.eth.getAccounts().then(accounts => console.log(accounts))
 
@@ -84,7 +63,4 @@ const result = await contractInstance.myFunction.call({ from: accountToUse })
 
 ### call state-changing SC function**
 const tx = await contractInstance.myFunction(param1, { from: accountToUse }) 
-
-
-
 */
