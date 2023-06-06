@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -28,9 +28,9 @@ contract TaskSama is ERC721, Ownable {
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
 
-        _mint(recipient, newTokenId);
+        _safeMint(recipient, newTokenId);
 
-        tasksama[newTokenId] = Video({
+        tasksama.push(Video({
             title: title,
             description: description,
             ipfsUrl: ipfsUrl,
@@ -38,7 +38,7 @@ contract TaskSama is ERC721, Ownable {
             winner: recipient,
             participants: participants,
             timestamp: block.timestamp // Set the current timestamp
-        });
+        }));
 
         return newTokenId;
     }

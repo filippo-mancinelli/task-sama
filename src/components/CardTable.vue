@@ -1,11 +1,13 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useVideoStore } from '../stores/useVideoStore';
+import { useConnectionStore } from '../stores/useConnectionStore';
 import _ from 'lodash';
 import Card from './Card.vue';
 import { storeToRefs } from 'pinia';
 
 const videoStore = useVideoStore();
+const connectionStore = useConnectionStore();
 
 const { videoMetadata: cards } = storeToRefs(videoStore)
 const searchQuery = ref("");
@@ -45,11 +47,15 @@ const sortCards = () => {
 
 const toggleSortDirection = () => {
   sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
-
 };
 
 onMounted(() => {
-  videoStore.initVideoMetadata();
+  watch(() => connectionStore.tasksInstance, async (instance) => {
+    if(instance != null) {
+      cards.value = await videoStore.initVideoMetadata();
+      console.log("cards:", cards.value)
+    }
+  });
 });
 
 </script>

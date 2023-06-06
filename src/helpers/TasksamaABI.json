@@ -1,12 +1,6 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "taskSamaContractAddress",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -77,68 +71,6 @@
       }
     ],
     "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "taskId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "winner",
-        "type": "address"
-      }
-    ],
-    "name": "TaskCompleted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "taskId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "title",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "description",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "imageURI",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "reward",
-        "type": "uint256"
-      }
-    ],
-    "name": "TaskCreated",
     "type": "event"
   },
   {
@@ -243,20 +175,6 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [],
-    "name": "minimumReward",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -429,58 +347,8 @@
         "type": "uint256"
       }
     ],
-    "name": "taskCompleted",
+    "name": "tasksama",
     "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "taskExists",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "tasks",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
       {
         "internalType": "string",
         "name": "title",
@@ -493,18 +361,23 @@
       },
       {
         "internalType": "string",
-        "name": "imageURI",
+        "name": "ipfsUrl",
         "type": "string"
       },
       {
         "internalType": "uint256",
-        "name": "reward",
+        "name": "rewardEarned",
         "type": "uint256"
       },
       {
         "internalType": "address",
         "name": "winner",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -570,169 +443,53 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_title",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_description",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_imageURI",
-        "type": "string"
-      }
-    ],
-    "name": "createTask",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function",
-    "payable": true
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_taskId",
-        "type": "uint256"
-      }
-    ],
-    "name": "participate",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_taskId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address payable",
-        "name": "_winner",
+        "internalType": "address",
+        "name": "recipient",
         "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
       },
       {
         "internalType": "string",
         "name": "ipfsUrl",
         "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rewardEarned",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "participants",
+        "type": "address[]"
       }
     ],
-    "name": "chooseWinner",
-    "outputs": [],
+    "name": "mintVideoNFT",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_taskId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_participant",
-        "type": "address"
-      }
-    ],
-    "name": "_isParticipant",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_taskId",
-        "type": "uint256"
-      }
-    ],
-    "name": "_taskExists",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_taskId",
-        "type": "uint256"
-      }
-    ],
-    "name": "_isCompleted",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_taskId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "walletCheck",
-        "type": "address"
-      }
-    ],
-    "name": "_isOwner",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
     "inputs": [],
-    "name": "_getTasks",
+    "name": "getVideos",
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
           {
             "internalType": "string",
             "name": "title",
@@ -745,13 +502,18 @@
           },
           {
             "internalType": "string",
-            "name": "imageURI",
+            "name": "ipfsUrl",
             "type": "string"
           },
           {
             "internalType": "uint256",
-            "name": "reward",
+            "name": "rewardEarned",
             "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "winner",
+            "type": "address"
           },
           {
             "internalType": "address[]",
@@ -759,12 +521,12 @@
             "type": "address[]"
           },
           {
-            "internalType": "address",
-            "name": "winner",
-            "type": "address"
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
           }
         ],
-        "internalType": "struct Tasks.Task[]",
+        "internalType": "struct TaskSama.Video[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -777,24 +539,14 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_taskId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
-    "name": "_getTask",
+    "name": "getVideo",
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
           {
             "internalType": "string",
             "name": "title",
@@ -807,13 +559,18 @@
           },
           {
             "internalType": "string",
-            "name": "imageURI",
+            "name": "ipfsUrl",
             "type": "string"
           },
           {
             "internalType": "uint256",
-            "name": "reward",
+            "name": "rewardEarned",
             "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "winner",
+            "type": "address"
           },
           {
             "internalType": "address[]",
@@ -821,12 +578,12 @@
             "type": "address[]"
           },
           {
-            "internalType": "address",
-            "name": "winner",
-            "type": "address"
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
           }
         ],
-        "internalType": "struct Tasks.Task",
+        "internalType": "struct TaskSama.Video",
         "name": "",
         "type": "tuple"
       }
@@ -839,36 +596,53 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_taskId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
-    "name": "_getParticipantsOf",
+    "name": "getParticipants",
     "outputs": [
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "string",
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "ipfsUrl",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardEarned",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "winner",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "participants",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TaskSama.Video",
         "name": "",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_taskId",
-        "type": "uint256"
-      }
-    ],
-    "name": "_getWinnerOf",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",

@@ -14,7 +14,8 @@ async function connectToDatabase() {
   try {
     const client = await MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
     db = client.db(dbName);
-    console.log(`Connected to database ${dbName}`);
+    await db.authenticate(process.env.MONGO_USERNAME, process.env.MONGO_PASSWORD);
+    console.log(`Connected to database ${dbName} as ${process.env.MONGO_USERNAME}`);
 
     return db;
   } catch (error) {

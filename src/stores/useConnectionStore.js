@@ -2,8 +2,9 @@ import { ethers } from 'ethers';
 import { Web3Provider } from '@ethersproject/providers';
 import { networkConfigs } from '../helpers/networks';
 import { defineStore } from 'pinia'
-import { watch } from 'vue';
+import { watch, markRaw  } from 'vue';
 import TasksABI from "../helpers/TasksABI.json";
+import TasksamaABI from "../helpers/TasksamaABI.json";
 
 
 export const useConnectionStore = defineStore('metamaskConnection', {
@@ -13,16 +14,21 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         signer: null,
         walletAddress: null,
         isConnected: false,
-        contractABI: TasksABI,
-        contractAddress: "0x4Bf7250D7a9edeE52A9C2AE74534AC2cC4fF8E81", //ganache generated
-        contractInstance: null,
+        tasksABI: TasksABI,
+        tasksamaABI: TasksamaABI,
+        tasksAddress: "0x31590FFB91E2ad3C297EA056626113dc0a399766", // ganache generated
+        tasksamaAddress: "0x5FA522CFcEBB03E7163C88927D6daeF2bdd06E82", //ganache generated
+        tasksInstance: null,
+        tasksamaInstance: null,
     }),
 
     getters: {
       getProvider: (state) => state.provider,
       getContractABI: (state) => state.contractABI,
-      getContractAddress: (state) => state.contractAddress,
-      getContractInstance: (state) => state.contractInstance,
+      getTasksAddress: (state) => state.tasksAddress,
+      getTasksamaAddress: (state) => state.tasksamaAddress,
+      getTasksInstance: (state) => state.tasksInstance,
+      getTasksamaInstance: (state) => state.tasksInstance,
       getWalletAddress: (state) => state.walletAddress
     },
   
@@ -54,15 +60,17 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         if (typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined')) {
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
           this.isConnected = accounts.length > 0;
+          await this.setProvider(); //in any case we need a provider (ganache or infura)
+
           if (this.isConnected) {
-            await this.setProvider();
             await this.setSigner();
             await this.setWalletAddress();
             return this.walletAddress;
           }
-          return null;
+          
+          this.tasksInstance = new ethers.Contract(this.tasksAddress, this.tasksABI, this.provider);
+          this.tasksamaInstance = new ethers.Contract(this.tasksamaAddress, this.tasksamaABI, this.provider);
         }
-        return null;
       },
       
       async connect() { 
@@ -83,21 +91,17 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       //if the user is connected we use metamask as provider, else we use infura/ganache, and then create the contract istance 
       async setProvider() {
         if(this.isConnected) {
-          this.provider = new Web3Provider(window.ethereum);
+          this.provider = markRaw(new Web3Provider(window.ethereum));
         } else {
-          //this.provider = new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/e595556a6f02441e809bc933758ab52a');  //Infura
-          //this.provider = ethers.getDefaultProvider('moonbeam'); //Default provider, moonbeam mainnet
-          this.provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');  //ganache
-        }
-        
-        if(this.provider != 'undefined') {
-          this.contractInstance = new ethers.Contract(this.contractAddress, this.contractABI, this.provider);
+          //this.provider = markRaw(new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/e595556a6f02441e809bc933758ab52a'));  //Infura
+          //this.provider = markRaw(ethers.getDefaultProvider('moonbeam')); //Default provider, moonbeam mainnet
+          this.provider = markRaw(new ethers.providers.JsonRpcProvider('http://localhost:8545'));  //ganache
         }
       },
 
       async setSigner() {
         if(this.isConnected) {
-          this.signer = this.provider.getSigner();
+          this.signer = markRaw(this.provider.getSigner());
         }
       },
 
@@ -107,8 +111,13 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         }
       },
 
-      async callContractFunction(functionName, params){
-        const result = await this.contractInstance[functionName](...params);
+      async callContractFunction(contractName, functionName, params){ 
+        let result;
+        if(contractName == "TaskSama") {
+          result = await this.tasksamaInstance[functionName](...(params || []));
+        } else if(contractName == "Tasks") {
+          result = await this.tasksInstance[functionName](...(params || []));
+        }
         return result
       }
     },
