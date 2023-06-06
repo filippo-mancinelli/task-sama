@@ -10,6 +10,7 @@ name: Deploy backend container
 
 # "push" events includes "merge" events from test into main
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
