@@ -10,6 +10,7 @@ name: Deploy backend container
 
 # "push" events includes "merge" events from test into main
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -40,6 +41,8 @@ jobs:
         uses: SpicyPizza/create-envfile@v1.3.0
         with:
           envkey_MONGO_URL: ${{ secrets.MONGO_URL }}
+          envkey_MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
+          envkey_MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
           some_other_variable: foobar
 
       - name: Build and push
