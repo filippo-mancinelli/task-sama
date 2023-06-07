@@ -39,8 +39,8 @@ module.exports = async function (deployer) {
 
 /*
 //contract instances
-const tasksama = await TaskSama.at("0xF59BaD8377f94da4b3243c0bF412B2cc86f35599");
-const tasks = await Tasks.at("0xC609b2B24dd1e0B316BE3656d15E25c89d2539d0");
+const tasksama = await TaskSama.at("0x2D3b14D12781f9CC6c4447306cE014d27367a98a");
+const tasks = await Tasks.at("0xA17fF75807256BDA40460409f327e8713135B3E2");
 
 //test send funds
 const accounts = await web3.eth.getAccounts()
