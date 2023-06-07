@@ -31,6 +31,8 @@ router.get('/initLikes', async (ctx, next) => {
 
 router.post('/like', async (ctx, next) => {
     if(ctx.request.path == '/like') {
+      console.log("Chiamata: 'http://localhost:3000/like'")
+
       const db = await connectToDatabase();
       const collection = db.collection('videos');
       const tokenId = ctx.request.body.tokenId;

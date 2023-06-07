@@ -64,7 +64,7 @@ function setLikesMapping() {
         like.value = false;
         ctx.$refs.lottiePlayer.seek("10%");
     }
-  })
+  });
 }
 
 onMounted(() => {

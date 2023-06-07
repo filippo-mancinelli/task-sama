@@ -16,8 +16,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         isConnected: false,
         tasksABI: TasksABI,
         tasksamaABI: TasksamaABI,
-        tasksAddress: "0xA17fF75807256BDA40460409f327e8713135B3E2", // ganache generated
-        tasksamaAddress: "0x2D3b14D12781f9CC6c4447306cE014d27367a98a", //ganache generated
+        tasksAddress: "0x6F524eEbab3EB575718fF1D004e620059A328952", // ganache generated
+        tasksamaAddress: "0x15fE6C3B94f0359a9d25CE7DF7F64284B9AD4981", //ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
     }),
@@ -33,15 +33,18 @@ export const useConnectionStore = defineStore('metamaskConnection', {
     },
   
     actions: {
-      initConnectionWatcher() {
+      async initConnectionWatcher() {
+        await this.setProvider(); //in any case we need a provider (ganache or infura)
+        this.tasksInstance = markRaw(new ethers.Contract(this.tasksAddress, this.tasksABI, this.provider));
+        this.tasksamaInstance = markRaw(new ethers.Contract(this.tasksamaAddress, this.tasksamaABI, this.provider));
+
         watch(
           () => this.isConnected,
           async (newValue) => {
-            await this.setProvider(); //in any case we need a provider (ganache or infura)
-
+            await this.setProvider();
             if(newValue == true) {
-              this.setSigner();
-              this.setWalletAddress();
+              await this.setSigner();
+              await this.setWalletAddress();
             }
           });
         
@@ -62,9 +65,10 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
           this.isConnected = accounts.length > 0;
           await this.setProvider();
-          this.tasksInstance = markRaw(new ethers.Contract(this.tasksAddress, this.tasksABI, this.provider));
-          this.tasksamaInstance = markRaw(new ethers.Contract(this.tasksamaAddress, this.tasksamaABI, this.provider));
+          await this.setSigner();
+          await this.setWalletAddress();  
 
+          console.log("wallet",this.walletAddress)
           if (this.isConnected) return this.walletAddress;
         }
       },
@@ -74,12 +78,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           if(this.hasMetamask()){
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             await this.setProvider();
-
-            //at this point, initConnectionWatcher listener should have updated already isConnected
-            if(this.isConnected){
-              this.setSigner();
-              this.setWalletAddress()    
-            }
+            await this.setSigner();
+            await this.setWalletAddress();  
           }
         } 
       },
@@ -119,7 +119,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           result = await this.tasksInstance[functionName](...(params || []));
         }
         return result
-      }
+      },
+
     },
   })
 

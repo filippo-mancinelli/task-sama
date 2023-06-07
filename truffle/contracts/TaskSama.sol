@@ -11,6 +11,7 @@ contract TaskSama is ERC721, Ownable {
     Counters.Counter private _tokenIdCounter;
 
     struct Video {
+        uint256 tokenId;
         string title;
         string description;
         string ipfsUrl;
@@ -31,6 +32,7 @@ contract TaskSama is ERC721, Ownable {
         _safeMint(recipient, newTokenId);
 
         tasksama.push(Video({
+            tokenId: newTokenId,
             title: title,
             description: description,
             ipfsUrl: ipfsUrl,

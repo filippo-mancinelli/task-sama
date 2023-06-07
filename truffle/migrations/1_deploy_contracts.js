@@ -35,12 +35,15 @@ module.exports = async function (deployer) {
   // check 
   console.log(await tasksama.getVideos())
 
+  console.log("tasks: ", tasks.address)
+  console.log("tasksama: ", tasksama.address)
+
 };
 
 /*
 //contract instances
-const tasksama = await TaskSama.at("0x2D3b14D12781f9CC6c4447306cE014d27367a98a");
-const tasks = await Tasks.at("0xA17fF75807256BDA40460409f327e8713135B3E2");
+const tasksama = await TaskSama.at("0xA05B016848B87a9D4DA298B19263B8E8Ad13755f");
+const tasks = await Tasks.at("0x938CEa6063B34D4A58f8F2D2a18Bc9b05E4C63a9");
 
 //test send funds
 const accounts = await web3.eth.getAccounts()

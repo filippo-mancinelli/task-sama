@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useConnectionStore } from './useConnectionStore'
+import { BigNumber } from 'ethers';
 import axios from 'axios';
 
 export const useVideoStore = defineStore('videoNFTs', {
@@ -18,16 +19,24 @@ export const useVideoStore = defineStore('videoNFTs', {
     actions: {
         async initVideoMetadata() {
             //fetch from blockchain
-            this.videoMetadata = await useConnectionStore().callContractFunction("TaskSama", "getVideos");
+            const fetchedMetadata = await useConnectionStore().callContractFunction("TaskSama", "getVideos");
+
+            // Create a new array with modified objects
+            const modifiedMetadata = fetchedMetadata.map(metadata => {
+                return {
+                ...metadata,
+                tokenId: parseInt(metadata.tokenId)
+                };
+            });
+            
+            this.videoMetadata = modifiedMetadata;
             return this.videoMetadata;
         },
 
          //fetch total likes per video and an array of wallets who liked it. Then check for each video 
          //if the current user is present inside the array of likes. In that case we update 'userLikedVideos' mapping 
         async initLikes(walletAddress) {
-            console.log("BACKEND CALL")
-            const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/initLikes').then(response => {
-                console.log("response",response)
+            const promise = axios.get(import.meta.env.VITE_BACKEND_URL + '/initLikes').then(response => {
                 response.data.data.forEach(video => {
                     this.totalLikesPerVideo.set(video.tokenId, video.likes);
                     this.walletsLikesPerVideo.set(video.tokenId, video.likeWallets);
@@ -51,7 +60,7 @@ export const useVideoStore = defineStore('videoNFTs', {
 
 
         async like(tokenId, isLiked, walletAddress) {
-            const result = await axios.post(import.meta.env.VITE_BACKEND_URL + 'like', {tokenId, isLiked, walletAddress});
+            const result = await axios.post(import.meta.env.VITE_BACKEND_URL + '/like', {tokenId, isLiked, walletAddress});
             this.totalLikesPerVideo.set(tokenId, result.data);
             return result.data;
         },

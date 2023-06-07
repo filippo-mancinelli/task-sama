@@ -350,6 +350,11 @@
     "name": "tasksama",
     "outputs": [
       {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
         "internalType": "string",
         "name": "title",
         "type": "string"
@@ -491,6 +496,11 @@
       {
         "components": [
           {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
             "internalType": "string",
             "name": "title",
             "type": "string"
@@ -548,6 +558,11 @@
       {
         "components": [
           {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
             "internalType": "string",
             "name": "title",
             "type": "string"
@@ -604,6 +619,11 @@
     "outputs": [
       {
         "components": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
           {
             "internalType": "string",
             "name": "title",
