@@ -88,7 +88,10 @@ onMounted(() => {
           :tokenId="card.tokenId"
           :title="card.title"
           :description="card.description"
-          :reward="card.reward"
+          :rewardEarned="card.rewardEarned"
+          :creatorAddress="TODO"
+          :winnerAddress="card.winner"
+          :txhash="TODO"
           class="bg-white text-black"
         />
       </div>

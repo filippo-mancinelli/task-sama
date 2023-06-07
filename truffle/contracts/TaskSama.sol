@@ -16,6 +16,7 @@ contract TaskSama is ERC721, Ownable {
         string description;
         string ipfsUrl;
         uint256 rewardEarned;
+        address creator;
         address winner;
         address[] participants;
         uint256 timestamp;
@@ -25,7 +26,7 @@ contract TaskSama is ERC721, Ownable {
 
     constructor() ERC721("TaskSama", "TSK") { }
 
-    function mintVideoNFT(address recipient, string memory title, string memory description, string memory ipfsUrl, uint256 rewardEarned, address[] memory participants) public returns (uint256) {
+    function mintVideoNFT(address recipient, address creator, string memory title, string memory description, string memory ipfsUrl, uint256 rewardEarned, address[] memory participants) public returns (uint256) {
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
 
@@ -37,6 +38,7 @@ contract TaskSama is ERC721, Ownable {
             description: description,
             ipfsUrl: ipfsUrl,
             rewardEarned: rewardEarned,
+            creator: creator,
             winner: recipient,
             participants: participants,
             timestamp: block.timestamp // Set the current timestamp

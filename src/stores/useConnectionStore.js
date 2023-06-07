@@ -68,7 +68,6 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           await this.setSigner();
           await this.setWalletAddress();  
 
-          console.log("wallet",this.walletAddress)
           if (this.isConnected) return this.walletAddress;
         }
       },

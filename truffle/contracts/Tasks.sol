@@ -78,7 +78,7 @@ contract Tasks is ERC721, Ownable {
         //transfer the reward from the contract balance to the winner
         _winner.transfer(tasks[_taskId].reward * 1 wei); 
          //mints the video NFT
-        _taskSamaContract.mintVideoNFT(_winner, tasks[_taskId].title, tasks[_taskId].description, ipfsUrl, tasks[_taskId].reward, tasks[_taskId].participants);
+        _taskSamaContract.mintVideoNFT(_winner, msg.sender, tasks[_taskId].title, tasks[_taskId].description, ipfsUrl, tasks[_taskId].reward, tasks[_taskId].participants);
 
         emit TaskCompleted(_taskId, _winner);
     }

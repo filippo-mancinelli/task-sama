@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useConnectionStore } from './useConnectionStore'
-import { BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 import axios from 'axios';
 
 export const useVideoStore = defineStore('videoNFTs', {
@@ -25,7 +25,8 @@ export const useVideoStore = defineStore('videoNFTs', {
             const modifiedMetadata = fetchedMetadata.map(metadata => {
                 return {
                 ...metadata,
-                tokenId: parseInt(metadata.tokenId)
+                tokenId: parseInt(metadata.tokenId),
+                rewardEarned: parseInt(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned)))
                 };
             });
             

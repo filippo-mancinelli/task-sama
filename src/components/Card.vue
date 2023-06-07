@@ -14,7 +14,7 @@ const props = defineProps([
   'tokenId',
   'title',
   'description',
-  'reward',
+  'rewardEarned',
   'creatorAddress',
   'winnerAddress',
   'txhash'
@@ -91,10 +91,15 @@ onMounted(() => {
       <div class="badge badge-secondary">NEW</div>
     </h2>
     <p>{{ description }}</p>
-    <div class="flex  items-center"> 
-      <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ reward }} GLMR</span></p> 
-      <lottie-player class="relative h-8 resize left-4 bottom-0.5 align-top hover:cursor-pointer" ref="lottiePlayer" src="src/assets/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;" @click="likeButton"></lottie-player>
-      <span>{{ likeCount }}</span>
+    <div class="flex-container "> 
+      <p class="italic">Creator:  <span class="pl-1 text-xs">{{ creatorAddress }}</span></p> 
+      <p class="italic">Winner:  <span class="pl-1 text-xs">{{ winnerAddress }}</span></p> 
+      <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ rewardEarned }} GLMR</span></p> 
+      <div class="flex items-center justify-end pt-3">
+        <lottie-player class="relative h-8 resize left-4 bottom-0.5 align-top" ref="lottiePlayer" src="src/assets/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;"></lottie-player>
+        <div class="absolute hover:cursor-pointer h-7 w-7 mr-10"  @click="likeButton"></div> <!-- hitbox for click -->
+        <span>{{ likeCount }}</span>
+      </div>
     </div>
   </div>
 </div>
