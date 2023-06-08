@@ -65,42 +65,37 @@ onMounted(() => {
     <p class="text-center text-5xl font-extrabold text-black drop-shadow-lg drop-shadow-orange-500">Tasks completed</p>
   </div>
 
-    <div class="flex items-center px-40 space-x-2">
-      <input type="text" v-model="searchQuery" class="w-full py-2 pl-3 pr-10 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search cards...">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-40 my-4">
+    <input type="text" v-model="searchQuery" class="w-full py-2 px-3 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search cards...">
+    <div class="flex flex-col sm:flex-row mt-2 sm:mt-0 space-y-2 sm:space-y-0 sm:space-x-2">
       <select v-model="sortOrder" @change="sortCards" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
-          <option value="id" class="hover:bg-orange-200">Sort by ID</option>
-          <option value="reward">Sort by Reward</option>
+        <option value="id" class="hover:bg-orange-200">Sort by ID</option>
+        <option value="reward">Sort by Reward</option>
       </select>
-      <button @click="toggleSortDirection" class="ml-2 px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+      <button @click="toggleSortDirection" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
         {{ sortDirection === 'asc' ? 'Ascending' : 'Descending'}}
       </button>
     </div>
+  </div>
 
-  
-    <div class="card-table px-40 mt-10">
-      <div
-        v-for="(cardRow, index) in _.chunk(filteredCards, 3)"
-        :key="index"
-        class="flex space-x-3 mb-4"
-      >
-      <div v-for="card in cardRow">
+  <div class="card-table px-4 sm:px-40 mt-10">
+    <div v-for="(cardRow, index) in _.chunk(filteredCards, 3)" :key="index" class="flex flex-col sm:flex-row mb-4">
+      <div v-for="card in cardRow" class="w-full sm:w-1/3">
         <Card
           :tokenId="card.tokenId"
           :title="card.title"
           :description="card.description"
           :rewardEarned="card.rewardEarned"
-          :creatorAddress="TODO"
+          :creatorAddress="card.creator"
           :winnerAddress="card.winner"
+          :ipfsUrl="card.ipfsUrl"
           :txhash="TODO"
           class="bg-white text-black"
         />
       </div>
-
-
-      </div>
-
     </div>
-  </template>
+  </div>
+</template>
 
 <style scoped>
     .card-table {
@@ -115,5 +110,45 @@ onMounted(() => {
     option:hover {
     background-color: #ffbb55;
     }
+
+    
+@media (min-width: 640px) {
+  .flex-row {
+    flex-direction: row;
+  }
+
+  .flex-col {
+    flex-direction: column;
+  }
+
+  .items-center {
+    align-items: center;
+  }
+
+  .justify-between {
+    justify-content: space-between;
+  }
+
+  .mt-2 {
+    margin-top: 0.5rem;
+  }
+
+  .sm:mt-0 {
+    margin-top: 0;
+  }
+
+  .space-y-2 {
+    gap: 0.5rem;
+  }
+
+  .sm:space-y-0 {
+    gap: 0;
+  }
+
+  .sm:space-x-2 > * + * {
+    margin-left: 0.5rem;
+  }
+
+}
 </style>
 

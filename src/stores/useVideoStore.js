@@ -26,7 +26,7 @@ export const useVideoStore = defineStore('videoNFTs', {
                 return {
                 ...metadata,
                 tokenId: parseInt(metadata.tokenId),
-                rewardEarned: parseInt(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned)))
+                rewardEarned: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned))).toFixed(2)
                 };
             });
             

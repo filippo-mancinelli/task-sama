@@ -376,6 +376,11 @@
       },
       {
         "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "winner",
         "type": "address"
       },
@@ -453,6 +458,11 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
         "internalType": "string",
         "name": "title",
         "type": "string"
@@ -522,6 +532,11 @@
           },
           {
             "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
             "name": "winner",
             "type": "address"
           },
@@ -584,6 +599,11 @@
           },
           {
             "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
             "name": "winner",
             "type": "address"
           },
@@ -643,6 +663,11 @@
             "internalType": "uint256",
             "name": "rewardEarned",
             "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
           },
           {
             "internalType": "address",

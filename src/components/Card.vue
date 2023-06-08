@@ -17,9 +17,12 @@ const props = defineProps([
   'rewardEarned',
   'creatorAddress',
   'winnerAddress',
+  'ipfsUrl',
   'txhash'
 ]);
 
+
+//###### Like ######//
 const like = ref(false);
 const likeCount = ref(0)
 
@@ -67,14 +70,29 @@ function setLikesMapping() {
   });
 }
 
+//##### video player #####//
+const videoPlayer = ref(null);
+
+async function fetchIPFSVideo() {
+  const response = await fetch(props.ipfsUrl);
+  const blob = await response.blob();
+  videoPlayer.value.src = URL.createObjectURL(blob);
+}
+
+
+
+
 onMounted(() => {
   //we must watch for changes in the totalLikesPerVideo mapping BEFORE we make the call to the backend 
   watch(() => totalLikesPerVideo.value, (newValue, oldValue) => {
     likeCount.value = totalLikesPerVideo.value.get(props.tokenId);
   }, { deep: true });
 
+  //init data
   setLikesMapping();
+  fetchIPFSVideo();
 
+  //keep watching for user connection state to enable/disable like button
   watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
     setLikesMapping();
   });
@@ -84,7 +102,7 @@ onMounted(() => {
 
 <template>
 <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
-  <figure><img src="https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427" alt="Shoes" /></figure>
+  <div class=""><video ref="videoPlayer" controls autoplay class="rounded-t-lg object-contain h-48 w-96"></video></div>
   <div class="card-body gap-1 p-5">
     <h2 class="card-title">
       {{ title }}   #{{ tokenId  }}
@@ -97,7 +115,7 @@ onMounted(() => {
       <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ rewardEarned }} GLMR</span></p> 
       <div class="flex items-center justify-end pt-3">
         <lottie-player class="relative h-8 resize left-4 bottom-0.5 align-top" ref="lottiePlayer" src="src/assets/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;"></lottie-player>
-        <div class="absolute hover:cursor-pointer h-7 w-7 mr-10"  @click="likeButton"></div> <!-- hitbox for click -->
+        <div class="absolute hover:cursor-pointer h-7 w-7 mr-9"  @click="likeButton"></div> <!-- hitbox for click -->
         <span>{{ likeCount }}</span>
       </div>
     </div>

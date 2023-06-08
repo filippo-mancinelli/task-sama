@@ -17,14 +17,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="app" class=" bg-background-image z-10">
-    <Navbar class=" text-black" />
-    <Popup />
-    
-    <Home />
+  <div id="app" class="bg-background-image z-10">
+    <Navbar class="text-black" />
+
+    <div class="px-4 sm:px-10 md:px-20 lg:px-40 xl:px-60">
+      <Popup />
+      <Home />
+    </div>
   </div>
-
-
 </template>
 
 <style scoped>

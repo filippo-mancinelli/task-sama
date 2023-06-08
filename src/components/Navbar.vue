@@ -14,7 +14,7 @@ const connectionStore = useConnectionStore();
 </script>
 
 <template>
-  <div class="px-40 sticky top-0 z-10 mt-4 pb-20">
+  <div class="px-4 sm:px-40 sticky top-0 z-10 mt-4 pb-20">
     <div class="navbar  w-full   bg-yellow-100	 border-2 border-black rounded-full ">
   <div class="flex-1 border-solid border-2 border-black rounded-full bg-orange-100">
     <a class="btn btn-ghost normal-case text-2xl">Task Sama</a>
