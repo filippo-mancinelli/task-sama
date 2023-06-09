@@ -110,15 +110,16 @@ onMounted(() => {
 <div id="home" class="hero mb-10">
   <div class="hero-content text-center">
     <div class="max-w-md">
-      <h1 class="text-7xl font-bold drop-shadow-lg">Welcome</h1>
+      <h1 class="text-5xl sm:text-7xl font-bold drop-shadow-lg">Welcome</h1>
       <div class="py-6 my-4">
-        <p class="text-xl typewriter" id="first-typer">Create your task and offer a reward for users</p>
-        <p class="text-xl typewriter inline-block second-typer" style="max-width: 23rem;" v-if="showSecondTyper"> to incentivize them solving your task.</p>
+        <p class="text-lg sm:text-xl typewriter" id="first-typer">Create your task and offer a reward for users</p>
+        <p class="text-lg sm:text-xl typewriter inline-block second-typer" style="max-width: 23rem;" v-if="showSecondTyper"> to incentivize them solving your task.</p>
       </div>
       <label @click="openModal" class="btn btn-primary bg-orange-400 border-orange-400 hover:bg-orange-600 hover:border-black">Create your task</label>
     </div>
   </div>
 </div>
+
 </template>
 
 <style>

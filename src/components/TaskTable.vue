@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import Task from './Task.vue';
 import _ from 'lodash';
@@ -55,59 +55,77 @@ const toggleSortDirection = () => {
 
 };
 
+//###### card columns ######//
+const calculateColumnNumber = () => {
+  var result = 3;
+
+  if(window.innerWidth <= 1000) {
+    result = 2;
+  } else if (window.innerWidth <= 1700) {
+    result = 3;
+  } else {
+    result = 4;
+  }
+  return result;
+}
+const screenSizeColumns =  ref(calculateColumnNumber());
+
+onMounted(() => {
+  window.addEventListener('resize', function(event){
+    screenSizeColumns.value = calculateColumnNumber();
+  });
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize')
+});
+
 </script>
 
 <template>
-<div id="tasks" class="my-10 content-center">
-  <p class="text-center text-6xl font-extrabold text-black drop-shadow-lg drop-shadow-orange-500">Tasks to do</p>
-</div>
+  <div id="tasks" class="my-10 content-center">
+    <p class="text-center text-5xl font-extrabold text-black drop-shadow-lg drop-shadow-orange-500">Tasks to do</p>
+  </div>
 
-    <div class="flex items-center px-40 space-x-2 mt-10">
-      <input type="text" v-model="searchQuery" class="w-full py-2 pl-3 pr-10 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search tasks...">
+  <div class="flex flex-col items-center px-4 md:px-40 space-y-2 md:space-x-2 md:space-y-0 mt-10">
+    <input type="text" v-model="searchQuery" class="w-full py-2 pl-3 pr-10 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search tasks...">
+    <div class="flex items-center space-x-2">
       <select v-model="sortOrder" @change="sortTasks" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
-          <option value="id" class="hover:bg-orange-200">Sort by ID</option>
-          <option value="reward">Sort by Reward</option>
+        <option value="id" class="hover:bg-orange-200">Sort by ID</option>
+        <option value="reward">Sort by Reward</option>
       </select>
       <button @click="toggleSortDirection" class="ml-2 px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
         {{ sortDirection === 'asc' ? 'Ascending' : 'Descending'}}
       </button>
     </div>
+  </div>
 
-  
-    <div class="card-table px-40 mt-10">
-      <div
-        v-for="(taskRow, index) in _.chunk(filteredTasks, 3)"
-        :key="index"
-        class="flex space-x-3 mb-4"
-      >
-      <div v-for="task in taskRow">
-        <Task
-          :id="task.id"
-          :title="task.title"
-          :description="task.description"
-          :reward="task.reward"
-          class="bg-white text-black"
-        />
-      </div>
-
-
-      </div>
-
+  <div class="card-table px-4 md:px-40 mt-10">
+  <div
+    v-for="(taskRow, index) in _.chunk(filteredTasks, screenSizeColumns)"
+    :key="index"
+    class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4"
+  >
+    <div v-for="task in taskRow" class="w-full">
+      <Task
+        :id="task.id"
+        :title="task.title"
+        :description="task.description"
+        :reward="task.reward"
+        class="bg-white text-black"
+      />
     </div>
-  </template>
+  </div>
+</div>
+
+</template>
 
 <style scoped>
-    .card-table {
+  .card-table {
     display: flex;
     flex-direction: column;
-    }
-    .card-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    }
-    option:hover {
+  }
+  option:hover {
     background-color: #ffbb55;
-    }
+  }
 </style>
-

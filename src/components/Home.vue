@@ -9,10 +9,12 @@ import Test from './Test.vue';
 
 <template>
 <!--<Test /> -->
+<div class="">
+    <Hero />
+    <CardTable />
+    <TaskTable />
+</div>
 
-<Hero class="text-black"/>
-<CardTable />
-<TaskTable />
 </template>
 
 <style scoped>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import _ from 'lodash';
@@ -49,6 +49,22 @@ const toggleSortDirection = () => {
   sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
 };
 
+//###### card columns ######//
+const calculateColumnNumber = () => {
+  var result = 3;
+
+  if(window.innerWidth <= 1000) {
+    result = 2;
+  } else if (window.innerWidth <= 1700) {
+    result = 3;
+  } else {
+    result = 4;
+  }
+  return result;
+}
+
+const screenSizeColumns =  ref(calculateColumnNumber());
+
 onMounted(() => {
   watch(() => connectionStore.tasksInstance, async (instance) => {
     if(instance != null) {
@@ -56,18 +72,31 @@ onMounted(() => {
       console.log("cards:", cards.value)
     }
   });
+
+  watch(() => searchQuery.value, async () => {
+    //videoStore.
+  });
+
+  window.addEventListener('resize', function(event){
+    screenSizeColumns.value = calculateColumnNumber();
+  });
+
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize')
 });
 
 </script>
 
 <template>
-  <div id="tasks" class="my-10 content-center">
+  <div id="cards" class="my-10 content-center">
     <p class="text-center text-5xl font-extrabold text-black drop-shadow-lg drop-shadow-orange-500">Tasks completed</p>
   </div>
 
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-40 my-4">
-    <input type="text" v-model="searchQuery" class="w-full py-2 px-3 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search cards...">
-    <div class="flex flex-col sm:flex-row mt-2 sm:mt-0 space-y-2 sm:space-y-0 sm:space-x-2">
+    <input type="text" v-model="searchQuery" class="w-full py-2 px-3 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent mb-2 sm:mb-0" placeholder="Search cards...">
+    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
       <select v-model="sortOrder" @change="sortCards" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
         <option value="id" class="hover:bg-orange-200">Sort by ID</option>
         <option value="reward">Sort by Reward</option>
@@ -79,8 +108,8 @@ onMounted(() => {
   </div>
 
   <div class="card-table px-4 sm:px-40 mt-10">
-    <div v-for="(cardRow, index) in _.chunk(filteredCards, 3)" :key="index" class="flex flex-col sm:flex-row mb-4">
-      <div v-for="card in cardRow" class="w-full sm:w-1/3">
+    <div v-for="(cardRow, index) in _.chunk(filteredCards, screenSizeColumns)" :key="index" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
+      <div v-for="card in cardRow" :key="card.tokenId" class="w-full">
         <Card
           :tokenId="card.tokenId"
           :title="card.title"
@@ -95,60 +124,22 @@ onMounted(() => {
       </div>
     </div>
   </div>
+
 </template>
 
 <style scoped>
-    .card-table {
+  .card-table {
     display: flex;
     flex-direction: column;
-    }
-    .card-row {
+  }
+  .card-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
-    }
-    option:hover {
+  }
+  option:hover {
     background-color: #ffbb55;
-    }
-
-    
-@media (min-width: 640px) {
-  .flex-row {
-    flex-direction: row;
   }
-
-  .flex-col {
-    flex-direction: column;
-  }
-
-  .items-center {
-    align-items: center;
-  }
-
-  .justify-between {
-    justify-content: space-between;
-  }
-
-  .mt-2 {
-    margin-top: 0.5rem;
-  }
-
-  .sm:mt-0 {
-    margin-top: 0;
-  }
-
-  .space-y-2 {
-    gap: 0.5rem;
-  }
-
-  .sm:space-y-0 {
-    gap: 0;
-  }
-
-  .sm:space-x-2 > * + * {
-    margin-left: 0.5rem;
-  }
-
-}
 </style>
+
 

@@ -72,6 +72,7 @@ function setLikesMapping() {
 
 //##### video player #####//
 const videoPlayer = ref(null);
+const showControls = ref(false);
 
 async function fetchIPFSVideo() {
   const response = await fetch(props.ipfsUrl);
@@ -85,6 +86,8 @@ async function fetchIPFSVideo() {
 onMounted(() => {
   //we must watch for changes in the totalLikesPerVideo mapping BEFORE we make the call to the backend 
   watch(() => totalLikesPerVideo.value, (newValue, oldValue) => {
+    console.log(totalLikesPerVideo.value)
+
     likeCount.value = totalLikesPerVideo.value.get(props.tokenId);
   }, { deep: true });
 
@@ -94,7 +97,7 @@ onMounted(() => {
 
   //keep watching for user connection state to enable/disable like button
   watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
-    setLikesMapping();
+    setLikesMapping(); 
   });
 });
 
@@ -102,7 +105,11 @@ onMounted(() => {
 
 <template>
 <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
-  <div class=""><video ref="videoPlayer" controls autoplay class="rounded-t-lg object-contain h-48 w-96"></video></div>
+  <!-- video player -->
+  <div class="video-container" @mouseenter="showControls = true" @mouseleave="showControls = false">
+    <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-lg"></video>
+  </div>
+
   <div class="card-body gap-1 p-5">
     <h2 class="card-title">
       {{ title }}   #{{ tokenId  }}
@@ -126,5 +133,39 @@ onMounted(() => {
 <style scoped>
 .resize {
   transform: scale(3);
+}
+
+.video-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Hide video controls by default */
+video::-webkit-media-controls {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Show video controls on hover */
+.video-container:hover video::-webkit-media-controls {
+  opacity: 1;
+}
+
+.show-controls::-webkit-media-controls {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.show-controls:not(:hover)::-webkit-media-controls {
+  opacity: 0;
 }
 </style>
