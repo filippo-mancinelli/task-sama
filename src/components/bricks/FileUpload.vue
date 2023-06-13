@@ -21,14 +21,14 @@ function onFileChange(event) {
   const file = event.target.files[0];
 
   if(props.uploadType == 'image') {
-    if (file && file.type == 'image/jpeg') {
+    if (file && (file.type == 'image/jpeg' || file.type == 'image/png')) {
       uploadedFile.value.name = file.name
       uploadedFile.value.size = file.size
       uploadedFile.value.file = file
       uploadedFile.value.date = new Date()
       showError.value = false;
     } else {
-      if(file.type !== 'image/jpeg'){
+      if(file.type !== 'image/jpeg' && file.type !== 'image/png'){
         errorMessage.value = 'File format must be jpeg or png.';
       }
       if(file.size > 2000000) {
@@ -37,7 +37,6 @@ function onFileChange(event) {
       showError.value = true;
     }
   } else if(props.uploadType == 'video') {
-    console.log("failll", file)
     if (file && (file.type == 'video/mp4' || file.type == 'video/webm')) {
       uploadedFile.value.name = file.name
       uploadedFile.value.size = file.size

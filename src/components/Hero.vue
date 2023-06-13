@@ -6,6 +6,7 @@ import FileUpload from './bricks/FileUpload.vue';
 import TokenAmount from './bricks/TokenAmount.vue';
 import { ref, watchEffect, onMounted } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
+import { usePopupStore } from '../stores/usePopupStore';
 import { useArgStore } from '../stores/useArgStore';
 
 const connectionStore = useConnectionStore();
@@ -33,6 +34,7 @@ function closeModalEvent() {
 }
 
 function createTask() {
+  console.log("arguments: ", argStore.getArguments)
   if(argStore.getArguments.textArea == '' || argStore.getArguments.textInput == '' || argStore.getArguments.numberInput == '') {
     if(argStore.getArguments.textArea == '') 
     showAreaError.value = true;
@@ -42,7 +44,7 @@ function createTask() {
     
     if(argStore.getArguments.numberInput == '') 
       showTokenError.value = true;
-  } else if(connectionStore.isConnected){
+  } else if(connectionStore.isConnected) {
      const {_file, _reward, _description, _title} = argStore.getArguments;
      connectionStore.callContractFunction('createTask', {_title,  _description, URI: _file.URI, _reward}) //TODO URI ???
       .then(response => {
@@ -57,6 +59,8 @@ function createTask() {
         showModalResult.value = true;
         console.log("errore Nella creazione del task: ", error)
       } );
+  } else {
+    usePopupStore().setPopup(true, 'alert', 'You need to connect your wallet before creating the task')
   }
 }
 
