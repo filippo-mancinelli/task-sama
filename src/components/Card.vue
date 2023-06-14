@@ -107,8 +107,10 @@ onMounted(() => {
 <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
   <!-- video player -->
   <div class="video-container" @mouseenter="showControls = true" @mouseleave="showControls = false">
-    <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-lg"></video>
+  <div class="video-wrapper">
+    <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
   </div>
+</div>
 
   <div class="card-body gap-1 p-5">
     <h2 class="card-title">
@@ -137,17 +139,27 @@ onMounted(() => {
 
 .video-container {
   position: relative;
-  display: inline-block;
   width: 100%;
-  height: 100%;
   overflow: hidden;
+}
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  background-color: rgb(255, 255, 255); /* Optional: Add a background color to fill the empty space */
+  border-top-left-radius: 1rem; /* 16px */
+  border-top-right-radius: 1rem; /* 16px */
 }
 
 .video-player {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
+
 
 /* Hide video controls by default */
 video::-webkit-media-controls {

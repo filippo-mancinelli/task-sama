@@ -73,10 +73,6 @@ onMounted(() => {
     }
   });
 
-  watch(() => searchQuery.value, async () => {
-    //videoStore.
-  });
-
   window.addEventListener('resize', function(event){
     screenSizeColumns.value = calculateColumnNumber();
   });
