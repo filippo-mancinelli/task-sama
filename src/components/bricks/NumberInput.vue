@@ -16,7 +16,7 @@ watchEffect(() => {
       <label for="amount" class="label-text text-base"><slot name="title">Default title</slot></label>
       <div class="flex mt-1">
         <input type="number" id="amount" name="amount" v-model="amount" pattern="\d*" min="0"
-        class="shadow-sm w-full mr-2 sm:text-sm focus:ring-orange-400 focus:border-orange-400 border border-orange-400 outline-orange-400 outline-offset-4 rounded-md ">
+        class="self-start shadow-sm w-full mr-2 sm:text-sm focus:ring-orange-400 focus:border-orange-400 border border-orange-400 outline-orange-400 outline-offset-4 rounded-md ">
         <span class="mt-1"> <slot name="currency"> </slot> </span>
       </div>
     </div>
