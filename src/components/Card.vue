@@ -32,7 +32,7 @@ async function likeButton() {
     like.value = !like.value;
     likeCount.value = await updatelike(props.tokenId, like.value, useConnectionStore().walletAddress)
   } else {
-    usePopupStore().setPopup(true, 'alert', 'Connect your wallet before liking videos!');
+    usePopupStore().setPopup(true, 'alert', 'Connect your wallet before liking videos!', 'noModal');
   }
 }
 

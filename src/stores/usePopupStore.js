@@ -3,22 +3,18 @@ import { defineStore } from 'pinia'
 export const usePopupStore = defineStore('popup', {
 
     state: () => ({
-        //similar hashMap
         showPopup: false,
         messageType: '',
-        message: ''
+        message: '',
+        popupType: 'noModal'  //if we show the popup when a modal is open, we set the height differently
     }),
 
-    getters: {
-        getShowPopup: (state) => { return this.showPopup }
-    },
-
     actions: {
-        setPopup(show, msgType, msg) {
+        setPopup(show, msgType, msg, popType) {
             this.messageType = msgType;
             this.message = msg;
             this.showPopup = show;
-            
+            this.popupType = popType;
         }
     }
 
