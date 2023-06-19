@@ -53,7 +53,9 @@ const toggleSortDirection = () => {
 const calculateColumnNumber = () => {
   var result = 3;
 
-  if(window.innerWidth <= 1000) {
+  if(window.innerWidth <= 900) {
+    result = 1;
+  } else if(window.innerWidth <= 1200) {
     result = 2;
   } else if (window.innerWidth <= 1700) {
     result = 3;
@@ -69,7 +71,6 @@ onMounted(() => {
   watch(() => connectionStore.tasksInstance, async (instance) => {
     if(instance != null) {
       cards.value = await videoStore.initVideoMetadata();
-      console.log("cards:", cards.value)
     }
   });
 
@@ -91,7 +92,7 @@ onBeforeUnmount(() => {
   </div>
 
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-40 my-4">
-    <input type="text" v-model="searchQuery" class="w-full py-2 px-3 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent mb-2 sm:mb-0" placeholder="Search cards...">
+    <input type="text" v-model="searchQuery" class="w-full py-2 px-3  mb-2 sm:mb-0 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search cards...">
     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
       <select v-model="sortOrder" @change="sortCards" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
         <option value="id" class="hover:bg-orange-200">Sort by ID</option>

@@ -34,7 +34,6 @@ function closeModalEvent() {
 }
 
 function createTask() {
-  console.log("arguments: ", argStore.getArguments)
   if(argStore.getArguments.textArea == '' || argStore.getArguments.textInput == '' || argStore.getArguments.numberInput == '') {
     if(argStore.getArguments.textArea == '') 
     showAreaError.value = true;
@@ -42,16 +41,17 @@ function createTask() {
     if(argStore.getArguments.textInput == '') 
       showInputError.value = true;
     
-    if(argStore.getArguments.numberInput == '') 
+    if(argStore.getArguments.numberInput == '' || argStore.getArguments.numberInput < 10) 
       showTokenError.value = true;
   } else if(connectionStore.isConnected) {
-     const {_file, _reward, _description, _title} = argStore.getArguments;
-     connectionStore.callContractFunction('createTask', {_title,  _description, URI: _file.URI, _reward}) //TODO URI ???
+     const {file, numberInput: _reward, textInput: _title, textArea: _description} = argStore.getArguments;
+     connectionStore.callContractFunction('Tasks', 'createTask', 'payable', [_title,  _description ], _reward.toString())
       .then(response => {
         modalType.value = 'success';
         message.value = 'Task created successfully!';
         showModalResult.value = true;
         showModal.value = false;
+        
       })
       .catch(error => {
         modalType.value = 'danger';
@@ -67,7 +67,7 @@ function createTask() {
 watchEffect(() => {
   argStore.arguments.textArea !== '' ? showAreaError.value = false : 'doNothing';
   argStore.arguments.textInput !== '' ? showInputError.value = false : 'doNothing';
-  argStore.arguments.numberInput !== '' ? showTokenError.value = false : 'doNothing';
+  argStore.arguments.numberInput > 10 ? showTokenError.value = false : 'doNothing';
 });
 
 //Typing animation
@@ -92,7 +92,7 @@ onMounted(() => {
     <FileUpload :uploadType="'image'" />
     <div class="flex flex-nowrap just">
       <div class="w-1/3">
-        <TokenAmount :showError="showTokenError" :errorMessage="'Reward cannot be empty.'"><template v-slot:title>Reward amount:</template></TokenAmount> 
+        <TokenAmount :showError="showTokenError" :errorMessage="'Minimum reward is 10 GLMR.'"><template v-slot:title>Reward amount:</template></TokenAmount> 
       </div>
     </div>
 

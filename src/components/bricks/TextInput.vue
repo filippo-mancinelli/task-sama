@@ -17,7 +17,7 @@ watchEffect(() => {
         <label class="label">
             <span class="label-text text-lg "><slot name="text-input">Default title</slot></span>
         </label>
-        <input v-model="value" type="text" placeholder="Your title" class="input input-bordered placeholder:text-base w-full border-orange-400 outline-orange-400" />
+        <input v-model="value" type="text" placeholder="Your title" class="input input-bordered placeholder:text-base w-full focus:ring-orange-400 focus:border-orange-400 border border-orange-400 outline-orange-400 outline-offset-4" />
         <Error :showError="showError"> <template v-slot:error> {{ errorMessage }} </template> </Error>
     </div>
 </template>

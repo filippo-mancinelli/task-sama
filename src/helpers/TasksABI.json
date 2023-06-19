@@ -127,12 +127,6 @@
       },
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "imageURI",
-        "type": "string"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
         "name": "reward",
         "type": "uint256"
@@ -492,11 +486,6 @@
         "type": "string"
       },
       {
-        "internalType": "string",
-        "name": "imageURI",
-        "type": "string"
-      },
-      {
         "internalType": "uint256",
         "name": "reward",
         "type": "uint256"
@@ -577,11 +566,6 @@
       {
         "internalType": "string",
         "name": "_description",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_imageURI",
         "type": "string"
       }
     ],
@@ -744,11 +728,6 @@
             "type": "string"
           },
           {
-            "internalType": "string",
-            "name": "imageURI",
-            "type": "string"
-          },
-          {
             "internalType": "uint256",
             "name": "reward",
             "type": "uint256"
@@ -803,11 +782,6 @@
           {
             "internalType": "string",
             "name": "description",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "imageURI",
             "type": "string"
           },
           {

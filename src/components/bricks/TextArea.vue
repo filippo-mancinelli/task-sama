@@ -19,7 +19,7 @@ watchEffect(() => {
         <label class="label">
             <span class="label-text text-lg"><slot name="text-area">Default text-area</slot></span>
         </label>
-        <textarea v-model="value" class="textarea textarea-warning placeholder:text-base border-orange-400 outline-orange-400 w-full" placeholder="Tell participants what to do..."> </textarea>
+        <textarea v-model="value" class="textarea textarea-warning placeholder:text-base  w-full focus:ring-orange-400 focus:border-orange-400 border border-orange-400 outline-orange-400 outline-offset-4" placeholder="Tell participants what to do..."> </textarea>
         <Error :showError="showErrorRef"> <template v-slot:error> {{ errorMessage }} </template> </Error>
     </div>
 </template>

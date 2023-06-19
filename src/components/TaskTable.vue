@@ -1,11 +1,13 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
+import { useAPIStore } from '../stores/useAPIStore'
 import Task from './Task.vue';
 import _ from 'lodash';
 
 //immediately fetch task nfts
 const connectionStore = useConnectionStore();
+const apiStore = useAPIStore();
 
 const tasks = ref([
     { id: 1, title: "Task 1", description: "Description 1", reward: 10 },
@@ -55,11 +57,13 @@ const toggleSortDirection = () => {
 
 };
 
-//###### card columns ######//
+//###### task columns ######//
 const calculateColumnNumber = () => {
   var result = 3;
 
-  if(window.innerWidth <= 1000) {
+  if(window.innerWidth <= 900) {
+    result = 1;
+  } else if(window.innerWidth <= 1200) {
     result = 2;
   } else if (window.innerWidth <= 1700) {
     result = 3;
@@ -71,6 +75,10 @@ const calculateColumnNumber = () => {
 const screenSizeColumns =  ref(calculateColumnNumber());
 
 onMounted(() => {
+  window.addEventListener('resize', function(event){
+    screenSizeColumns.value = calculateColumnNumber();
+  });
+
   window.addEventListener('resize', function(event){
     screenSizeColumns.value = calculateColumnNumber();
   });
@@ -87,36 +95,32 @@ onBeforeUnmount(() => {
     <p class="text-center text-5xl font-extrabold text-black drop-shadow-lg drop-shadow-orange-500">Tasks to do</p>
   </div>
 
-  <div class="flex flex-col items-center px-4 md:px-40 space-y-2 md:space-x-2 md:space-y-0 mt-10">
-    <input type="text" v-model="searchQuery" class="w-full py-2 pl-3 pr-10 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search tasks...">
-    <div class="flex items-center space-x-2">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-40 my-4">
+    <input type="text" v-model="searchQuery" class="w-full py-2 px-3  mb-2 sm:mb-0 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search tasks...">
+    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
       <select v-model="sortOrder" @change="sortTasks" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
         <option value="id" class="hover:bg-orange-200">Sort by ID</option>
         <option value="reward">Sort by Reward</option>
       </select>
-      <button @click="toggleSortDirection" class="ml-2 px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+      <button @click="toggleSortDirection" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
         {{ sortDirection === 'asc' ? 'Ascending' : 'Descending'}}
       </button>
     </div>
   </div>
 
-  <div class="card-table px-4 md:px-40 mt-10">
-  <div
-    v-for="(taskRow, index) in _.chunk(filteredTasks, screenSizeColumns)"
-    :key="index"
-    class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4"
-  >
-    <div v-for="task in taskRow" class="w-full">
-      <Task
-        :id="task.id"
-        :title="task.title"
-        :description="task.description"
-        :reward="task.reward"
-        class="bg-white text-black"
-      />
+  <div class="card-table px-4 sm:px-40 mt-10">
+    <div v-for="(taskRow, index) in _.chunk(filteredTasks, screenSizeColumns)" :key="index" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
+      <div v-for="task in taskRow" class="w-full">
+        <Task
+          :id="task.id"
+          :title="task.title"
+          :description="task.description"
+          :reward="task.reward"
+          class="bg-white text-black"
+        />
+      </div>
     </div>
   </div>
-</div>
 
 </template>
 

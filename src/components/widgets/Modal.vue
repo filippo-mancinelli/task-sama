@@ -24,7 +24,7 @@ watchEffect(() => {
 <template> 
 <Teleport to="body">
     <Transition name="fade">
-        <div v-if="showModal" class="w-full sticky z-50">
+        <div v-if="showModal" class="w-full sticky z-50 ">
             <div class="modal" :class="{ 'modal-open': showModal }">
                 <div class="modal-box w-3/4 h-auto relative flex flex-col justify-center">
                     <button @click="$emit('closeModal')" class="btn btn-sm btn-circle absolute right-2 top-2 bg-orange-400 border-orange-400">✕</button>
@@ -45,7 +45,9 @@ watchEffect(() => {
                             </span>
                         </h3>
                     </div>
-                    <slot name="content">Default content</slot>
+                    <div class="break-words "> 
+                        <slot name="content">Default content</slot> 
+                    </div>
 
                     <div class="flex justify-end">
                         <button v-if="modalType !==''" @click="$emit('closeModal')" class="btn w-20 h-10 bg-orange-400">Ok</button>

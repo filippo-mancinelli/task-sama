@@ -86,7 +86,6 @@ async function fetchIPFSVideo() {
 onMounted(() => {
   //we must watch for changes in the totalLikesPerVideo mapping BEFORE we make the call to the backend 
   watch(() => totalLikesPerVideo.value, (newValue, oldValue) => {
-    console.log(totalLikesPerVideo.value)
 
     likeCount.value = totalLikesPerVideo.value.get(props.tokenId);
   }, { deep: true });
@@ -118,9 +117,9 @@ onMounted(() => {
       <div class="badge badge-secondary">NEW</div>
     </h2>
     <p>{{ description }}</p>
-    <div class="flex-container "> 
-      <p class="italic">Creator:  <span class="pl-1 text-xs">{{ creatorAddress }}</span></p> 
-      <p class="italic">Winner:  <span class="pl-1 text-xs">{{ winnerAddress }}</span></p> 
+    <div class="flex-container"> 
+      <p class="italic truncate">Creator:  <span class="pl-1 text-xs">{{ creatorAddress }}</span></p>
+      <p class="italic truncate">Winner:  <span class="pl-1 text-xs">{{ winnerAddress }}</span></p> 
       <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ rewardEarned }} GLMR</span></p> 
       <div class="flex items-center justify-end pt-3">
         <lottie-player class="relative h-8 resize left-4 bottom-0.5 align-top" ref="lottiePlayer" src="src/assets/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;"></lottie-player>

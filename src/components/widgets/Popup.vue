@@ -14,8 +14,6 @@ watch(() => popupStore.showPopup, (newValue, oldValue) => {
       }, 5000);
     }
 });
-
-
 </script>
 
 <template>

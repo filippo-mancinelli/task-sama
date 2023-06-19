@@ -11,11 +11,11 @@ module.exports = async function (deployer) {
   const tasks = await Tasks.deployed();
 
   // Initialize dummy data
-  await tasks.createTask('TITLE 1', 'DESC 1', 'IPFS 1', { value: web3.utils.toWei("10", "ether") });
-  await tasks.createTask('TITLE 2', 'DESC 2', 'IPFS 2', { value: web3.utils.toWei("12", "ether") });
-  await tasks.createTask('TITLE 3', 'DESC 3', 'IPFS 3', { value: web3.utils.toWei("15", "ether") });
-  await tasks.createTask('TITLE 4', 'DESC 4', 'IPFS 4', { value: web3.utils.toWei("20", "ether") });
-  await tasks.createTask('TITLE 5', 'DESC 5', 'IPFS 5', { value: web3.utils.toWei("25", "ether") });
+  await tasks.createTask('TITLE 1', 'DESC 1', { value: web3.utils.toWei("10", "ether") });
+  await tasks.createTask('TITLE 2', 'DESC 2', { value: web3.utils.toWei("12", "ether") });
+  await tasks.createTask('TITLE 3', 'DESC 3', { value: web3.utils.toWei("15", "ether") });
+  await tasks.createTask('TITLE 4', 'DESC 4', { value: web3.utils.toWei("20", "ether") });
+  await tasks.createTask('TITLE 5', 'DESC 5', { value: web3.utils.toWei("25", "ether") });
 
 
   // participate to tasks with various accounts

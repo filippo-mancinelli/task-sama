@@ -16,8 +16,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         isConnected: false,
         tasksABI: TasksABI,
         tasksamaABI: TasksamaABI,
-        tasksAddress: "0x68DA649C5801DAFbEe838bef65de84249b485bF6", // ganache generated
-        tasksamaAddress: "0x94f11B4A885AaD7FB1d23F0d06Fa83589f80e02E", //ganache generated
+        tasksAddress: "0x3262B91ba878BA4B0561832283526c8429208C00", // ganache generated
+        tasksamaAddress: "0xcd99c7845fC82708df8a377E09871597E0De39B1", //ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
     }),
@@ -101,6 +101,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       async setSigner() {
         if(this.isConnected) {
           this.signer = this.provider.getSigner();
+          this.tasksInstance = markRaw(this.tasksInstance.connect(this.signer))
+          this.tasksamaInstance = markRaw(this.tasksamaInstance.connect(this.signer))
         }
       },
 
@@ -110,12 +112,15 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         }
       },
 
-      async callContractFunction(contractName, functionName, params){ 
+      async callContractFunction(contractName, functionName, functionType, params, eth){         
         let result;
         if(contractName == "TaskSama") {
-          result = await this.tasksamaInstance[functionName](...(params || []));
+          if(functionType == "payable") result = await this.tasksamaInstance[functionName](...(params ? [...params] : []), { value: ethers.utils.parseEther(eth) });
+          else result = await this.tasksamaInstance[functionName](...(params ? [...params] : []));
+         
         } else if(contractName == "Tasks") {
-          result = await this.tasksInstance[functionName](...(params || []));
+          if(functionType=="payable") result = await this.tasksInstance[functionName](...(params ? [...params] : []), { value: ethers.utils.parseEther(eth) });
+          else result = await this.tasksInstance[functionName](...(params ? [...params] : []));
         }
         return result
       },

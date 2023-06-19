@@ -57,7 +57,7 @@ function participateTask() {
 <template>
   <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
     <figure><img src="https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427" alt="Shoes" /></figure>
-    <div class="card-body">
+    <div class="card-body gap-1 p-5">
       <h2 class="card-title">
         {{ title }}   #{{ id  }}
         <div class="badge badge-secondary">NEW</div>

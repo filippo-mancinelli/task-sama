@@ -38,7 +38,6 @@ export const useVideoStore = defineStore('videoNFTs', {
          //if the current user is present inside the array of likes. In that case we update 'userLikedVideos' mapping 
         async initLikes(walletAddress) {
             const promise = axios.get(import.meta.env.VITE_BACKEND_URL + '/initLikes').then(response => {
-                console.log("response",response)
                 response.data.data.forEach(video => {
                     this.totalLikesPerVideo.set(video.tokenId, video.likes);
                     this.walletsLikesPerVideo.set(video.tokenId, video.likeWallets);

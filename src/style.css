@@ -10,3 +10,22 @@
 body {
     scroll-behavior: smooth;
 }
+
+/* Daisy UI */
+@layer components {
+    .tooltip {
+        display: block;
+        --tooltip-offset:20px;
+        --tooltip-tail-offset: 15px;
+        --tooltip-color: rgb(255, 249, 249);
+        --tooltip-text-color: rgb(0, 0, 0);
+    }
+    
+    .tooltip:before {
+        border-radius: 0.25rem;
+        border-width: 1px;
+        border-color: black;
+        font-size: 0.775rem;
+    }
+    
+}
