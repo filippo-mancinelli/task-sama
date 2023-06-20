@@ -8,9 +8,11 @@ import { ref, watchEffect, onMounted } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { usePopupStore } from '../stores/usePopupStore';
 import { useArgStore } from '../stores/useArgStore';
+import { useAPIStore } from '../stores/useAPIStore';
 
 const connectionStore = useConnectionStore();
 const argStore = useArgStore();
+const apiStore = useAPIStore
 
 const showModal = ref(false);
 const showModalResult = ref(false);
@@ -52,6 +54,9 @@ function createTask() {
         showModalResult.value = true;
         showModal.value = false;
         
+        //after the task NFT is created and if the user uploaded an image, we upload it to our DB for moderation reasons
+        apiStore.uploadImageToDB();
+
       })
       .catch(error => {
         modalType.value = 'danger';

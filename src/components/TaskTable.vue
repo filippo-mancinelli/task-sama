@@ -1,28 +1,23 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, computed, onMounted, onBeforeUnmount, toRefs } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useAPIStore } from '../stores/useAPIStore'
+import { storeToRefs } from 'pinia';
 import Task from './Task.vue';
 import _ from 'lodash';
 
-//immediately fetch task nfts
-const connectionStore = useConnectionStore();
 const apiStore = useAPIStore();
+const connectionStore = useConnectionStore();
 
-const tasks = ref([
-    { id: 1, title: "Task 1", description: "Description 1", reward: 10 },
-    { id: 2, title: "Task 2", description: "Description 2", reward: 20 },
-    { id: 3, title: "Task 3", description: "Description 3", reward: 30 },
-    { id: 4, title: "Task 4", description: "Description 4", reward: 40 },
-    { id: 5, title: "Task 5", description: "Description 5", reward: 50 },
-]);
+const { tasksMetadata: tasks } = toRefs(apiStore);
 
 const searchQuery = ref("");
 const sortOrder = ref("id");
 const sortDirection = ref("asc");
 
 const filteredTasks = computed(() => {
-    let results = tasks.value;
+  let results = tasks && tasks.value ? tasks.value : [];
+
 
     if (searchQuery.value) {
         results = _.filter(results, (task) => {
@@ -54,7 +49,6 @@ const sortTasks = () => {
 
 const toggleSortDirection = () => {
   sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
-
 };
 
 //###### task columns ######//
@@ -75,10 +69,14 @@ const calculateColumnNumber = () => {
 const screenSizeColumns =  ref(calculateColumnNumber());
 
 onMounted(() => {
-  window.addEventListener('resize', function(event){
-    screenSizeColumns.value = calculateColumnNumber();
+  //fetchTasksMetadata
+  watch(() => connectionStore.tasksInstance, async (instance) => {
+    if(instance != null) {
+      tasks.value = await apiStore.fetchTasksMetadata();
+    }
   });
 
+  //listeners for updating columns 
   window.addEventListener('resize', function(event){
     screenSizeColumns.value = calculateColumnNumber();
   });
@@ -121,7 +119,6 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </div>
-
 </template>
 
 <style scoped>

@@ -6,6 +6,7 @@ import { ref } from 'vue'
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useArgStore } from '../stores/useArgStore';
 import { usePopupStore } from '../stores/usePopupStore';
+import { useAPIStore } from '../stores/useAPIStore';
 
 const connectionStore = useConnectionStore();
 const argStore = useArgStore();
@@ -34,12 +35,16 @@ function participateTask() {
      console.log("args", argStore.getArguments)
 
      const { name, video, walletAddress } = argStore.getArguments;
-     connectionStore.callContractFunction('participate', {name,  video, walletAddress}) //TODO URI ???
+     connectionStore.callContractFunction('participate', {name,  video, walletAddress})
       .then(response => {
         modalType.value = 'success';
         message.value = 'You sent your participation!';
         showModal2.value = true;
         showModal1.value = false;
+
+        //after the task NFT is updated with the participation we upload the user video to our DB for moderation reasons
+        useAPIStore.uploadVideoToDB();
+
       })
       .catch(error => {
         modalType.value = 'danger';
@@ -50,8 +55,6 @@ function participateTask() {
       popupStore.setPopup(true, 'danger', 'You need to connect your wallet first', 'modal');
   }
 }
-
-
 </script>
 
 <template>
@@ -63,44 +66,41 @@ function participateTask() {
         <div class="badge badge-secondary">NEW</div>
       </h2>
       <p>{{ description }}</p>
-      <div class="card-actions ">
-        <div class="badge badge-outline py-6 pr-4 text-lg">Reward:    <span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
-        <div class="">
-          <label @click="openModal" class="btn btn-primary w-30 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
+      <div class="card-actions justify-between">
+        <div class=" text-lg">Reward:<span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
+        <label @click="openModal" class="btn btn-primary w-30 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
           Participate
           <HandRaisedIcon class="h-6 w-6 pl-2 " />
         </label>
-        </div>
       </div>
     </div>
   </div>
 
-<Modal @close-modal="showModal1 = false" :showModal="showModal1" :modalType="''">
-  <template v-slot:title>Participate to this task:</template>
-  <template v-slot:content>
-    <span class="text-lg">├─ <span class="italic"> {{ title }}  </span> </span>
-    <span class="text-lg">├─ <span class="italic"> {{ description }}  </span> </span>
-    <span class="text-lg">├─ <span class="italic"> {{ reward }} GLMR </span> </span>
-    <div class="my-2" />
+  <Modal @close-modal="showModal1 = false" :showModal="showModal1" :modalType="''">
+    <template v-slot:title>Participate to this task:</template>
+    <template v-slot:content>
+      <div class="flex flex-col mb-2">
+        <span class="text-lg">&#x1F4F0; <span class="italic"> {{ title }}  </span> </span>
+        <span class="text-lg">&#x270F; <span class="italic"> {{ description }}  </span> </span>
+        <span class="text-lg">&#x1F4B8;<span class="italic"> {{ reward }} GLMR </span> </span>
+      </div>
 
-    <FileUpload :upload-type="'video'" />
+      <FileUpload :upload-type="'video'" />
 
-    <div class="flex flex-col items-end">
-    <label @click="participateTask" class="btn btn-primary w-25 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
-          Participate
-          <HandRaisedIcon class="h-6 w-6 pl-2" />
-    </label>
-    </div>
+      <div class="flex flex-col items-end">
+      <label @click="participateTask" class="btn btn-primary w-25 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
+            Participate
+            <HandRaisedIcon class="h-6 w-6 pl-2" />
+      </label>
+      </div>
 
-  </template>
-</Modal>
+    </template>
+  </Modal>
 
-<Modal @close-modal="showModal2 = false" :showModal="showModal2" :modalType="modalType">
-<template v-slot:content> {{ message }}</template>
-</Modal>
-
-
-  </template>
+  <Modal @close-modal="showModal2 = false" :showModal="showModal2" :modalType="modalType">
+  <template v-slot:content> {{ message }}</template>
+  </Modal>
+</template>
 
 <style scoped>
 </style>

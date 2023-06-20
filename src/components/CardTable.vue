@@ -2,9 +2,9 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
-import _ from 'lodash';
-import Card from './Card.vue';
 import { storeToRefs } from 'pinia';
+import Card from './Card.vue';
+import _ from 'lodash';
 
 const videoStore = useVideoStore();
 const connectionStore = useConnectionStore();
@@ -68,12 +68,14 @@ const calculateColumnNumber = () => {
 const screenSizeColumns =  ref(calculateColumnNumber());
 
 onMounted(() => {
-  watch(() => connectionStore.tasksInstance, async (instance) => {
+  //fetch videos metadata
+  watch(() => connectionStore.tasksamaInstance, async (instance) => {
     if(instance != null) {
       cards.value = await videoStore.initVideoMetadata();
     }
   });
 
+    //listeners for updating columns 
   window.addEventListener('resize', function(event){
     screenSizeColumns.value = calculateColumnNumber();
   });
