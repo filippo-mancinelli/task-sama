@@ -9,7 +9,9 @@ import _ from 'lodash';
 const videoStore = useVideoStore();
 const connectionStore = useConnectionStore();
 
-const { videoMetadata: cards } = storeToRefs(videoStore)
+const { videoMetadata: cards } = storeToRefs(videoStore);
+const likesMetadata = storeToRefs(videoStore)
+
 const searchQuery = ref("");
 const sortOrder = ref("id");
 const sortDirection = ref("asc");
@@ -67,6 +69,21 @@ const calculateColumnNumber = () => {
 
 const screenSizeColumns =  ref(calculateColumnNumber());
 
+//####### LIKES ########
+const { like: updatelike } = useVideoStore();
+
+async function like(tokenId, likeValue, walletAddress) {
+    cards.value.find(element => element.tokenId === tokenId).likeCount = await updatelike(tokenId, likeValue, walletAddress)
+}
+
+function getCurrentLikeCount(tokenId) {
+  return likesMetadata.value.get(tokenId).likeCount;
+}
+
+function getCurrentIsLiked(tokenId) {
+  return likesMetadata.value.get(tokenId).isLiked;
+}
+
 onMounted(() => {
   //fetch videos metadata
   watch(() => connectionStore.tasksamaInstance, async (instance) => {
@@ -74,12 +91,17 @@ onMounted(() => {
       cards.value = await videoStore.initVideoMetadata();
     }
   });
+  watch(() => connectionStore.walletAddress, async (walletAddress) => {
+    if(walletAddress)
+      likesMetadata.value = await videoStore.initLikes(walletAddress);
+    else
+      likesMetadata.value = await videoStore.initLikes();
+  });
 
-    //listeners for updating columns 
+  //listeners for updating columns 
   window.addEventListener('resize', function(event){
     screenSizeColumns.value = calculateColumnNumber();
   });
-
 });
 
 onBeforeUnmount(() => {
@@ -118,6 +140,9 @@ onBeforeUnmount(() => {
           :winnerAddress="card.winner"
           :ipfsUrl="card.ipfsUrl"
           :txhash="TODO"
+          :likeCount="getCurrentLikeCount(card.tokenId)"
+          :isLiked="getCurrentIsLiked(card.tokenId)"
+          @like="(tokenId, likeValue, walletAddress) => like(tokenId, likeValue, walletAddress)"
           class="bg-white text-black"
         />
       </div>

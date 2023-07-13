@@ -1,13 +1,12 @@
 <script setup>
-import { getCurrentInstance, ref, watch, onMounted } from 'vue';
+import { getCurrentInstance, ref, watch, onMounted, defineEmits } from 'vue';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { storeToRefs } from 'pinia';
 import { usePopupStore } from '../stores/usePopupStore';
 
 //TODO: txhash, address, like/dislike,
-const { like: updatelike } = useVideoStore();
-const { totalLikesPerVideo } = storeToRefs(useVideoStore());
+const emit = defineEmits(['like'])
 const { ctx } = getCurrentInstance();
 
 const props = defineProps([
@@ -18,57 +17,35 @@ const props = defineProps([
   'creatorAddress',
   'winnerAddress',
   'ipfsUrl',
-  'txhash'
+  'txhash',
+  'likeCount',
+  'isLiked'
 ]);
-
-
-//###### Like ######//
-const like = ref(false);
-const likeCount = ref(0)
 
 async function likeButton() {
   if(useConnectionStore().isConnected) {
     playLikeAnimation();
-    like.value = !like.value;
-    likeCount.value = await updatelike(props.tokenId, like.value, useConnectionStore().walletAddress)
+    //the parent component (CardTables) listens for this event to take care of updating the DB and re-render  
+    //this card component with updated data of likeCount and isLiked status props.
+    emit('like', props.tokenId, !props.isLiked, useConnectionStore().walletAddress); 
   } else {
     usePopupStore().setPopup(true, 'alert', 'Connect your wallet before liking videos!', 'noModal');
   }
 }
 
 function playLikeAnimation(){
-  if(like.value) {
+  if(props.isLiked) {
      ctx.$refs.lottiePlayer.stop();
   } else {
     ctx.$refs.lottiePlayer.seek("20%") 
     ctx.$refs.lottiePlayer.play();
     setTimeout(function(){
       ctx.$refs.lottiePlayer.pause() 
-      like.value==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")
+      props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")
     },1300)
   }
 }
 
-//check if the user is connected and then sets the mapping of likes he has on videos
-function setLikesMapping() {
-  useConnectionStore().checkConnection().then(res => { //res is the connected wallet address
-    if(res !== null) {
-      useVideoStore().initLikes(res).then(likedVideoMapping => {
-        if(likedVideoMapping.get(props.tokenId) == true) {
-            like.value = true;
-            ctx.$refs.lottiePlayer.seek("70%");
-        } else {
-          like.value = false;
-          ctx.$refs.lottiePlayer.seek("10%");
-        }
-      });
-    } else {
-        useVideoStore().initLikes(null);
-        like.value = false;
-        ctx.$refs.lottiePlayer.seek("10%");
-    }
-  });
-}
 
 //##### video player #####//
 const videoPlayer = ref(null);
@@ -81,22 +58,15 @@ async function fetchIPFSVideo() {
 }
 
 
-
-
 onMounted(() => {
-  //we must watch for changes in the totalLikesPerVideo mapping BEFORE we make the call to the backend 
-  watch(() => totalLikesPerVideo.value, (newValue, oldValue) => {
-
-    likeCount.value = totalLikesPerVideo.value.get(props.tokenId);
-  }, { deep: true });
-
-  //init data
-  setLikesMapping();
   fetchIPFSVideo();
+  //set initial like status
+  console.log("props.isLiked",props.isLiked)
+  props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")
 
   //keep watching for user connection state to enable/disable like button
   watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
-    setLikesMapping(); 
+    
   });
 });
 

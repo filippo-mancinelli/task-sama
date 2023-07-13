@@ -7,16 +7,28 @@ const { connectToDatabase } = require('../db');
 ####################### initLikes #############################
 ############################################################### */
 
-router.get('/initLikes', async (ctx, next) => {
+router.post('/initLikes', async (ctx, next) => {
     if(ctx.request.path === '/initLikes') {
       console.log("Chiamata: 'http://localhost:3000/initLikes'")
   
       const db = await connectToDatabase();
       const collection = db.collection('videos');
+      const walletAddress = ctx.request.body.walletAddress;
       const documents = await collection.find({}, {projection: {_id: 0, tokenId: 1, likes: 1, likeWallets: 1}}).toArray();
-      
+
+      documents.forEach(video => {
+        video["isLiked"] = false; //"push" a new attribute to the object
+
+        if(walletAddress != undefined) {
+          video.likeWallets.forEach(wallet => {
+            if(wallet == walletAddress)
+              video.isLiked = true;
+          });
+        }
+      });
+
       ctx.body = {
-        message: 'likes to video',
+        message: 'likes metadata',
         data: documents,
       };
     } 
@@ -59,6 +71,8 @@ router.post('/like', async (ctx, next) => {
         ctx.throw(400, 'Unable to update like count');
       }
     }
+    
+    await db.close();
     await next();
   });
 

@@ -7,9 +7,7 @@ export const useVideoStore = defineStore('videoNFTs', {
 
     state: () => ({
         videoMetadata: [], //fetch from blockchain
-        totalLikesPerVideo: new Map(), //fetch from backend
-        walletsLikesPerVideo: new Map(), //fetch from backend
-        userLikedVideos: new Map() //which videos the user already liked
+        likesMetadata: new Map(), //fetch from backend
     }),
 
     getters: {
@@ -29,30 +27,17 @@ export const useVideoStore = defineStore('videoNFTs', {
                 rewardEarned: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned))).toFixed(2)
                 };
             });
-            
             this.videoMetadata = modifiedMetadata;
             return this.videoMetadata;
         },
 
-         //fetch total likes per video and an array of wallets who liked it. Then check for each video 
-         //if the current user is present inside the array of likes. In that case we update 'userLikedVideos' mapping 
+         //fetch total likes per video, an array of wallets who liked it, and the status (isLiked). Then check for each video 
         async initLikes(walletAddress) {
-            const promise = axios.get(import.meta.env.VITE_BACKEND_URL + '/initLikes').then(response => {
+            const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/initLikes', {walletAddress}).then(response => { //TODO BACKEND   
                 response.data.data.forEach(video => {
-                    this.totalLikesPerVideo.set(video.tokenId, video.likes);
-                    this.walletsLikesPerVideo.set(video.tokenId, video.likeWallets);
-
-                    //if the array is empty (no one liked the video) we map the current user like to false. Otherwise we iterate 
-                    //the array of likes to check if the current user is present, and in case, set its mapping to true.
-                    if(video.likeWallets.length > 0) {
-                        video.likeWallets.forEach(wallet => {
-                            this.userLikedVideos.set(video.tokenId, walletAddress == wallet ? true : false);
-                        })
-                    } else {
-                        this.userLikedVideos.set(video.tokenId, false);
-                    }
+                    this.likesMetadata.set(video.tokenId, { "likeCount": video.likes, "likeWallets": video.likeWallets, "isLiked": video.isLiked });
                 });
-                return this.userLikedVideos;
+                return this.likesMetadata;
             }).catch(error => {
                 console.error('Error fetching likes to videos: ',error);
             });
@@ -61,8 +46,10 @@ export const useVideoStore = defineStore('videoNFTs', {
 
 
         async like(tokenId, isLiked, walletAddress) {
-            const result = await axios.post(import.meta.env.VITE_BACKEND_URL + '/like', {tokenId, isLiked, walletAddress});
-            this.totalLikesPerVideo.set(tokenId, result.data);
+            const result = await axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/like', {tokenId, isLiked, walletAddress});
+            const tempMetadata = this.likesMetadata.get(tokenId);
+            tempMetadata.likeCount = result.data;
+            this.likesMetadata.set(tokenId, tempMetadata);
             return result.data;
         },
 

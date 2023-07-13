@@ -2,7 +2,7 @@ const Router = require('@koa/router');
 const router = new Router();
 const { connectToDatabase } = require('../db');
 
-/* Fetch all videos metadata - cardTable.vue
+/* Fetch all videos metadata - Currently not used, metadata is fetched from blockchain
 ###############################################################
 ####################### initVideoMetadata #####################
 ############################################################### */
