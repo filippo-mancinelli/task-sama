@@ -8,6 +8,7 @@ import { usePopupStore } from '../stores/usePopupStore';
 //TODO: txhash, address, like/dislike,
 const emit = defineEmits(['like'])
 const { ctx } = getCurrentInstance();
+let isLikePlaying = false;
 
 const props = defineProps([
   'tokenId',
@@ -23,27 +24,31 @@ const props = defineProps([
 ]);
 
 async function likeButton() {
-  if(useConnectionStore().isConnected) {
-    playLikeAnimation();
-    //the parent component (CardTables) listens for this event to take care of updating the DB and re-render  
-    //this card component with updated data of likeCount and isLiked status props.
-    emit('like', props.tokenId, !props.isLiked, useConnectionStore().walletAddress); 
-  } else {
-    usePopupStore().setPopup(true, 'alert', 'Connect your wallet before liking videos!', 'noModal');
+  if(!isLikePlaying) { //prevents spamming like button
+    if(useConnectionStore().isConnected) {
+      playLikeAnimation();
+      //the parent component (CardTables) listens for this event to take care of updating the DB and re-render  
+      //this card component with updated data of likeCount and isLiked status props.
+      emit('like', props.tokenId, !props.isLiked, useConnectionStore().walletAddress); 
+    } else {
+      usePopupStore().setPopup(true, 'alert', 'Connect your wallet before liking videos!', 'noModal');
+    }
   }
 }
 
 function playLikeAnimation(){
-  if(props.isLiked) {
-     ctx.$refs.lottiePlayer.stop();
-  } else {
-    ctx.$refs.lottiePlayer.seek("20%") 
-    ctx.$refs.lottiePlayer.play();
-    setTimeout(function(){
-      ctx.$refs.lottiePlayer.pause() 
-      props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")
-    },1300)
-  }
+    if(props.isLiked) {
+      ctx.$refs.lottiePlayer.seek("10%");
+      isLikePlaying = false;
+    } else {
+      ctx.$refs.lottiePlayer.play();
+      isLikePlaying = true;
+      setTimeout(function(){
+          ctx.$refs.lottiePlayer.pause();
+          ctx.$refs.lottiePlayer.seek("70%");
+          isLikePlaying = false;
+      },1300);
+    }
 }
 
 
@@ -60,13 +65,11 @@ async function fetchIPFSVideo() {
 
 onMounted(() => {
   fetchIPFSVideo();
-  //set initial like status
-  console.log("props.isLiked",props.isLiked)
-  props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")
 
-  //keep watching for user connection state to enable/disable like button
+  //execute it the first time and then keep watching for user connection state to enable/disable like button
+  setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 500)
   watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
-    
+    setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 500)
   });
 });
 

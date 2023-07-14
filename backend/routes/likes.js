@@ -72,7 +72,6 @@ router.post('/like', async (ctx, next) => {
       }
     }
     
-    await db.close();
     await next();
   });
 

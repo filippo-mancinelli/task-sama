@@ -73,7 +73,8 @@ const screenSizeColumns =  ref(calculateColumnNumber());
 const { like: updatelike } = useVideoStore();
 
 async function like(tokenId, likeValue, walletAddress) {
-    cards.value.find(element => element.tokenId === tokenId).likeCount = await updatelike(tokenId, likeValue, walletAddress)
+    cards.value.find(element => element.tokenId === tokenId).likeCount = await updatelike(tokenId, likeValue, walletAddress); //updateLike takes care of updating likesMetadata store values
+    likesMetadata.value.get(tokenId).isLiked = likeValue;
 }
 
 function getCurrentLikeCount(tokenId) {
@@ -84,18 +85,19 @@ function getCurrentIsLiked(tokenId) {
   return likesMetadata.value.get(tokenId).isLiked;
 }
 
-onMounted(() => {
+onMounted(async () => {
   //fetch videos metadata
   watch(() => connectionStore.tasksamaInstance, async (instance) => {
+
     if(instance != null) {
       cards.value = await videoStore.initVideoMetadata();
     }
   });
+
+  //we need to execute the first time, then every wallet change
+  likesMetadata.value = await videoStore.initLikes(connectionStore.walletAddress ? connectionStore.walletAddress : undefined);
   watch(() => connectionStore.walletAddress, async (walletAddress) => {
-    if(walletAddress)
-      likesMetadata.value = await videoStore.initLikes(walletAddress);
-    else
-      likesMetadata.value = await videoStore.initLikes();
+    likesMetadata.value = await videoStore.initLikes(walletAddress ? walletAddress : undefined);
   });
 
   //listeners for updating columns 
