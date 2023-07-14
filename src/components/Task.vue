@@ -25,35 +25,41 @@ const modalType = ref('');
 const message = ref('');
 
 
-
 function openModal() {
   showModal1.value = true;
 }
 
 function participateTask() {
-  if(connectionStore.isConnected){
-     console.log("args", argStore.getArguments)
 
-     const { name, video, walletAddress } = argStore.getArguments;
-     connectionStore.callContractFunction('participate', {name,  video, walletAddress})
-      .then(response => {
-        modalType.value = 'success';
-        message.value = 'You sent your participation!';
-        showModal2.value = true;
-        showModal1.value = false;
-
-        //after the task NFT is updated with the participation we upload the user video to our DB for moderation reasons
-        useAPIStore.uploadVideoToDB();
-
-      })
-      .catch(error => {
-        modalType.value = 'danger';
-        message.value = 'Error sending participation: ' + error;
-        showModal2.value = true;
-      } );
+  if(argStore.getArguments.file.file == null) { 
+    popupStore.setPopup(true, 'danger', 'You must upload a video to participate', 'modal');
+    return;
   } else {
-      popupStore.setPopup(true, 'danger', 'You need to connect your wallet first', 'modal');
+    if(connectionStore.isConnected){
+
+      const { name, video, walletAddress } = argStore.getArguments.file;
+      connectionStore.callContractFunction('participate', {name,  video, walletAddress})
+        .then(response => {
+          modalType.value = 'success';
+          message.value = 'You sent your participation!';
+          showModal2.value = true;
+          showModal1.value = false;
+
+          //after the task NFT is updated with the participation we upload the user video to our DB for moderation reasons
+          useAPIStore().uploadVideoToDB();
+
+        })
+        .catch(error => {
+          modalType.value = 'danger';
+          message.value = 'Error sending participation: ' + error;
+          showModal2.value = true;
+        } );
+    } else {
+        popupStore.setPopup(true, 'danger', 'You need to connect your wallet first', 'modal');
+    }
   }
+
+
 }
 </script>
 
@@ -86,7 +92,6 @@ function participateTask() {
       </div>
 
       <FileUpload :upload-type="'video'" />
-
       <div class="flex flex-col items-end">
       <label @click="participateTask" class="btn btn-primary w-25 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
             Participate

@@ -67,9 +67,9 @@ onMounted(() => {
   fetchIPFSVideo();
 
   //execute it the first time and then keep watching for user connection state to enable/disable like button
-  setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 500)
+  setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 200)
   watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
-    setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 500)
+    setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 200)
   });
 });
 

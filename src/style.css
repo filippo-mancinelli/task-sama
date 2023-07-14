@@ -11,6 +11,18 @@ body {
     scroll-behavior: smooth;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #dbd8d2;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #FF5A1F;
+}
+
 /* Daisy UI */
 @layer components {
     .tooltip {

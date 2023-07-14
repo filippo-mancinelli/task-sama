@@ -44,7 +44,7 @@ function onFileChange(event) {
       uploadedFile.value.date = new Date()
       showError.value = false;
     } else {
-      if(file.type !== 'image/jpeg'){
+      if(file.type !== 'video/mp4'){
         errorMessage.value = 'File format must be mp4 or mkv.';
       }
       if(file.size > 15000000) {

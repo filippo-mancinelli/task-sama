@@ -7,15 +7,16 @@ const { connectToDatabase } = require('../db');
 ####################### initVideoMetadata #####################
 ############################################################### */
 
-router.get('/initVideoMetadata', async (ctx, next) => {
-  if (ctx.request.path === '/initVideoMetadata') {
-    console.log("\n ####################################### \n 'http://localhost:3000/initVideoMetadata' \n ####################################### \n ")
+router.post('/uploadVideoToDB', async (ctx, next) => {
+  if (ctx.request.path === '/uploadVideoToDB') {
+    console.log("\n ####################################### \n '/uploadVideoToDB' \n ####################################### \n ")
 
     const db = await connectToDatabase();
     const collection = db.collection('videos');
 
     // Query to find all documents in the "videos" collection
     const documents = await collection.find({}).toArray();
+    
     ctx.body = {
       message: 'All documents in the videos collection',
       data: documents,

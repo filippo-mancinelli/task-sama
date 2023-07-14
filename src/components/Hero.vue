@@ -56,7 +56,6 @@ function createTask() {
         
         //after the task NFT is created and if the user uploaded an image, we upload it to our DB for moderation reasons
         apiStore.uploadImageToDB();
-
       })
       .catch(error => {
         modalType.value = 'danger';
@@ -116,7 +115,7 @@ onMounted(() => {
 <template v-slot:content>{{ message }}</template>
 </Modal>
 
-<div id="home" class="hero mb-10">
+<div id="home" class="hero mb-10 mt-4">
   <div class="hero-content text-center">
     <div class="max-w-md">
       <h1 class="text-5xl sm:text-7xl font-bold drop-shadow-lg">Welcome</h1>

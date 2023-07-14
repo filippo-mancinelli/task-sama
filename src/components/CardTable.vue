@@ -10,7 +10,7 @@ const videoStore = useVideoStore();
 const connectionStore = useConnectionStore();
 
 const { videoMetadata: cards } = storeToRefs(videoStore);
-const likesMetadata = storeToRefs(videoStore)
+const likesMetadata = storeToRefs(videoStore);
 
 const searchQuery = ref("");
 const sortOrder = ref("id");

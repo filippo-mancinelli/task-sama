@@ -10,6 +10,7 @@ export const useAPIStore = defineStore('api', {
     actions: {
         // ###### VIDEOS ###### //
         uploadVideoToDB(file) {
+            console.log("file",file)
             const promise = axios.post(import.meta.env.VITE_BACKEND_URL + '/uploadVideoToDB').then(response => {
 
             });
