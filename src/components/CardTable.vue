@@ -88,7 +88,6 @@ function getCurrentIsLiked(tokenId) {
 onMounted(async () => {
   //fetch videos metadata
   watch(() => connectionStore.tasksamaInstance, async (instance) => {
-
     if(instance != null) {
       cards.value = await videoStore.initVideoMetadata();
     }

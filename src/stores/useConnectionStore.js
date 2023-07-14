@@ -20,6 +20,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         tasksamaAddress: "0x04B8af0a74a95C8266970788787b5DDe2bb5451d", //ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
+        isAllSetUp: false
     }),
 
     getters: {
@@ -46,6 +47,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
               await this.setSigner();
               await this.setWalletAddress();
             }
+            this.setAllSetUp()
           });
         
         if(this.hasMetamask()){
@@ -55,6 +57,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
               this.isConnected = true;
             } else {
               this.isConnected = false;
+              this.walletAddress = null;
             }
           });        
         } 
@@ -109,6 +112,21 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       async setWalletAddress() {
         if(this.isConnected && this.signer != null) {
           this.walletAddress = await this.signer.getAddress();
+        }
+      },
+
+      setAllSetUp() {
+        if(
+          this.isConnected == true &&
+          (this.walletAddress !== null || this.walletAddress !== undefined) &&
+          (this.signer !== null || this.signer !== undefined) &&
+          (this.provider !== null || this.provider !== undefined) &&
+          (this.tasksInstance !== null || this.tasksInstance !== undefined) &&
+          (this.tasksamaInstance !== null || this.tasksamaInstance !== undefined)
+        ) {
+          this.isAllSetUp = true;
+        } else {
+          this.isAllSetUp = false;
         }
       },
 

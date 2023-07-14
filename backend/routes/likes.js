@@ -19,7 +19,7 @@ router.post('/initLikes', async (ctx, next) => {
       documents.forEach(video => {
         video["isLiked"] = false; //"push" a new attribute to the object
 
-        if(walletAddress != undefined) {
+        if(walletAddress != null) {
           video.likeWallets.forEach(wallet => {
             if(wallet == walletAddress)
               video.isLiked = true;
