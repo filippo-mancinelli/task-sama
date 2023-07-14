@@ -64,7 +64,7 @@ function createTask() {
         console.log("errore Nella creazione del task: ", error)
       } );
   } else {
-    usePopupStore().setPopup(true, 'alert', 'You need to connect your wallet before creating the task', 'modal')
+    usePopupStore().setPopup(true, 'alert', 'You need to connect your wallet before creating the task', 'noModal')
   }
 }
 

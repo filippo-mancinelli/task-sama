@@ -31,7 +31,7 @@ async function likeButton() {
       //this card component with updated data of likeCount and isLiked status props.
       emit('like', props.tokenId, !props.isLiked, useConnectionStore().walletAddress); 
     } else {
-      usePopupStore().setPopup(true, 'alert', 'Connect your wallet before liking videos!', 'noModal');
+      usePopupStore().setPopup(true, 'alert', 'Connect your wallet before liking videos!', 'modal');
     }
   }
 }

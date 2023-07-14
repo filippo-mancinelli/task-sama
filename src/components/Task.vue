@@ -55,7 +55,7 @@ function participateTask() {
           showModal2.value = true;
         } );
     } else {
-        popupStore.setPopup(true, 'danger', 'You need to connect your wallet first', 'modal');
+        popupStore.setPopup(true, 'alert', 'You need to connect your wallet first', 'modal');
     }
   }
 
