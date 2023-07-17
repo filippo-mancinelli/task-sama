@@ -7,7 +7,6 @@ const connectionStore = useConnectionStore();
 
     //not strictly necessary since pinia variables by default are reactive
     const isConnected = computed(() => { return connectionStore.isConnected})
-
     function connect() {
       connectionStore.connect();
     }

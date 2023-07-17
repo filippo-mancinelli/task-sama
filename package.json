@@ -13,6 +13,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@headlessui/vue": "^1.7.13",
     "@heroicons/vue": "^2.0.17",
+    "@metamask/jazzicon": "^2.0.0",
     "@openzeppelin/contracts": "^4.8.3",
     "@truffle/hdwallet-provider": "^2.1.9",
     "axios": "^1.4.0",

@@ -5,7 +5,7 @@ import { defineStore } from 'pinia'
 import { watch, markRaw  } from 'vue';
 import TasksABI from "../helpers/TasksABI.json";
 import TasksamaABI from "../helpers/TasksamaABI.json";
-
+import jazzicon from "@metamask/jazzicon"
 
 export const useConnectionStore = defineStore('metamaskConnection', {
 
@@ -16,8 +16,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         isConnected: false,
         tasksABI: TasksABI,
         tasksamaABI: TasksamaABI,
-        tasksAddress: "0x11d94f2558956359dB118310f75b393e435547B9", // ganache generated
-        tasksamaAddress: "0x04B8af0a74a95C8266970788787b5DDe2bb5451d", //ganache generated
+        tasksAddress: "0x6522F42e9E4783061A86B6033C0fd7fE04B84245", // ganache generated
+        tasksamaAddress: "0x7d29DC6F800312C6324d35dE2df2EFbC91514530", //ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
         isAllSetUp: false
@@ -36,13 +36,13 @@ export const useConnectionStore = defineStore('metamaskConnection', {
     actions: {
       async initConnectionWatcher() {
         await this.setProvider(); //in any case we need a provider (ganache or infura)
-        this.tasksInstance = markRaw(new ethers.Contract(this.tasksAddress, this.tasksABI, this.provider));
-        this.tasksamaInstance = markRaw(new ethers.Contract(this.tasksamaAddress, this.tasksamaABI, this.provider));
+        await this.setContractInstances();
 
         watch(
           () => this.isConnected,
           async (newValue) => {
             await this.setProvider();
+            
             if(newValue == true) {
               await this.setSigner();
               await this.setWalletAddress();
@@ -86,6 +86,17 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         } 
       },
 
+      async disconnect() {
+        if (this.isConnected) {
+          if (this.hasMetamask()) {
+            this.isConnected = false;
+            this.walletAddress = null;
+            await this.setProvider();
+            await this.setSigner();
+          }
+        }
+      },
+      
       hasMetamask() {
         return typeof window.ethereum !== 'undefined' || (typeof window.web3 !== 'undefined') ? true : false;
       },
@@ -99,6 +110,13 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           //this.provider = ethers.getDefaultProvider('moonbeam'); //Default provider, moonbeam mainnet
           this.provider = markRaw(new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545'));  //ganache
         }
+        //either way we need to update the contracts instances because they use the provider
+        await this.setContractInstances();
+      },
+
+      async setContractInstances() {
+        this.tasksInstance = markRaw(new ethers.Contract(this.tasksAddress, this.tasksABI, this.provider));
+        this.tasksamaInstance = markRaw(new ethers.Contract(this.tasksamaAddress, this.tasksamaABI, this.provider));
       },
 
       async setSigner() {
@@ -142,6 +160,11 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         }
         return result
       },
+
+      getAvatarImg(size, seed) {
+        const icon = jazzicon(size, seed == undefined ? Math.round(Math.random() * 10000000) : seed).outerHTML; //generates a size 20 icon as an HTML string. we use outerHTML because v-html renders only html strings
+        return icon;
+      }
 
     },
   })
