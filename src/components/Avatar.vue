@@ -11,7 +11,6 @@
     const showDropdown = ref(false);
 
     function toggleDropdown() {
-      console.log("carl")
       if (showDropdown.value) {
         //we need to close the dropdown with blur() because of DaisyUI CSS behaviour with :focus status
         showDropdown.value = false;

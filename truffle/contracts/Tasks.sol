@@ -109,7 +109,20 @@ contract Tasks is ERC721, Ownable {
     function _getTask(uint256 _taskId) public view returns (Task memory) {
         return tasks[_taskId];
     }
-    
+
+    function _getCompletedTasks() public view returns (Task[] memory) {
+        //dynamic array in memory
+        Task[] memory completedTasks = new Task[](tasks.length); 
+
+        for (uint256 i = 0; i < tasks.length; i++) {
+            if (_isCompleted(i)) {
+                completedTasks[i] = tasks[i];
+            }
+        }
+
+        return completedTasks;
+    }
+
     function _getParticipantsOf(uint256 _taskId) public view returns (address[] memory) {
         return tasks[_taskId].participants;
     }

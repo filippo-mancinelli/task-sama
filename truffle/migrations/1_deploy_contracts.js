@@ -16,6 +16,11 @@ module.exports = async function (deployer) {
   await tasks.createTask('TITLE 3', 'DESC 3', { value: web3.utils.toWei("15", "ether") });
   await tasks.createTask('TITLE 4', 'DESC 4', { value: web3.utils.toWei("20", "ether") });
   await tasks.createTask('TITLE 5', 'DESC 5', { value: web3.utils.toWei("25", "ether") });
+  await tasks.createTask('TITLE 6', 'DESC 6', { value: web3.utils.toWei("21", "ether") });
+  await tasks.createTask('TITLE 7', 'DESC 7', { value: web3.utils.toWei("300", "ether") });
+  await tasks.createTask('TITLE 8', 'DESC 8', { value: web3.utils.toWei("120", "ether") });
+  await tasks.createTask('TITLE 9', 'DESC 9', { value: web3.utils.toWei("19", "ether") });
+
 
 
   // participate to tasks with various accounts
@@ -28,6 +33,7 @@ module.exports = async function (deployer) {
   await tasks.participate(4, {from: accounts[4]});
   await tasks.participate(4, {from: accounts[5]});
   await tasks.participate(4, {from: accounts[6]});
+  await tasks.participate(8, {from: accounts[8]});
 
 
   console.log("########### ACCOUNTS #############",accounts)

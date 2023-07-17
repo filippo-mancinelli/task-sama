@@ -16,19 +16,20 @@ export const useVideoStore = defineStore('videoNFTs', {
 
     actions: {
         async initVideoMetadata() {
-            //fetch from blockchain
-            const fetchedMetadata = await useConnectionStore().callContractFunction("TaskSama", "getVideos");
+                //fetch from blockchain
+                const fetchedMetadata = await useConnectionStore().callContractFunction("TaskSama", "getVideos");
+                useConnectionStore().logConnectionDetails();
 
-            // Create a new array with modified objects
-            const modifiedMetadata = fetchedMetadata.map(metadata => {
-                return {
-                ...metadata,
-                tokenId: parseInt(metadata.tokenId),
-                rewardEarned: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned))).toFixed(2)
-                };
-            });
-            this.videoMetadata = modifiedMetadata;
-            return this.videoMetadata;
+                // Create a new array with modified objects
+                const modifiedMetadata = fetchedMetadata.map(metadata => {
+                    return {
+                    ...metadata,
+                    tokenId: parseInt(metadata.tokenId),
+                    rewardEarned: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned))).toFixed(2)
+                    };
+                });
+                this.videoMetadata = modifiedMetadata;
+                return this.videoMetadata;
         },
 
          //fetch total likes per video, an array of wallets who liked it, and the status (isLiked). Then check for each video 

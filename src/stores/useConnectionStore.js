@@ -16,8 +16,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         isConnected: false,
         tasksABI: TasksABI,
         tasksamaABI: TasksamaABI,
-        tasksAddress: "0x6522F42e9E4783061A86B6033C0fd7fE04B84245", // ganache generated
-        tasksamaAddress: "0x7d29DC6F800312C6324d35dE2df2EFbC91514530", //ganache generated
+        tasksAddress: "0x52CF49BA9D29387D07b467C8d8269101d1fCB2bC", // ganache generated
+        tasksamaAddress: "0x8c0959Dd18b41E214c026D939Ac96556AD87Ed2c", //ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
         isAllSetUp: false
@@ -36,7 +36,6 @@ export const useConnectionStore = defineStore('metamaskConnection', {
     actions: {
       async initConnectionWatcher() {
         await this.setProvider(); //in any case we need a provider (ganache or infura)
-        await this.setContractInstances();
 
         watch(
           () => this.isConnected,
@@ -164,6 +163,16 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       getAvatarImg(size, seed) {
         const icon = jazzicon(size, seed == undefined ? Math.round(Math.random() * 10000000) : seed).outerHTML; //generates a size 20 icon as an HTML string. we use outerHTML because v-html renders only html strings
         return icon;
+      },
+
+      logConnectionDetails() {
+        console.log("isConnected",this.isConnected)
+        console.log("walletAddress",this.walletAddress)
+        console.log("signer",this.signer)
+        console.log("provider",this.provider)
+        console.log("tasksInstance",this.tasksInstance)
+        console.log("tasksamaInstance",this.tasksamaInstance)
+        console.log("isAllSetUp",this.isAllSetUp)
       }
 
     },

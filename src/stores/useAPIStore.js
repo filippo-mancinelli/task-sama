@@ -36,20 +36,21 @@ export const useAPIStore = defineStore('api', {
         // ###### TASKS ####### //
 
         //fetch NFT metadata from blockchain
-        fetchTasksMetadata() { 
-            const promise = useConnectionStore().callContractFunction("Tasks", "_getTasks").then(response => {
-                const modifiedMetadata = response.map(task => {
-                    return {
-                        ...task,
-                        tokenId: parseInt(task.tokenId),
-                        reward: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(task.reward))).toFixed(2)
-                    }
+        async fetchTasksMetadata() { 
+                const promise = useConnectionStore().callContractFunction("Tasks", "_getCompletedTasks").then(response => {
+                    const modifiedMetadata = response.map(task => {
+                        return {
+                            ...task,
+                            tokenId: parseInt(task.tokenId),
+                            reward: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(task.reward))).toFixed(2)
+                        }
+                    });
+                    console.log("_getCompletedTasks",modifiedMetadata)
+                    this.tasksMetadata = modifiedMetadata;
+                    
+                    return this.tasksMetadata;
                 });
-                this.tasksMetadata = modifiedMetadata;
-                
-                return this.tasksMetadata;
-            });
-            return promise;
+                return promise;
         },
 
         //fetch task image from DB
