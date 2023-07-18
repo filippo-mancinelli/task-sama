@@ -66,7 +66,6 @@ contract Tasks is ERC721, Ownable {
 
     function chooseWinner(uint256 _taskId, address payable _winner, string memory ipfsUrl) public {
         require(_taskExists(_taskId), "Task does not exist");
-        require(!_isCompleted(_taskId), "Task is already completed");
         require(_isParticipant(_taskId, _winner), "The user chosen did not participate");
         require(_isOwner(_taskId, msg.sender), "Only the owner of the task can choose the winner");
 
@@ -79,6 +78,14 @@ contract Tasks is ERC721, Ownable {
         _taskSamaContract.mintVideoNFT(_winner, msg.sender, tasks[_taskId].title, tasks[_taskId].description, ipfsUrl, tasks[_taskId].reward, tasks[_taskId].participants);
 
         emit TaskCompleted(_taskId, _winner);
+
+        // Remove the task after we chose the winner
+        // Swap the task to be removed with the last task in the array
+        tasks[_taskId] = tasks[tasks.length - 1];
+        // Remove the last element (which is the duplicated task) from the array
+        tasks.pop();
+        // Clear the taskExists mapping for the removed task
+        taskExists[_taskId] = false;
     }
 
     function _isParticipant(uint256 _taskId, address _participant) public view returns (bool) {
@@ -94,10 +101,6 @@ contract Tasks is ERC721, Ownable {
         return taskExists[_taskId];
     }
 
-    function _isCompleted(uint256 _taskId) public view returns (bool) {
-        return taskCompleted[_taskId];
-    }
-
     function _isOwner(uint256 _taskId, address walletCheck) public view returns (bool) {
         return tasks[_taskId].owner == walletCheck;
     }
@@ -110,26 +113,8 @@ contract Tasks is ERC721, Ownable {
         return tasks[_taskId];
     }
 
-    function _getCompletedTasks() public view returns (Task[] memory) {
-        //dynamic array in memory
-        Task[] memory completedTasks = new Task[](tasks.length); 
-
-        for (uint256 i = 0; i < tasks.length; i++) {
-            if (_isCompleted(i)) {
-                completedTasks[i] = tasks[i];
-            }
-        }
-
-        return completedTasks;
-    }
-
     function _getParticipantsOf(uint256 _taskId) public view returns (address[] memory) {
         return tasks[_taskId].participants;
     }
-    
-    function _getWinnerOf(uint256 _taskId) public view returns (address) {
-        require(!_isCompleted(_taskId), "This task doesn't have a winner yet");
-        
-        return tasks[_taskId].winner;
-    }
+
 }

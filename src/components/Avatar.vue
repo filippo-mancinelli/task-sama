@@ -38,15 +38,14 @@
           const seed = Math.round(Math.random() * 10000000);
           avatarImgHtml1.value = connectionStore.getAvatarImg(60, seed); 
           avatarImgHtml2.value = connectionStore.getAvatarImg(20, seed);
+          
+          //needed to check if user closed the dropdown by clicking outside the dropdown
+          document.addEventListener('click', handleDropdownOutsideClick);
+        } else {
+          document.removeEventListener('click', handleDropdownOutsideClick);
         }
       });
 
-      //needed to check if user closed the dropdown by clicking outside the dropdown
-      document.addEventListener('click', handleDropdownOutsideClick);
-    });
-
-    onUnmounted(() => {
-      document.removeEventListener('click', handleDropdownOutsideClick);
     });
 
 </script>

@@ -16,8 +16,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         isConnected: false,
         tasksABI: TasksABI,
         tasksamaABI: TasksamaABI,
-        tasksAddress: "0x52CF49BA9D29387D07b467C8d8269101d1fCB2bC", // ganache generated
-        tasksamaAddress: "0x8c0959Dd18b41E214c026D939Ac96556AD87Ed2c", //ganache generated
+        tasksAddress: "0x95B6E60b50C775586DAa2Ef7053403A25d8E078d", // ganache generated
+        tasksamaAddress: "0xb8917E38143C145859da328Bfc093257c728862d", //ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
         isAllSetUp: false

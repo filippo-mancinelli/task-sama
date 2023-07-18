@@ -37,7 +37,7 @@ export const useAPIStore = defineStore('api', {
 
         //fetch NFT metadata from blockchain
         async fetchTasksMetadata() { 
-                const promise = useConnectionStore().callContractFunction("Tasks", "_getCompletedTasks").then(response => {
+                const promise = useConnectionStore().callContractFunction("Tasks", "_getTasks").then(response => {
                     const modifiedMetadata = response.map(task => {
                         return {
                             ...task,
@@ -45,7 +45,6 @@ export const useAPIStore = defineStore('api', {
                             reward: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(task.reward))).toFixed(2)
                         }
                     });
-                    console.log("_getCompletedTasks",modifiedMetadata)
                     this.tasksMetadata = modifiedMetadata;
                     
                     return this.tasksMetadata;

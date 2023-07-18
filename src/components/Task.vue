@@ -16,9 +16,11 @@ const props = defineProps([
   'id',
   'title',
   'description',
-  'reward'
+  'reward',
+  'participants'
 ]);
 
+const showDropdown = ref(false);
 const showModal1 = ref(false);
 const showModal2 = ref(false);
 const modalType = ref('');
@@ -29,8 +31,11 @@ function openModal() {
   showModal1.value = true;
 }
 
-function participateTask() {
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value;
+}
 
+function participateTask() {
   if(argStore.getArguments.file.file == null) { 
     popupStore.setPopup(true, 'danger', 'You must upload a video to participate', 'modal');
     return;
@@ -71,12 +76,17 @@ function participateTask() {
         {{ title }}   #{{ id  }}
         <div class="badge badge-secondary">NEW</div>
       </h2>
-      <p>{{ description }}</p>
+      <p class="italic truncate">{{ description }}</p>
+      <div class="flex">
+        <p class="italic truncate">Participanting: {{ participants }}</p>
+        <div class="right-10 hover:cursor-pointer" ><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg></div> 
+      </div>
+
       <div class="card-actions justify-between">
-        <div class=" text-lg">Reward:<span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
+        <div class="italic truncate">Reward:<span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
         <label @click="openModal" class="btn btn-primary w-30 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
           Participate
-          <HandRaisedIcon class="h-6 w-6 pl-2 " />
+          <HandRaisedIcon class="h-6 w-6 pl-2" />
         </label>
       </div>
     </div>

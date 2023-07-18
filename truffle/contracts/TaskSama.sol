@@ -61,4 +61,8 @@ contract TaskSama is ERC721, Ownable {
         require(_exists(tokenId), "Token ID does not exist");
         return tasksama[tokenId];
     }
+        
+    function getWinnerOf(uint256 _taskId) public view returns (address) {
+        return tasksama[_taskId].winner;
+    }
 }
