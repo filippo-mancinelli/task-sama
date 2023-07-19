@@ -2,7 +2,7 @@
 import Modal from './widgets/Modal.vue';
 import FileUpload from './bricks/FileUpload.vue';
 import { HandRaisedIcon } from '@heroicons/vue/24/solid';
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useArgStore } from '../stores/useArgStore';
 import { usePopupStore } from '../stores/usePopupStore';
@@ -25,7 +25,13 @@ const showModal1 = ref(false);
 const showModal2 = ref(false);
 const modalType = ref('');
 const message = ref('');
+const searchQuery = ref('');
 
+const filteredParticipants = computed(() => {
+  if(!searchQuery.value) return props.participants;
+  const query = searchQuery.value.toLowerCase();
+  return props.participants.filter(participant => participant.toLowerCase().includes(query));
+})
 
 function openModal() {
   showModal1.value = true;
@@ -78,8 +84,28 @@ function participateTask() {
       </h2>
       <p class="italic truncate">{{ description }}</p>
       <div class="flex">
-        <p class="italic truncate">Participanting: {{ participants }}</p>
-        <div class="right-10 hover:cursor-pointer" ><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg></div> 
+        <p class="italic truncate">Participanting: <span class="pl-1 text-xs">{{ participants[0] }}</span></p>
+
+        <!--DROPDOWN-->
+        <div class="dropdown">
+          <label tabindex="0" class="hover:cursor-pointer" ><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg></label> 
+          <div tabindex="0" class="dropdown-content z-[1] card card-compact right-1 shadow border-2 border-black bg-white text-black rounded p-1">
+            <div class="card-body p-1 max-h-80 min-w-max overflow-y-auto">
+              <!--SEARCHBAR AND ADDRESS LIST-->
+              <p class="text-s">{{ participants.length }} {{ participants.length === 1 ? 'participant' : 'participants' }}</p>
+              <div class="flex gap-1 items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class=" w-5 h-5"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                <input type="text" v-model="searchQuery" class="border rounded p-0.5 w-full outline-none border-orange-300 focus:ring-1 focus:ring-orange-400 focus:border-transparent" placeholder="Search address...">
+              </div>
+              <div v-if="filteredParticipants.length > 0" v-for="participant in filteredParticipants">
+                <p class="border-b-2 border-orange-300 text-xs">{{ participant }}</p>
+              </div>
+              <div v-else>
+                <p class="text-s">No address found...</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="card-actions justify-between">

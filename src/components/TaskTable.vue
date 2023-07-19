@@ -73,6 +73,7 @@ onMounted(() => {
   watch(() => connectionStore.tasksInstance, async (instance) => {
     if(instance != null) {
       tasks.value = await apiStore.fetchTasksMetadata();
+      console.log("tasks.value",tasks.value)
     }
   });
 
@@ -114,6 +115,7 @@ onBeforeUnmount(() => {
           :title="task.title"
           :description="task.description"
           :reward="task.reward"
+          :participants="task.participants"
           class="bg-white text-black"
         />
       </div>
