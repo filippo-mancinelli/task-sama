@@ -69,7 +69,7 @@
               <h5 class="card-title text-sm mb-0">{{ connectionStore.walletAddress }}</h5>
             </div>
             <p>Tasks listed:</p>
-            <p>Tasks participated:</p>
+            <p>Tasks participated: </p>
             <p>Tasks won:</p>
             <button @click="connectionStore.disconnect" class="btn btn-warning mt-1 text-white">Disconnect</button>
           </div>

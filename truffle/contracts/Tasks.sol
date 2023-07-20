@@ -9,9 +9,7 @@ interface ITasksSamaContract {
 }
 
 contract Tasks is ERC721, Ownable {
-    
     struct Task {
-        uint256 tokenId;
         address owner;
         string title;
         string description;
@@ -21,11 +19,9 @@ contract Tasks is ERC721, Ownable {
     }
 
     ITasksSamaContract private _taskSamaContract;
-    Task[] public tasks;
+    mapping(uint256 => Task) public tasks;
 
-    mapping(uint256 => bool) public taskExists;
-    mapping(uint256 => bool) public taskCompleted;
-
+    uint256 public taskCount;
     uint256 public minimumReward = 10 ether; // Minimum reward is 5 GLMR tokens //900
 
     event TaskCreated(uint256 indexed taskId, address owner, string title, string description, uint256 reward);
@@ -38,8 +34,8 @@ contract Tasks is ERC721, Ownable {
     function createTask(string memory _title, string memory _description) public payable {
         require(msg.value >= minimumReward, "Reward is too low");
 
+        uint256 tokenId = taskCount;
         Task memory newTask = Task({
-            tokenId: tasks.length,
             owner: msg.sender,
             title: _title,
             description: _description,
@@ -48,65 +44,63 @@ contract Tasks is ERC721, Ownable {
             winner: address(0)
         });
 
-        tasks.push(newTask);
+        tasks[tokenId] = newTask;
+        taskCount++;
 
-        _mint(msg.sender, newTask.tokenId);
-        taskExists[newTask.tokenId] = true;
+        _mint(msg.sender, tokenId);
 
-        emit TaskCreated(newTask.tokenId, msg.sender, _title, _description, msg.value);
+        emit TaskCreated(tokenId, msg.sender, _title, _description, msg.value);
     }
 
     function participate(uint256 _taskId) public {
+        Task storage task = tasks[_taskId];
         require(_taskExists(_taskId), "Task does not exist");
-        require(!_isOwner(_taskId, msg.sender), "You cannot participate in your own task");
-        require(!_isParticipant(_taskId, msg.sender), "Already participated");
+        require(!_isOwner(task, msg.sender), "You cannot participate in your own task");
+        require(!_isParticipant(task, msg.sender), "Already participated");
 
-        tasks[_taskId].participants.push(msg.sender);
+        task.participants.push(msg.sender);
     }
 
     function chooseWinner(uint256 _taskId, address payable _winner, string memory ipfsUrl) public {
+        Task storage task = tasks[_taskId];
         require(_taskExists(_taskId), "Task does not exist");
-        require(_isParticipant(_taskId, _winner), "The user chosen did not participate");
-        require(_isOwner(_taskId, msg.sender), "Only the owner of the task can choose the winner");
+        require(_isParticipant(task, _winner), "The user chosen did not participate");
+        require(_isOwner(task, msg.sender), "Only the owner of the task can choose the winner");
 
-        tasks[_taskId].winner = _winner;
-        taskCompleted[_taskId] = true;
+        task.winner = _winner;
 
         //transfer the reward from the contract balance to the winner
-        _winner.transfer(tasks[_taskId].reward * 1 wei); 
-         //mints the video NFT
-        _taskSamaContract.mintVideoNFT(_winner, msg.sender, tasks[_taskId].title, tasks[_taskId].description, ipfsUrl, tasks[_taskId].reward, tasks[_taskId].participants);
+        _winner.transfer(task.reward * 1 wei);
+
+        //mints the video NFT
+        _taskSamaContract.mintVideoNFT(_winner, msg.sender, task.title, task.description, ipfsUrl, task.reward, task.participants);
 
         emit TaskCompleted(_taskId, _winner);
-
-        // Remove the task after we chose the winner
-        // Swap the task to be removed with the last task in the array
-        tasks[_taskId] = tasks[tasks.length - 1];
-        // Remove the last element (which is the duplicated task) from the array
-        tasks.pop();
-        // Clear the taskExists mapping for the removed task
-        taskExists[_taskId] = false;
     }
 
-    function _isParticipant(uint256 _taskId, address _participant) public view returns (bool) {
-        for (uint256 i = 0; i < tasks[_taskId].participants.length; i++) {
-            if (tasks[_taskId].participants[i] == _participant) {
+    function _isParticipant(Task storage task, address _participant) internal view returns (bool) {
+        for (uint256 i = 0; i < task.participants.length; i++) {
+            if (task.participants[i] == _participant) {
                 return true;
             }
         }
         return false;
     }
 
-    function _taskExists(uint256 _taskId) public view returns (bool) {
-        return taskExists[_taskId];
+    function _taskExists(uint256 _taskId) internal view returns (bool) {
+        return _taskId < taskCount;
     }
 
-    function _isOwner(uint256 _taskId, address walletCheck) public view returns (bool) {
-        return tasks[_taskId].owner == walletCheck;
+    function _isOwner(Task storage task, address walletCheck) internal view returns (bool) {
+        return task.owner == walletCheck;
     }
 
     function _getTasks() public view returns (Task[] memory) {
-        return tasks;
+        Task[] memory allTasks = new Task[](taskCount);
+        for (uint256 i = 0; i < taskCount; i++) {
+            allTasks[i] = tasks[i];
+        }
+        return allTasks;
     }
 
     function _getTask(uint256 _taskId) public view returns (Task memory) {
@@ -116,5 +110,4 @@ contract Tasks is ERC721, Ownable {
     function _getParticipantsOf(uint256 _taskId) public view returns (address[] memory) {
         return tasks[_taskId].participants;
     }
-
 }

@@ -1,18 +1,18 @@
 <script setup>
 import { ref, watch, computed, onMounted, onBeforeUnmount, toRefs } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
-import { useAPIStore } from '../stores/useAPIStore'
+import { useTaskStore } from '../stores/useTaskStore'
 import { storeToRefs } from 'pinia';
 import Task from './Task.vue';
 import _ from 'lodash';
 
-const apiStore = useAPIStore();
+const taskStore = useTaskStore();
 const connectionStore = useConnectionStore();
 
-const { tasksMetadata: tasks } = toRefs(apiStore);
+const { tasksMetadata: tasks } = toRefs(taskStore);
 
 const searchQuery = ref("");
-const sortOrder = ref("id");
+const sortOrder = ref("tokenId");
 const sortDirection = ref("asc");
 
 const filteredTasks = computed(() => {
@@ -30,8 +30,8 @@ const filteredTasks = computed(() => {
         });
     }
 
-    if (sortOrder.value === "id") {
-        results = _.orderBy(results, ["id"], [sortDirection.value]);
+    if (sortOrder.value === "tokenId") {
+        results = _.orderBy(results, ["tokenId"], [sortDirection.value]);
     } else if (sortOrder.value === "reward") {
         results = _.orderBy(results, ["reward"], [sortDirection.value]);
     }
@@ -40,8 +40,8 @@ const filteredTasks = computed(() => {
 });
 
 const sortTasks = () => {
-    if (sortOrder.value === "id") {
-      tasks.value = _.orderBy(tasks.value, ["id"], [sortDirection.value]);
+    if (sortOrder.value === "tokenId") {
+      tasks.value = _.orderBy(tasks.value, ["tokenId"], [sortDirection.value]);
     } else if (sortOrder.value === "reward") {
       tasks.value = _.orderBy(tasks.value, ["reward"], [sortDirection.value]);
     }
@@ -72,8 +72,8 @@ onMounted(() => {
   //fetchTasksMetadata
   watch(() => connectionStore.tasksInstance, async (instance) => {
     if(instance != null) {
-      tasks.value = await apiStore.fetchTasksMetadata();
-      console.log("tasks.value",tasks.value)
+      tasks.value = await taskStore.fetchTasksMetadata();
+      //console.log("tasks.value",tasks.value)
     }
   });
 
@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
     <input type="text" v-model="searchQuery" class="w-full py-2 px-3  mb-2 sm:mb-0 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search tasks...">
     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
       <select v-model="sortOrder" @change="sortTasks" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
-        <option value="id" class="hover:bg-orange-200">Sort by ID</option>
+        <option value="tokenId" class="hover:bg-orange-200">Sort by ID</option>
         <option value="reward">Sort by Reward</option>
       </select>
       <button @click="toggleSortDirection" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
     <div v-for="(taskRow, index) in _.chunk(filteredTasks, screenSizeColumns)" :key="index" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
       <div v-for="task in taskRow" class="w-full">
         <Task
-          :id="task.id"
+          :tokenId="task.tokenId"
           :title="task.title"
           :description="task.description"
           :reward="task.reward"

@@ -1,9 +1,8 @@
 const Koa = require('koa');
 const cors = require('@koa/cors');
 const bodyParser = require('koa-bodyparser');
-
+const formidable = require('koa2-formidable');
 const app = new Koa();
-
 const corsOptions = {
   origin: '*',
   credentials: true,
@@ -21,6 +20,7 @@ app.use(async (ctx, next) => {
 });
 
 // Use koa-bodyparser middleware to parse request bodies
+app.use(formidable());
 app.use(bodyParser());
 
 // We import route files and use them

@@ -6,14 +6,14 @@ import { ref, computed } from 'vue'
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useArgStore } from '../stores/useArgStore';
 import { usePopupStore } from '../stores/usePopupStore';
-import { useAPIStore } from '../stores/useAPIStore';
+import { useTaskStore } from '../stores/useTaskStore';
 
 const connectionStore = useConnectionStore();
 const argStore = useArgStore();
 const popupStore = usePopupStore();
 
 const props = defineProps([
-  'id',
+  'tokenId',
   'title',
   'description',
   'reward',
@@ -42,23 +42,22 @@ function toggleDropdown() {
 }
 
 function participateTask() {
-  if(argStore.getArguments.file.file == null) { 
-    popupStore.setPopup(true, 'danger', 'You must upload a video to participate', 'modal');
+  if(argStore.getArguments.file.size == null) { 
+    popupStore.setPopup(true, 'danger', 'You must upload a valid video to participate', 'modal');
     return;
   } else {
     if(connectionStore.isConnected){
-
-      const { name, video, walletAddress } = argStore.getArguments.file;
-      connectionStore.callContractFunction('participate', {name,  video, walletAddress})
+      connectionStore.callContractFunction('Tasks', 'participate', '', [props.tokenId])
         .then(response => {
           modalType.value = 'success';
           message.value = 'You sent your participation!';
           showModal2.value = true;
           showModal1.value = false;
+          console.log("response",response)
 
-          //after the task NFT is updated with the participation we upload the user video to our DB for moderation reasons
-          useAPIStore().uploadVideoToDB();
-
+          //after the task NFT is updated with the participation we upload the user video + tokenId to our DB for moderation purposes
+          argStore.getArguments.file.tokenId = props.tokenId; 
+          useTaskStore().uploadVideoToDB(argStore.getArguments.formData);
         })
         .catch(error => {
           modalType.value = 'danger';
@@ -69,8 +68,6 @@ function participateTask() {
         popupStore.setPopup(true, 'alert', 'You need to connect your wallet first', 'modal');
     }
   }
-
-
 }
 </script>
 
@@ -79,7 +76,7 @@ function participateTask() {
     <figure><img src="https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427" alt="Shoes" /></figure>
     <div class="card-body gap-1 p-5">
       <h2 class="card-title">
-        {{ title }}   #{{ id  }}
+        {{ title }}   #{{ tokenId  }}
         <div class="badge badge-secondary">NEW</div>
       </h2>
       <p class="italic truncate">{{ description }}</p>
@@ -101,7 +98,7 @@ function participateTask() {
                 <p class="border-b-2 border-orange-300 text-xs">{{ participant }}</p>
               </div>
               <div v-else>
-                <p class="text-s">No address found...</p>
+                <p class="text-s mr-40">No address found...</p>
               </div>
             </div>
           </div>
