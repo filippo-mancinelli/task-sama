@@ -9,7 +9,8 @@ export const useTaskStore = defineStore('api', {
     }),
 
     actions: {
-        // ###### VIDEOS ###### //
+        // ###### VIDEO API ###### //
+
         uploadVideoToDB(files) {
             let formData = new FormData();
             formData.append('file', files);
@@ -33,7 +34,7 @@ export const useTaskStore = defineStore('api', {
             return promise;
         },
 
-        // ###### IMAGES ###### //
+        // ###### IMAGES API ###### //
         uploadImageToDB(file) {
             const promise =  axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadImageToDB').then(response => {
                 

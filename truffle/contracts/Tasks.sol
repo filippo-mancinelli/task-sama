@@ -20,8 +20,8 @@ contract Tasks is ERC721, Ownable {
 
     ITasksSamaContract private _taskSamaContract;
     mapping(uint256 => Task) public tasks;
+    uint256[] public taskIndices; // Array to store the indices of existing tasks
 
-    uint256 public taskCount;
     uint256 public minimumReward = 10 ether; // Minimum reward is 5 GLMR tokens //900
 
     event TaskCreated(uint256 indexed taskId, address owner, string title, string description, uint256 reward);
@@ -34,7 +34,7 @@ contract Tasks is ERC721, Ownable {
     function createTask(string memory _title, string memory _description) public payable {
         require(msg.value >= minimumReward, "Reward is too low");
 
-        uint256 tokenId = taskCount;
+        uint256 tokenId = taskIndices.length;
         Task memory newTask = Task({
             owner: msg.sender,
             title: _title,
@@ -45,7 +45,7 @@ contract Tasks is ERC721, Ownable {
         });
 
         tasks[tokenId] = newTask;
-        taskCount++;
+        taskIndices.push(tokenId); // Add the new task index to the array
 
         _mint(msg.sender, tokenId);
 
@@ -69,11 +69,21 @@ contract Tasks is ERC721, Ownable {
 
         task.winner = _winner;
 
-        //transfer the reward from the contract balance to the winner
+        // Transfer the reward from the contract balance to the winner
         _winner.transfer(task.reward * 1 wei);
 
-        //mints the video NFT
+        // Mints the video NFT
         _taskSamaContract.mintVideoNFT(_winner, msg.sender, task.title, task.description, ipfsUrl, task.reward, task.participants);
+
+        // Delete the task from the mapping and the taskIndices array
+        delete tasks[_taskId];
+        for (uint256 i = 0; i < taskIndices.length; i++) {
+            if (taskIndices[i] == _taskId) {
+                taskIndices[i] = taskIndices[taskIndices.length - 1];
+                taskIndices.pop();
+                break;
+            }
+        }
 
         emit TaskCompleted(_taskId, _winner);
     }
@@ -88,7 +98,7 @@ contract Tasks is ERC721, Ownable {
     }
 
     function _taskExists(uint256 _taskId) internal view returns (bool) {
-        return _taskId < taskCount;
+        return _taskId < taskIndices.length;
     }
 
     function _isOwner(Task storage task, address walletCheck) internal view returns (bool) {
@@ -96,9 +106,9 @@ contract Tasks is ERC721, Ownable {
     }
 
     function _getTasks() public view returns (Task[] memory) {
-        Task[] memory allTasks = new Task[](taskCount);
-        for (uint256 i = 0; i < taskCount; i++) {
-            allTasks[i] = tasks[i];
+        Task[] memory allTasks = new Task[](taskIndices.length);
+        for (uint256 i = 0; i < taskIndices.length; i++) {
+            allTasks[i] = tasks[taskIndices[i]];
         }
         return allTasks;
     }
