@@ -18,7 +18,6 @@ const sortDirection = ref("asc");
 const filteredTasks = computed(() => {
   let results = tasks && tasks.value ? tasks.value : [];
 
-
     if (searchQuery.value) {
         results = _.filter(results, (task) => {
             return (

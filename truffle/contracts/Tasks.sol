@@ -3,13 +3,19 @@ pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 interface ITasksSamaContract {
     function mintVideoNFT(address recipient, address creator, string calldata title, string calldata description, string calldata ipfsUrl, uint256 rewardEarned, address[] calldata participants) external returns (uint256);
 }
 
 contract Tasks is ERC721, Ownable {
+
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIdCounter;
+
     struct Task {
+        uint256 tokenId;
         address owner;
         string title;
         string description;
@@ -20,7 +26,6 @@ contract Tasks is ERC721, Ownable {
 
     ITasksSamaContract private _taskSamaContract;
     mapping(uint256 => Task) public tasks;
-    uint256[] public taskIndices; // Array to store the indices of existing tasks
 
     uint256 public minimumReward = 10 ether; // Minimum reward is 5 GLMR tokens //900
 
@@ -34,8 +39,10 @@ contract Tasks is ERC721, Ownable {
     function createTask(string memory _title, string memory _description) public payable {
         require(msg.value >= minimumReward, "Reward is too low");
 
-        uint256 tokenId = taskIndices.length;
+        _tokenIdCounter.increment();
+        uint256 tokenId = _tokenIdCounter.current();
         Task memory newTask = Task({
+            tokenId: tokenId,
             owner: msg.sender,
             title: _title,
             description: _description,
@@ -45,8 +52,6 @@ contract Tasks is ERC721, Ownable {
         });
 
         tasks[tokenId] = newTask;
-        taskIndices.push(tokenId); // Add the new task index to the array
-
         _mint(msg.sender, tokenId);
 
         emit TaskCreated(tokenId, msg.sender, _title, _description, msg.value);
@@ -75,15 +80,8 @@ contract Tasks is ERC721, Ownable {
         // Mints the video NFT
         _taskSamaContract.mintVideoNFT(_winner, msg.sender, task.title, task.description, ipfsUrl, task.reward, task.participants);
 
-        // Delete the task from the mapping and the taskIndices array
+        // Delete the task from the mapping
         delete tasks[_taskId];
-        for (uint256 i = 0; i < taskIndices.length; i++) {
-            if (taskIndices[i] == _taskId) {
-                taskIndices[i] = taskIndices[taskIndices.length - 1];
-                taskIndices.pop();
-                break;
-            }
-        }
 
         emit TaskCompleted(_taskId, _winner);
     }
@@ -97,8 +95,10 @@ contract Tasks is ERC721, Ownable {
         return false;
     }
 
-    function _taskExists(uint256 _taskId) internal view returns (bool) {
-        return _taskId < taskIndices.length;
+    // Since "tasks" is a mapping, every possible keys already exists, therefore we can make use of its defaults values to check if a given key has initialized values to see if it exists or not.
+    function _taskExists(uint256 _taskId) public view returns (bool) {
+        bool result = (tasks[_taskId].tokenId != 0 && tasks[_taskId].reward != 0) ? true : false;  
+        return result;
     }
 
     function _isOwner(Task storage task, address walletCheck) internal view returns (bool) {
@@ -106,10 +106,21 @@ contract Tasks is ERC721, Ownable {
     }
 
     function _getTasks() public view returns (Task[] memory) {
-        Task[] memory allTasks = new Task[](taskIndices.length);
-        for (uint256 i = 0; i < taskIndices.length; i++) {
-            allTasks[i] = tasks[taskIndices[i]];
+        Task[] memory allTasks = new Task[](_tokenIdCounter.current());
+    
+        uint256 validTaskCount = 0;
+        for (uint256 i = 0; i < _tokenIdCounter.current(); i++) {
+            if (_taskExists(i)) {
+                allTasks[validTaskCount] = tasks[i];
+                validTaskCount++;
+            }
         }
+    
+        // Resize the array to remove any uninitialized elements
+        assembly {
+            mstore(allTasks, validTaskCount)
+        }
+    
         return allTasks;
     }
 
