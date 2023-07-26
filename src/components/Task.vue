@@ -1,7 +1,7 @@
 <script setup>
 import Modal from './widgets/Modal.vue';
 import FileUpload from './bricks/FileUpload.vue';
-import { HandRaisedIcon } from '@heroicons/vue/24/solid';
+import { HandRaisedIcon, ClockIcon } from '@heroicons/vue/24/solid';
 import { ref, computed } from 'vue'
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useArgStore } from '../stores/useArgStore';
@@ -17,10 +17,10 @@ const props = defineProps([
   'title',
   'description',
   'reward',
-  'participants'
+  'participants',
+  'isParticipanting'
 ]);
-
-const showDropdown = ref(false);
+console.log("props",props)
 const showModal1 = ref(false);
 const showModal2 = ref(false);
 const modalType = ref('');
@@ -37,15 +37,17 @@ function openModal() {
   showModal1.value = true;
 }
 
-function toggleDropdown() {
-  showDropdown.value = !showDropdown.value;
-}
-
 function participateTask() {
-  if(argStore.getArguments.file.size == null) { 
+  console.log("argStore.getArguments",argStore.getArguments)
+  if(argStore.getArguments.file.size == 0) { 
     popupStore.setPopup(true, 'danger', 'You must upload a valid video to participate', 'modal');
     return;
   } else {
+    //before updating the task NFT with the participation we upload the user video + tokenId to our server for moderation purposes
+    argStore.getArguments.file.tokenId = props.tokenId; 
+    useTaskStore().uploadVideoToDB(argStore.getArguments.formData);
+
+
     if(connectionStore.isConnected){
       connectionStore.callContractFunction('Tasks', 'participate', '', [props.tokenId])
         .then(response => {
@@ -53,15 +55,11 @@ function participateTask() {
           message.value = 'You sent your participation!';
           showModal2.value = true;
           showModal1.value = false;
-          console.log("response",response)
-
-          //after the task NFT is updated with the participation we upload the user video + tokenId to our DB for moderation purposes
-          argStore.getArguments.file.tokenId = props.tokenId; 
-          useTaskStore().uploadVideoToDB(argStore.getArguments.formData);
         })
         .catch(error => {
+          console.log("error",error)
           modalType.value = 'danger';
-          message.value = 'Error sending participation: ' + error;
+          message.value = 'Error sending participation: ' + error.data.message;
           showModal2.value = true;
         } );
     } else {
@@ -107,9 +105,13 @@ function participateTask() {
 
       <div class="card-actions justify-between">
         <div class="italic truncate">Reward:<span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
-        <label @click="openModal" class="btn btn-primary w-30 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
+        <label v-if="!isParticipanting" @click="openModal" class="btn btn-primary w-30 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
           Participate
           <HandRaisedIcon class="h-6 w-6 pl-2" />
+        </label>
+        <label v-else class="btn btn-primary w-30 bg-orange-700 border-1 border-black hover:cursor-default ">
+          Participating
+          <ClockIcon class="h-6 w-6 pl-2" />
         </label>
       </div>
     </div>

@@ -56,7 +56,6 @@ export const useTaskStore = defineStore('api', {
                         }
                     });
                     this.tasksMetadata = modifiedMetadata;
-                    console.log("modifiedMetadata",modifiedMetadata)
                     
                     return this.tasksMetadata;
                 });
