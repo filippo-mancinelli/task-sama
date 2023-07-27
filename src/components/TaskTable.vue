@@ -80,7 +80,6 @@ onMounted(() => {
     if (connectionStore.walletAddress != null && connectionStore.tasksInstance != null) {
       tasks.value.forEach((task) => {
         task.isParticipanting = false;
-        console.log("task",task)
         for (let i = 0; i < task.participants.length; i++) {
           if(task.participants[i] == connectionStore.walletAddress) {
             task.isParticipanting = true;

@@ -11,21 +11,25 @@ export const useTaskStore = defineStore('api', {
     actions: {
         // ###### VIDEO API ###### //
 
-        uploadVideoToDB(files) {
-            let formData = new FormData();
-            formData.append('file', files);
-            const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadVideoToDB', 
-            formData,
-            {
+        uploadVideoToDB(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+          
+            return axios
+              .post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadVideoToDB', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            }
-            ).then(response => {
-
-            });
-            return promise;
-        },
+                  'Content-Type': 'multipart/form-data',
+                },
+              })
+              .then((response) => {
+                console.log('Video uploaded successfully:', response.data);
+                return response.data;
+              })
+              .catch((error) => {
+                console.error('Error uploading video:', error);
+                throw error;
+              });
+          },
 
         uploadVideoToIpfs(show, msgType, msg) {
             const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadVideoToIpfs').then(response => {

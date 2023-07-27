@@ -13,10 +13,9 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
     console.log("\n ####################################### \n '/uploadVideoToDB' \n ####################################### \n ");
     console.log("\n ####################################### \n", ctx.request.file, "\n ####################################### \n ");
 
-    const video = ctx.request.file;  // Access the uploaded file like this since the video is sent as a formData object
+    const video = ctx.request.file; 
 
     console.log("video",video)
-    console.log("video.name",video.name)
 
     try {
       const filePath = './uploads/' + video.name;
@@ -30,7 +29,7 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
 
       // Insert the video information into the "videos" collection
       const videoData = {
-        name: video.name, // Use 'video.name' instead of 'video.fileName'
+        name: video.name,
         path: filePath,
         uploadDate: formattedDate,
         size: video.size,

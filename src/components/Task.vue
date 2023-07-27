@@ -7,6 +7,7 @@ import { useConnectionStore } from '../stores/useConnectionStore';
 import { useArgStore } from '../stores/useArgStore';
 import { usePopupStore } from '../stores/usePopupStore';
 import { useTaskStore } from '../stores/useTaskStore';
+import axios from 'axios';
 
 const connectionStore = useConnectionStore();
 const argStore = useArgStore();
@@ -20,7 +21,6 @@ const props = defineProps([
   'participants',
   'isParticipanting'
 ]);
-console.log("props",props)
 const showModal1 = ref(false);
 const showModal2 = ref(false);
 const modalType = ref('');
@@ -38,14 +38,13 @@ function openModal() {
 }
 
 function participateTask() {
-  console.log("argStore.getArguments",argStore.getArguments)
   if(argStore.getArguments.file.size == 0) { 
     popupStore.setPopup(true, 'danger', 'You must upload a valid video to participate', 'modal');
     return;
   } else {
     //before updating the task NFT with the participation we upload the user video + tokenId to our server for moderation purposes
     argStore.getArguments.file.tokenId = props.tokenId; 
-    useTaskStore().uploadVideoToDB(argStore.getArguments.formData);
+    useTaskStore().uploadVideoToDB(argStore.arguments.fileData.file);
 
 
     if(connectionStore.isConnected){
@@ -125,7 +124,6 @@ function participateTask() {
         <span class="text-lg">&#x270F; <span class="italic"> {{ description }}  </span> </span>
         <span class="text-lg">&#x1F4B8;<span class="italic"> {{ reward }} GLMR </span> </span>
       </div>
-
       <FileUpload :upload-type="'video'" />
       <div class="flex flex-col items-end">
       <label @click="participateTask" class="btn btn-primary w-25 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
