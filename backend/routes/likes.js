@@ -12,7 +12,7 @@ router.post('/initLikes', async (ctx, next) => {
       console.log("Chiamata: 'http://localhost:3000/initLikes'")
   
       const db = await connectToDatabase();
-      const collection = db.collection('videos');
+      const collection = db.collection('likes');
       const walletAddress = ctx.request.body.walletAddress;
       const documents = await collection.find({}, {projection: {_id: 0, tokenId: 1, likes: 1, likeWallets: 1}}).toArray();
 
@@ -46,7 +46,7 @@ router.post('/like', async (ctx, next) => {
       console.log("Chiamata: 'http://localhost:3000/like'")
 
       const db = await connectToDatabase();
-      const collection = db.collection('videos');
+      const collection = db.collection('likes');
       const tokenId = ctx.request.body.tokenId;
       const isLiked = ctx.request.body.isLiked;
       const walletAddress = ctx.request.body.walletAddress;

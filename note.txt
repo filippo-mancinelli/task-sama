@@ -1,0 +1,5 @@
+- if i create an NFT not from the website but via raw SC, the DB is not updated with the like mapping which causes the breaking of the homepage view.
+- add spin animation when submitting participation video.
+- show success modal only when transaction confirmed.
+- when disconnecting the status of wallet does not change
+- disconnect button not working (setup cookie system)

@@ -11,6 +11,7 @@ const connectionStore = useConnectionStore();
 
 const { tasksMetadata: tasks } = toRefs(taskStore);
 
+//### SEARCH FILTERS ####
 const searchQuery = ref("");
 const sortOrder = ref("tokenId");
 const sortDirection = ref("asc");
@@ -67,12 +68,16 @@ const calculateColumnNumber = () => {
 }
 const screenSizeColumns =  ref(calculateColumnNumber());
 
+//### REFRESH METADATA ####
+async function refreshTasksMetadata() {
+  tasks.value = await taskStore.fetchTasksMetadata();
+}
+
 onMounted(() => {
   //fetchTasksMetadata
   watch(() => connectionStore.tasksInstance, async (instance) => {
     if(instance != null) {
-      tasks.value = await taskStore.fetchTasksMetadata();
-      //console.log("tasks.value",tasks.value)
+      await refreshTasksMetadata();
     }
   });
 
@@ -129,6 +134,7 @@ onBeforeUnmount(() => {
           :reward="task.reward"
           :participants="task.participants"
           :isParticipanting="task.isParticipanting"
+          @sentParticipation="() => refreshTasksMetadata()"
           class="bg-white text-black"
         />
       </div>

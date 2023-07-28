@@ -13,6 +13,7 @@ const connectionStore = useConnectionStore();
 const argStore = useArgStore();
 const popupStore = usePopupStore();
 
+const emit = defineEmits(['sentParticipation']);
 const props = defineProps([
   'tokenId',
   'title',
@@ -41,19 +42,19 @@ function participateTask() {
   if(argStore.getArguments.file.size == 0) { 
     popupStore.setPopup(true, 'danger', 'You must upload a valid video to participate', 'modal');
     return;
+  } else if(!connectionStore.isConnected){
+     popupStore.setPopup(true, 'alert', 'You need to connect your wallet first', 'modal');
   } else {
     //before updating the task NFT with the participation we upload the user video + tokenId to our server for moderation purposes
-    argStore.getArguments.file.tokenId = props.tokenId; 
-    useTaskStore().uploadVideoToDB(argStore.arguments.fileData.file);
-
-
-    if(connectionStore.isConnected){
+    useTaskStore().uploadVideoToDB(argStore.arguments.fileData.file, props.tokenId).then(() => {
       connectionStore.callContractFunction('Tasks', 'participate', '', [props.tokenId])
         .then(response => {
           modalType.value = 'success';
           message.value = 'You sent your participation!';
           showModal2.value = true;
           showModal1.value = false;
+
+          emit('sentParticipation'); 
         })
         .catch(error => {
           console.log("error",error)
@@ -61,9 +62,7 @@ function participateTask() {
           message.value = 'Error sending participation: ' + error.data.message;
           showModal2.value = true;
         } );
-    } else {
-        popupStore.setPopup(true, 'alert', 'You need to connect your wallet first', 'modal');
-    }
+    });
   }
 }
 </script>

@@ -11,10 +11,11 @@ export const useTaskStore = defineStore('api', {
     actions: {
         // ###### VIDEO API ###### //
 
-        uploadVideoToDB(file) {
+        uploadVideoToDB(file, tokenId) {
             const formData = new FormData();
             formData.append('file', file);
-          
+            formData.append('tokenId', tokenId);
+
             return axios
               .post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadVideoToDB', formData, {
                 headers: {

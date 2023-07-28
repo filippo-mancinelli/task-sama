@@ -16,8 +16,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         isConnected: false,
         tasksABI: TasksABI,
         tasksamaABI: TasksamaABI,
-        tasksAddress: "0x27c57019F8c1E3572d33Ce87C0c2cd0a729FE371", // ganache generated
-        tasksamaAddress: "0x1fd807E6c84CB59FbaE85bBDd070414ff6537af2", //ganache generated
+        tasksAddress: "0xcfA28c1157F27e13d0c6F813d1ae70039864CC49", // ganache generated
+        tasksamaAddress: "0xF102771EEAa7eC9cDD410A68D5e7183E1d7db63C", //ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
         isAllSetUp: false
@@ -157,6 +157,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           if(functionType=="payable") result = await this.tasksInstance[functionName](...(params ? [...params] : []), { value: ethers.utils.parseEther(eth) });
           else result = await this.tasksInstance[functionName](...(params ? [...params] : []));
         }
+        //The wait() function returns a promise that resolves once the transaction is confirmed.
+        await result.wait();
         return result
       },
 
