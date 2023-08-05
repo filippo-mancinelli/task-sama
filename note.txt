@@ -3,3 +3,5 @@
 - show success modal only when transaction confirmed.
 - when disconnecting the status of wallet does not change
 - disconnect button not working (setup cookie system)
+- implement transaction confirmaton waiting time.
+- add spinning animation
