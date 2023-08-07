@@ -16,8 +16,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         isConnected: false,
         tasksABI: TasksABI,
         tasksamaABI: TasksamaABI,
-        tasksAddress: "0xC6299e7a0C9f5646b2f85bae9DbEc4427fc6C2F2", // ganache generated
-        tasksamaAddress: "0x4CDfd210D093D487E8f3928c14f1292e2e9BD654", //ganache generated
+        tasksAddress: "0xdcd79D879bddf7E89c281F55360922592e90d968", // ganache generated
+        tasksamaAddress: "0xA3BF57BA2e76A8D133c8a60F95bcC7edC9b886Cf", //ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
         isAllSetUp: false
@@ -147,17 +147,39 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         }
       },
 
-      async callContractFunction(contractName, functionName, functionType, params, eth){         
+      async callContractFunction(contractName, functionName, functionType, params, eth) {        
         let result;
+        let transactionReceipt;
         if(contractName == "TaskSama") {
-          if(functionType == "payable") result = await this.tasksamaInstance[functionName](...(params ? [...params] : []), { value: ethers.utils.parseEther(eth) });
-          else result = await this.tasksamaInstance[functionName](...(params ? [...params] : []));
-         
+          if(functionType == "payable") {
+            result = await this.tasksamaInstance[functionName](...(params ? [...params] : []), { value: ethers.utils.parseEther(eth) });
+            transactionReceipt = await result.wait();
+            console.log("transactionReceipt",transactionReceipt);
+          }
+          else  {
+            result = await this.tasksamaInstance[functionName](...(params ? [...params] : []));
+            if(functionType=="stateChanging") {
+              transactionReceipt = await result.wait();
+              console.log("transactionReceipt",transactionReceipt);
+            }
+          }
+
         } else if(contractName == "Tasks") {
-          if(functionType=="payable") result = await this.tasksInstance[functionName](...(params ? [...params] : []), { value: ethers.utils.parseEther(eth) });
-          else result = await this.tasksInstance[functionName](...(params ? [...params] : []));
+          if(functionType=="payable"){
+            result = await this.tasksInstance[functionName](...(params ? [...params] : []), { value: ethers.utils.parseEther(eth) });
+            transactionReceipt = await result.wait();
+            console.log("transactionReceipt",transactionReceipt);
+          } 
+          else {
+            result = await this.tasksInstance[functionName](...(params ? [...params] : []));
+            if(functionType=="stateChanging") {
+              transactionReceipt = await result.wait();
+              console.log("transactionReceipt",transactionReceipt);
+            }
+          }
         }
-        return result
+        
+        return { result, transactionReceipt} 
       },
 
       getAvatarImg(size, seed) {

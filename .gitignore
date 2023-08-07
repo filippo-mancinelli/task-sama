@@ -29,3 +29,6 @@ bin/src/contracts/TaskSama.bin
 bin/src/contracts/TaskSama-solc-output.json
 bin/src/contracts/TaskSama.json
 .env
+
+# Backend
+backend/uploads/

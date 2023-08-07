@@ -5,3 +5,5 @@
 - disconnect button not working (setup cookie system)
 - implement transaction confirmaton waiting time.
 - add spinning animation
+- test the transaction.wait() receipt with payable functions
+- fix spinning on participate in case of rejected transaction

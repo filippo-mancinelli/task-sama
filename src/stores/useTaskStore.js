@@ -53,7 +53,8 @@ export const useTaskStore = defineStore('api', {
         //fetch NFT metadata from blockchain
         async fetchTasksMetadata() { 
                 const promise = useConnectionStore().callContractFunction("Tasks", "_getTasks").then(response => {
-                    const modifiedMetadata = response.map(task => {
+                    const { result } = response;
+                    const modifiedMetadata = result.map(task => {
                         return {
                             ...task,
                             tokenId: parseInt(task.tokenId),

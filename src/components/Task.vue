@@ -8,6 +8,7 @@ import { useArgStore } from '../stores/useArgStore';
 import { usePopupStore } from '../stores/usePopupStore';
 import { useTaskStore } from '../stores/useTaskStore';
 import axios from 'axios';
+import { pop } from '@metamask/jazzicon/colors';
 
 const connectionStore = useConnectionStore();
 const argStore = useArgStore();
@@ -22,6 +23,7 @@ const props = defineProps([
   'participants',
   'isParticipanting'
 ]);
+const isLoading = ref(false);
 const showModal1 = ref(false);
 const showModal2 = ref(false);
 const modalType = ref('');
@@ -39,31 +41,39 @@ function openModal() {
 }
 
 function participateTask() {
+  if(isLoading.value === true) {
+    popupStore.setPopup(true, 'alert', 'Wait for the current participation request to finish', 'modal');
+    return;
+  }
   if(argStore.getArguments.file.size == 0) { 
     popupStore.setPopup(true, 'danger', 'You must upload a valid video to participate', 'modal');
     return;
   } else if(!connectionStore.isConnected){
-     popupStore.setPopup(true, 'alert', 'You need to connect your wallet first', 'modal');
-  } else {
-    //before updating the task NFT with the participation we upload the user video + tokenId to our server for moderation purposes
-    useTaskStore().uploadVideoToDB(argStore.arguments.fileData.file, props.tokenId).then(() => {
-      connectionStore.callContractFunction('Tasks', 'participate', '', [props.tokenId])
-        .then(response => {
-          modalType.value = 'success';
-          message.value = 'You sent your participation!';
-          showModal2.value = true;
-          showModal1.value = false;
-
-          emit('sentParticipation'); 
-        })
-        .catch(error => {
-          console.log("error",error)
-          modalType.value = 'danger';
-          message.value = 'Error sending participation: ' + error.data.message;
-          showModal2.value = true;
-        } );
-    });
+     popupStore.setPopup(true, 'warning', 'You need to connect your wallet first', 'modal');
+     return;
   }
+  isLoading.value = true;
+  //before updating the task NFT with the participation we upload the user video + tokenId to our server for moderation purposes
+  useTaskStore().uploadVideoToDB(argStore.arguments.fileData.file, props.tokenId).then(() => {
+    connectionStore.callContractFunction('Tasks', 'participate', 'stateChanging', [props.tokenId])
+      .then(response => {
+        const { transactionReceipt } = response;
+        isLoading.value = false;
+        modalType.value = 'success';
+        message.value = 'You sent your participation!';
+        showModal2.value = true;
+        showModal1.value = false;
+
+        emit('sentParticipation'); 
+      })
+      .catch(error => {
+        console.log("error",error)
+        isLoading.value = false;
+        modalType.value = 'danger';
+        message.value = 'Error sending participation: ' + error.data.message;
+        showModal2.value = true;
+      } );
+  });
 }
 </script>
 
@@ -103,9 +113,9 @@ function participateTask() {
 
       <div class="card-actions justify-between">
         <div class="italic truncate">Reward:<span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
-        <label v-if="!isParticipanting" @click="openModal" class="btn btn-primary w-30 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
+        <label v-if="!isParticipanting" @click="openModal" class="btn btn-primary pr-1 pl-4 w-30 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
           Participate
-          <HandRaisedIcon class="h-6 w-6 pl-2" />
+          <HandRaisedIcon class="h-6 w-6 pl-2 -translate-x-2" />
         </label>
         <label v-else class="btn btn-primary w-30 bg-orange-700 border-1 border-black hover:cursor-default ">
           Participating
@@ -125,9 +135,10 @@ function participateTask() {
       </div>
       <FileUpload :upload-type="'video'" />
       <div class="flex flex-col items-end">
-      <label @click="participateTask" class="btn btn-primary w-25 bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
+      <label @click="participateTask" class="btn btn-primary pr-1 pl-4 w-25 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
             Participate
-            <HandRaisedIcon class="h-6 w-6 pl-2" />
+            <HandRaisedIcon v-if="!isLoading" class="h-6 w-6 pl-2 -translate-x-2" />
+            <span v-else class="loading loading-ring loading-md -translate-x-1"></span>
       </label>
       </div>
 
@@ -135,7 +146,7 @@ function participateTask() {
   </Modal>
 
   <Modal @close-modal="showModal2 = false" :showModal="showModal2" :modalType="modalType">
-  <template v-slot:content> {{ message }}</template>
+    <template v-slot:content> {{ message }}</template>
   </Modal>
 </template>
 

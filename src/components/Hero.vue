@@ -123,7 +123,7 @@ onMounted(() => {
         <p class="text-lg sm:text-xl typewriter" id="first-typer">Create your task and offer a reward for users</p>
         <p class="text-lg sm:text-xl typewriter inline-block second-typer" style="max-width: 23rem;" v-if="showSecondTyper"> to incentivize them solving your task.</p>
       </div>
-      <label @click="openModal" class="btn btn-primary bg-orange-400 border-orange-400 hover:bg-orange-600 hover:border-black">Create your task</label>
+      <label @click="openModal" class="btn btn-primary text-white bg-orange-400 border-orange-400 hover:bg-orange-600 hover:border-black">Create your task</label>
     </div>
   </div>
 </div>
