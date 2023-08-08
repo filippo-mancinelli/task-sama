@@ -1,9 +1,11 @@
 - if i create an NFT not from the website but via raw SC, the DB is not updated with the like mapping which causes the breaking of the homepage view.
-- add spin animation when submitting participation video.
-- show success modal only when transaction confirmed.
-- when disconnecting the status of wallet does not change
 - disconnect button not working (setup cookie system)
-- implement transaction confirmaton waiting time.
-- add spinning animation
 - test the transaction.wait() receipt with payable functions
-- fix spinning on participate in case of rejected transaction
+- remove winner address from task Struct on SC since the task is deleted after the winner is chosen
+- change data structure also for taskSama contract NFTs
+- fix truffle mess
+
+x fix spinning on participate in case of rejected transaction
+x add spinning animation
+x when disconnecting the status of wallet does not change
+x show success modal only when transaction confirmed.

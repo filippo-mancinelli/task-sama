@@ -5,7 +5,8 @@ import axios from 'axios';
 
 export const useTaskStore = defineStore('api', {
     state: () => ({
-        tasksMetadata: [] //fetch from blockchain
+        tasksMetadata: [], //fetch from blockchain
+        userMetadata: {}
     }),
 
     actions: {
@@ -68,6 +69,24 @@ export const useTaskStore = defineStore('api', {
                 return promise;
         },
 
+        //fetch user activity on-chain about tasks TODO
+        fetchUserMetadata() {  
+            const promise = useConnectionStore().callContractFunction("TaskSama", "getVideos").then(response => {
+                const { result } = response;
+                const modifiedMetadata = result.map(video => {
+                    return {
+                        ...video,
+                        tokenId: parseInt(task.tokenId),
+                        reward: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(task.reward))).toFixed(2)
+                    }
+                });
+                this.tasksMetadata = modifiedMetadata;
+                
+                return this.tasksMetadata;
+            });
+            return promise;
+        },
+
         //fetch task image from DB
         fetchTaskImages() {
             const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTaskImages').then(response => {
@@ -77,11 +96,6 @@ export const useTaskStore = defineStore('api', {
             });
             return promise;
         },
-
-
-
-
-
 
     }
 })

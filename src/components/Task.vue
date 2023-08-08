@@ -117,7 +117,7 @@ function participateTask() {
           Participate
           <HandRaisedIcon class="h-6 w-6 pl-2 -translate-x-2" />
         </label>
-        <label v-else class="btn btn-primary w-30 bg-orange-700 border-1 border-black hover:cursor-default ">
+        <label v-else class="btn btn-primary w-30 text-white bg-orange-700 border-1 border-black hover:cursor-default ">
           Participating
           <ClockIcon class="h-6 w-6 pl-2" />
         </label>

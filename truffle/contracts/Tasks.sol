@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity ^0.8.1;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 interface ITasksSamaContract {
-    function mintVideoNFT(address recipient, address creator, string calldata title, string calldata description, string calldata ipfsUrl, uint256 rewardEarned, address[] calldata participants) external returns (uint256);
+    function mintVideoNFT(address winner, address creator, string calldata title, string calldata description, string calldata ipfsUrl, uint256 rewardEarned, address[] calldata participants) external returns (uint256);
 }
 
 contract Tasks is ERC721, Ownable {

@@ -454,7 +454,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "recipient",
+        "name": "winner",
         "type": "address"
       },
       {

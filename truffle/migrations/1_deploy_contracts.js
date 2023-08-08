@@ -2,6 +2,13 @@ const TaskSama = artifacts.require("TaskSama");
 const Tasks = artifacts.require("Tasks");
 
 module.exports = async function (deployer) {
+  // Give test funds to your metamask account
+  const accounts = await web3.eth.getAccounts()
+  const sender = accounts[9]
+  const receiver = "0xA2385363b4e4B33d31bEB12FF1a350A9e37a6195"
+  const amount = web3.utils.toWei("400", "ether")
+  await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
+
   // Deploy TaskSama
   await deployer.deploy(TaskSama);
   const tasksama = await TaskSama.deployed();
@@ -23,7 +30,6 @@ module.exports = async function (deployer) {
 
 
   // participate to tasks with various accounts
-  const accounts =  await web3.eth.getAccounts();
   await tasks.participate(1, {from: accounts[9]});
   await tasks.participate(2, {from: accounts[1]});
   await tasks.participate(3, {from: accounts[2]});
@@ -54,8 +60,8 @@ module.exports = async function (deployer) {
 
 /*
 //contract instances
-const tasksama = await TaskSama.at("0xA05B016848B87a9D4DA298B19263B8E8Ad13755f");
-const tasks = await Tasks.at("0x938CEa6063B34D4A58f8F2D2a18Bc9b05E4C63a9");
+const tasksama = await TaskSama.at("0xFb802674358DE05573720Ea2fAFB1A8BF88bBb8e");
+const tasks = await Tasks.at("0x501dBbc69Ef8EB7982e310C8f0E1Ff61b4E7F131");
 
 //test send funds
 const accounts = await web3.eth.getAccounts()
