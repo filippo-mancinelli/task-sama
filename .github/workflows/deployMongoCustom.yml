@@ -57,6 +57,6 @@ jobs:
             echo "${PASSWORD}" | sudo -S docker stop ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker pull crosta/ts-mongo:latest
-            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 27117:27117 -v /home/carl/data/db:/data/db -f /etc/mongod.conf crosta/ts-mongo:latest
+            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 27117:27117 -v /home/carl/data/db:/data/db --config /etc/mongod.conf crosta/ts-mongo:latest
 
 
