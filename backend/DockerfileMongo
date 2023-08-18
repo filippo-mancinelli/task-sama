@@ -3,6 +3,8 @@ FROM mongo
 
 # ATTENTION: The build context is specified in deployMongoCustom.yml workflow file on github which is /backend/mongoDB. 
 # This is why the Copy command below use directly mongod.conf. read more about it on https://hub.docker.com/_/mongo
+# Right now this is not needed. A better approach is to copy the mongod.conf file from the repo into the server, and 
+# Start the container with the --config flag pointing to the host machine conf file.
 
 # Copy the custom configuration file to the container
 COPY mongod.conf /etc/mongod.conf
