@@ -19,5 +19,5 @@ jobs:
             CONTAINER_NAME="mongo"
             echo "${PASSWORD}" | sudo -S docker stop ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
-            echo "${PASSWORD}" | sudo docker run -d -p 27117:27017 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db -v /home/carl/configurations/mongod.conf:/etc/mongod.conf mongo:latest
+            echo "${PASSWORD}" | sudo docker run -d -p 27117:27017 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db -v /home/carl/configurations/mongod.conf:/etc/mongod.conf mongo:latest --auth
             
