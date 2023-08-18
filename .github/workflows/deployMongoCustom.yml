@@ -54,6 +54,7 @@ jobs:
           port: 22
           source: "./backend/mongoDB/mongod.conf"
           target: "/home/carl/configurations/"
+          strip_components: 2
 
       - name: Replace container
         uses: appleboy/ssh-action@v0.1.10
