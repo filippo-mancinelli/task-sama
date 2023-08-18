@@ -1,5 +1,6 @@
 # Official MongoDB image as the base image
 FROM mongo
 
+# ATTENTION: The build context is specified in deployMongoCustom.yml workflow file on github which is /backend/mongoDB. this is why the Copy command below use directly mongod.conf
 # Copy the custom configuration file to the container
-COPY mongoDB/mongod.conf /etc/mongod.conf
+COPY mongod.conf /etc/mongod.conf
