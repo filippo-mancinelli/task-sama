@@ -39,7 +39,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./backend/mongoDB
           push: true
           file: ./backend/DockerfileMongo
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ts-mongo:latest
