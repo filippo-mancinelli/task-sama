@@ -2,7 +2,6 @@
 import { useConnectionStore } from './stores/useConnectionStore';
 import { onMounted } from 'vue';
 import Navbar from './components/Navbar.vue'
-import Home from './components/Home.vue';
 import Popup from './components/widgets/Popup.vue';
 
 const connectionStore = useConnectionStore();
@@ -17,10 +16,12 @@ onMounted(() => {
 <template>
   <div id="app" class="bg-background-image z-10">
     <Navbar />
+    <Popup />
 
-      <Popup />
-      <Home />
-  </div>
+    <router-view>
+    </router-view>
+
+</div>
 </template>
 
 <style scoped>

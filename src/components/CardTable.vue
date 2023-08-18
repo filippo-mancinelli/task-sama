@@ -79,7 +79,6 @@ async function like(tokenId, likeValue, walletAddress) {
 
 function getCurrentLikeCount(tokenId) {
   if(likesMetadata.value != null) {
-    console.log("likesMetadata.value",likesMetadata.value)
     return likesMetadata.value.get(tokenId).likeCount;
   }
 }

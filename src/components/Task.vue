@@ -7,8 +7,6 @@ import { useConnectionStore } from '../stores/useConnectionStore';
 import { useArgStore } from '../stores/useArgStore';
 import { usePopupStore } from '../stores/usePopupStore';
 import { useTaskStore } from '../stores/useTaskStore';
-import axios from 'axios';
-import { pop } from '@metamask/jazzicon/colors';
 
 const connectionStore = useConnectionStore();
 const argStore = useArgStore();

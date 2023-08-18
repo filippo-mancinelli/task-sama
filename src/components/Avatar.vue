@@ -61,7 +61,7 @@
       </label>
 
       <!--DROPDOWN CONTENT-->
-      <div tabindex="0" class="dropdown-content z-[1] top-15 card card-compact p-2 shadow drop-shadow-xl text-white bg-orange-500" style="right: -9rem;">
+      <div tabindex="0" class="dropdown-content z-[1] top-15 card card-compact p-2 shadow drop-shadow-xl text-white bg-orange-500 -right-3" >
         <div class="card-body p-2 ">
 
           <div class="flex flex-col gap-1">
