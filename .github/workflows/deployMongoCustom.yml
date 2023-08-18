@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: "backend/mongoDB/mongod.conf"
+          source: "./backend/mongoDB/mongod.conf"
           target: "/home/carl/configurations/"
 
       - name: Replace container
