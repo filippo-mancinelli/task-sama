@@ -1,0 +1,5 @@
+# Official MongoDB image as the base image
+FROM mongo
+
+# Copy the custom configuration file to the container
+COPY ./mongoDB/mongod.conf /etc/mongod.conf

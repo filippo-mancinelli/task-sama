@@ -50,8 +50,7 @@ module.exports = async function (deployer) {
   await tasks.chooseWinner(5, accounts[6], 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4');
   
   // check 
-  //console.log(await tasksama.getVideos())
-  console.log(await tasks._getTasks())
+  console.log(await tasksama.getVideos())
 
   console.log("tasks: ", tasks.address)
   console.log("tasksama: ", tasksama.address)
