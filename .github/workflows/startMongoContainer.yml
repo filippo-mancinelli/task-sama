@@ -17,6 +17,6 @@ jobs:
           script: |
             PASSWORD="${{ secrets.VPS_PASSWORD }}"
             CONTAINER_NAME="mongo"
-            echo "${PASSWORD}" | sudo -S docker run -d -p 27117:27117 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db mongo:latest --config /etc/mongod.conf
+            echo "${PASSWORD}" | sudo -S docker run -d -p 27117:27117 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db -v /home/carl/configurations/mongod.conf:/etc/mongod.conf mongo:latest
 
             
