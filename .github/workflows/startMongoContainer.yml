@@ -1,13 +1,13 @@
-name: Restart mongo container remotely
+name: Start mongo container remotely
 on:
   workflow_dispatch:
 
 jobs:
-  restart:
+  start_mongo:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Restart container
+      - name: Start mongo container
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -17,8 +17,6 @@ jobs:
           script: |
             PASSWORD="${{ secrets.VPS_PASSWORD }}"
             CONTAINER_NAME="mongo"
-            echo "${PASSWORD}" | sudo -S docker stop ${CONTAINER_NAME} || true
-            echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
-            echo "${PASSWORD}" | sudo docker run -d -p 27117:27117 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db mongo:latest --config /etc/mongod.conf
+            echo "${PASSWORD}" | sudo -S docker run -d -p 27117:27117 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db mongo:latest --config /etc/mongod.conf
 
             
