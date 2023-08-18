@@ -1,0 +1,22 @@
+name: Start mongo container remotely
+on:
+  workflow_dispatch:
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Start mongo container
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            PASSWORD="${{ secrets.VPS_PASSWORD }}"
+            CONTAINER_NAME="mongo"
+            echo "${PASSWORD}" | sudo docker run -d -p 27117:27117 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db --config /etc/mongod.conf mongo:latest
+
+            
