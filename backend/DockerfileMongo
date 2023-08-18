@@ -2,4 +2,4 @@
 FROM mongo
 
 # Copy the custom configuration file to the container
-COPY ./mongoDB/mongod.conf /etc/mongod.conf
+COPY mongoDB/mongod.conf /etc/mongod.conf
