@@ -53,7 +53,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: ./backend/mongoDB/mongod.conf
-          target: /etc/mongod.conf
+          target: /home/carl/configurations/mongod.conf
 
       - name: Replace container
         uses: appleboy/ssh-action@v0.1.10
@@ -68,6 +68,6 @@ jobs:
             echo "${PASSWORD}" | sudo -S docker stop ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker pull crosta/ts-mongo:latest
-            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 27117:27117 -v /home/carl/data/db:/data/db crosta/ts-mongo:latest --config /etc/mongod.conf
+            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 27117:27117 -v /home/carl/data/db:/data/db crosta/ts-mongo:latest --config /home/carl/configurations/mongod.conf
 
 
