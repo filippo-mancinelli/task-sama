@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  restart:
+  start_mongo:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,6 +17,6 @@ jobs:
           script: |
             PASSWORD="${{ secrets.VPS_PASSWORD }}"
             CONTAINER_NAME="mongo"
-            echo "${PASSWORD}" | sudo docker run -d -p 27117:27117 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db --config /etc/mongod.conf mongo:latest
+            echo "${PASSWORD}" | sudo -S docker run -d -p 27117:27117 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db --config /etc/mongod.conf mongo:latest
 
             
