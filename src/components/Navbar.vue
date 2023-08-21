@@ -1,6 +1,5 @@
 <script setup>
 import { useConnectionStore } from '../stores/useConnectionStore'
-import { computed } from '@vue/reactivity';
 import Avatar from './Avatar.vue';
 
 const connectionStore = useConnectionStore();
@@ -17,7 +16,7 @@ const connectionStore = useConnectionStore();
   <div class="flex-1 border-solid border-2 border-black rounded-full bg-orange-100">
     <a class="btn btn-ghost normal-case text-2xl">Task Sama</a>
     <ul class="menu menu-horizontal px-1">
-      <li class="hidden md:block"><a href="#home" class=" hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out">Home</a></li>
+      <li class="hidden md:block"><router-link to="/" class=" hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out">Home</router-link></li>
       <li class="hidden md:block"><a href="#tasks" class="hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out">Tasks</a></li>
     </ul>
 

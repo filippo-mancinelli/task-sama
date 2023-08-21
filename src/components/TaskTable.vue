@@ -73,6 +73,11 @@ async function refreshTasksMetadata() {
   tasks.value = await taskStore.fetchTasksMetadata();
 }
 
+//Define callback function for event listeners for updating columns on screen resize 
+const resizeEventListener = function(event){
+  screenSizeColumns.value = calculateColumnNumber();
+};
+
 onMounted(() => {
   //fetchTasksMetadata
   watch(() => connectionStore.tasksInstance, async (instance) => {
@@ -95,13 +100,11 @@ onMounted(() => {
   });
 
   //listeners for updating columns 
-  window.addEventListener('resize', function(event){
-    screenSizeColumns.value = calculateColumnNumber();
-  });
+  window.addEventListener('resize', resizeEventListener);
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize')
+  window.removeEventListener('resize', resizeEventListener);
 });
 
 </script>

@@ -8,9 +8,9 @@ import _ from 'lodash';
 
 const videoStore = useVideoStore();
 const connectionStore = useConnectionStore();
-
 const { videoMetadata: cards } = storeToRefs(videoStore);
 const likesMetadata = storeToRefs(videoStore);
+console.log("likesMetadata.value",likesMetadata.value)
 
 const searchQuery = ref("");
 const sortOrder = ref("id");
@@ -72,23 +72,33 @@ const screenSizeColumns =  ref(calculateColumnNumber());
 //####### LIKES ########
 const { like: updatelike } = useVideoStore();
 
+// We are using computed properties to make the card Like count reactive, because using a normal call function in the template won't cause a re-render of the component.
+// Look into https://vuejs.org/guide/essentials/computed.html#basic-example
+const getCurrentLikeCount = computed(() => (tokenId) => {
+  if(likesMetadata.value != null && likesMetadata.value != undefined) {
+    return likesMetadata.value.get(tokenId).likeCount;
+  }
+}); 
+
+const getCurrentIsLiked = computed(() => (tokenId) => {
+  if(likesMetadata.value != null && likesMetadata.value != undefined) {
+    return likesMetadata.value.get(tokenId).isLiked;
+  }
+});
+
 async function like(tokenId, likeValue, walletAddress) {
     cards.value.find(element => element.tokenId === tokenId).likeCount = await updatelike(tokenId, likeValue, walletAddress); //updateLike takes care of updating likesMetadata store values
     likesMetadata.value.get(tokenId).isLiked = likeValue;
 }
 
-function getCurrentLikeCount(tokenId) {
-  if(likesMetadata.value != null) {
-    return likesMetadata.value.get(tokenId).likeCount;
-  }
-}
 
-function getCurrentIsLiked(tokenId) {
-  return likesMetadata.value.get(tokenId).isLiked;
-}
+//Define callback function for event listeners for updating columns on screen resize 
+const resizeEventListener = function(event){
+  screenSizeColumns.value = calculateColumnNumber();
+};
 
 onMounted(async () => {
-  //fetch videos metadata
+  //fetch videos metadata on-chain
   watch(() => connectionStore.tasksamaInstance, async (instance) => {
     if(instance != null) {
       cards.value = await videoStore.initVideoMetadata(); 
@@ -97,18 +107,17 @@ onMounted(async () => {
 
   //we need to execute the first time, then every wallet change
   likesMetadata.value = await videoStore.initLikes(connectionStore.walletAddress ? connectionStore.walletAddress : undefined);
+  console.log("likesMetadata.value2",likesMetadata.value)
+
   watch(() => connectionStore.walletAddress, async (walletAddress) => {
     likesMetadata.value = await videoStore.initLikes(walletAddress ? walletAddress : undefined);
   });
 
-  //listeners for updating columns 
-  window.addEventListener('resize', function(event){
-    screenSizeColumns.value = calculateColumnNumber();
-  });
+  window.addEventListener('resize', resizeEventListener);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize')
+  window.removeEventListener('resize', resizeEventListener);
 });
 
 </script>

@@ -1,7 +1,7 @@
 <script setup>
 import { useConnectionStore } from './stores/useConnectionStore';
 import { onMounted } from 'vue';
-import Navbar from './components/Navbar.vue'
+import Navbar from './components/Navbar.vue';
 import Popup from './components/widgets/Popup.vue';
 
 const connectionStore = useConnectionStore();
@@ -20,7 +20,6 @@ onMounted(() => {
 
     <router-view>
     </router-view>
-
 </div>
 </template>
 
