@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, computed, onMounted, defineProps, onBeforeUnmount, watch } from 'vue';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { storeToRefs } from 'pinia';
@@ -9,8 +9,6 @@ import _ from 'lodash';
 const videoStore = useVideoStore();
 const connectionStore = useConnectionStore();
 const { videoMetadata: cards } = storeToRefs(videoStore);
-const likesMetadata = storeToRefs(videoStore);
-console.log("likesMetadata.value",likesMetadata.value)
 
 const searchQuery = ref("");
 const sortOrder = ref("id");
@@ -75,20 +73,20 @@ const { like: updatelike } = useVideoStore();
 // We are using computed properties to make the card Like count reactive, because using a normal call function in the template won't cause a re-render of the component.
 // Look into https://vuejs.org/guide/essentials/computed.html#basic-example
 const getCurrentLikeCount = computed(() => (tokenId) => {
-  if(likesMetadata.value != null && likesMetadata.value != undefined) {
-    return likesMetadata.value.get(tokenId).likeCount;
+  if(videoStore.likesMetadata != null && videoStore.likesMetadata != undefined) {
+    return videoStore.likesMetadata.get(tokenId).likeCount;
   }
 }); 
 
 const getCurrentIsLiked = computed(() => (tokenId) => {
-  if(likesMetadata.value != null && likesMetadata.value != undefined) {
-    return likesMetadata.value.get(tokenId).isLiked;
+  if(videoStore.likesMetadata != null && videoStore.likesMetadata != undefined) {
+    return videoStore.likesMetadata.get(tokenId).isLiked;
   }
 });
 
 async function like(tokenId, likeValue, walletAddress) {
     cards.value.find(element => element.tokenId === tokenId).likeCount = await updatelike(tokenId, likeValue, walletAddress); //updateLike takes care of updating likesMetadata store values
-    likesMetadata.value.get(tokenId).isLiked = likeValue;
+    videoStore.likesMetadata.get(tokenId).isLiked = likeValue;
 }
 
 
@@ -105,12 +103,9 @@ onMounted(async () => {
     }
   });
 
-  //we need to execute the first time, then every wallet change
-  likesMetadata.value = await videoStore.initLikes(connectionStore.walletAddress ? connectionStore.walletAddress : undefined);
-  console.log("likesMetadata.value2",likesMetadata.value)
-
+  //every wallet change we update the mapping of which videos the new wallet liked 
   watch(() => connectionStore.walletAddress, async (walletAddress) => {
-    likesMetadata.value = await videoStore.initLikes(walletAddress ? walletAddress : undefined);
+    videoStore.likesMetadata = await videoStore.initLikes(walletAddress ? walletAddress : undefined);
   });
 
   window.addEventListener('resize', resizeEventListener);

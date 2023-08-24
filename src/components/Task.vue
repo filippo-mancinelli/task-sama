@@ -19,7 +19,7 @@ const props = defineProps([
   'description',
   'reward',
   'participants',
-  'isParticipanting'
+  'isParticipating'
 ]);
 const isLoading = ref(false);
 const showModal1 = ref(false);
@@ -84,10 +84,11 @@ function participateTask() {
         <div class="badge badge-secondary">NEW</div>
       </h2>
       <p class="italic truncate">{{ description }}</p>
-      <div class="flex">
-        <p class="italic truncate">Participanting: <span class="pl-1 text-xs">{{ participants[0] }}</span></p>
 
-        <!--DROPDOWN-->
+      <div class="flex">
+        <p class="italic truncate">Participating: <span class="pl-1 text-xs">{{ participants[0] }}</span></p>
+
+        <!--DROPDOWN SEARCHBAR-->
         <div class="dropdown">
           <label tabindex="0" class="hover:cursor-pointer" ><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg></label> 
           <div tabindex="0" class="dropdown-content z-[1] card card-compact right-1 shadow border-2 border-black bg-white text-black rounded p-1">
@@ -111,7 +112,7 @@ function participateTask() {
 
       <div class="card-actions justify-between">
         <div class="italic truncate">Reward:<span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
-        <label v-if="!isParticipanting" @click="openModal" class="btn btn-primary pr-1 pl-4 w-30 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
+        <label v-if="!isParticipating" @click="openModal" class="btn btn-primary pr-1 pl-4 w-30 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
           Participate
           <HandRaisedIcon class="h-6 w-6 pl-2 -translate-x-2" />
         </label>

@@ -1,9 +1,8 @@
 <script setup>
-import { getCurrentInstance, ref, watch, onMounted, defineEmits } from 'vue';
-import { useVideoStore } from '../stores/useVideoStore';
+import { getCurrentInstance, ref, watch, onMounted, defineEmits, nextTick } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
-import { storeToRefs } from 'pinia';
 import { usePopupStore } from '../stores/usePopupStore';
+import { PlayCircleIcon } from "@heroicons/vue/24/solid"
 
 //TODO: txhash, address, like/dislike,
 const emit = defineEmits(['like'])
@@ -63,13 +62,13 @@ async function fetchIPFSVideo() {
 }
 
 
-onMounted(() => {
+onMounted(async () => {
   fetchIPFSVideo();
 
   //execute it the first time and then keep watching for user connection state to enable/disable like button
-  setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 200)
+  setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 300)
   watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
-    setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 200)
+    setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 300)
   });
 });
 
@@ -95,6 +94,10 @@ onMounted(() => {
       <p class="italic truncate">Winner:  <span class="pl-1 text-xs">{{ winnerAddress }}</span></p> 
       <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ rewardEarned }} GLMR</span></p> 
       <div class="flex items-center justify-end pt-3">
+        <router-link :to="'/video/' + props.tokenId" class="btn absolute left-4 btn-primary text-white bg-orange-400 border-orange-400 hover:bg-orange-600 hover:border-black ">
+          watch
+          <PlayCircleIcon class="h-6 w-6 hover:cursor-pointer" /> 
+        </router-link>
         <lottie-player class="relative h-8 resize left-4 bottom-0.5 align-top" ref="lottiePlayer" src="src/assets/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;"></lottie-player>
         <div class="absolute hover:cursor-pointer h-7 w-7 mr-9"  @click="likeButton"></div> <!-- hitbox for click -->
         <span>{{ likeCount }}</span>

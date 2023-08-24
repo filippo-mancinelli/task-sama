@@ -109,7 +109,7 @@ contract Tasks is ERC721, Ownable {
         Task[] memory allTasks = new Task[](_tokenIdCounter.current());
     
         uint256 validTaskCount = 0;
-        for (uint256 i = 0; i < _tokenIdCounter.current(); i++) {
+        for (uint256 i = 0; i <= _tokenIdCounter.current(); i++) {
             if (_taskExists(i)) {
                 allTasks[validTaskCount] = tasks[i];
                 validTaskCount++;

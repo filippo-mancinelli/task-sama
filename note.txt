@@ -6,6 +6,8 @@
 - videos tokenId stars from 1 (wrong?)
 - Task and Tasksama using different data structure for NFTs (array vs mapping)
 - Header remaining when going to a random wrong route
+- Add navigation guards
+
 
 x fix truffle mess
 x fix spinning on participate in case of rejected transaction
