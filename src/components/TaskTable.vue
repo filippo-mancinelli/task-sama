@@ -2,7 +2,6 @@
 import { ref, watch, computed, onMounted, onBeforeUnmount, toRefs } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useTaskStore } from '../stores/useTaskStore'
-import { storeToRefs } from 'pinia';
 import Task from './Task.vue';
 import _ from 'lodash';
 
@@ -79,7 +78,6 @@ const resizeEventListener = function(event){
 };
 
 onMounted(() => {
-  //fetchTasksMetadata
   watch(() => connectionStore.tasksInstance, async (instance) => {
     if(instance != null) {
       await refreshTasksMetadata();
@@ -89,10 +87,10 @@ onMounted(() => {
   watch(() => tasks.value, () => {
     if (connectionStore.walletAddress != null && connectionStore.tasksInstance != null) {
       tasks.value.forEach((task) => {
-        task.isParticipanting = false;
+        task.isParticipating = false;
         for (let i = 0; i < task.participants.length; i++) {
           if(task.participants[i] == connectionStore.walletAddress) {
-            task.isParticipanting = true;
+            task.isParticipating = true;
           }
         }
       });
@@ -136,7 +134,7 @@ onBeforeUnmount(() => {
           :description="task.description"
           :reward="task.reward"
           :participants="task.participants"
-          :isParticipanting="task.isParticipanting"
+          :isParticipating="task.isParticipating"
           @sentParticipation="() => refreshTasksMetadata()"
           class="bg-white text-black"
         />

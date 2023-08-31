@@ -20,7 +20,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="app" class="z-10 h-screen" :class="backgroundStore.backgroundClass">
+  <div id="app" class="z-10" :class="[backgroundStore.backgroundClass, backgroundStore.backgroundClass === 'bg-background-image' ? 'h-full' : 'h-screen']">
     <Navbar />
     <Popup />
 

@@ -1,11 +1,60 @@
 const TaskSama = artifacts.require("TaskSama");
 const Tasks = artifacts.require("Tasks");
+const fs = require('fs');
+const AddressesFilePath = '../src/helpers/contractAddresses.js';
+const sourceTasksABIpath = './build/contracts/Tasks.json';
+const sourceTasksamaABIpath = './build/contracts/TaskSama.json';
+const targetTasksABIpath = '../src/helpers/TasksABI.json';
+const targetTasksamaABIpath = '../src/helpers/TasksamaABI.json';
+
+function updateAddresses(taskAdd, tasksamaAdd) {
+  try {
+    const data = fs.readFileSync(AddressesFilePath, 'utf8');
+    console.log('Original data:', data);
+    
+    const updatedContent = data
+      .replace(/tasksAddress = '.+'/g, `tasksAddress = '${taskAdd}'`)
+      .replace(/tasksamaAddress = '.+'/g, `tasksamaAddress = '${tasksamaAdd}'`);
+    console.log('Updated content:', updatedContent);
+  
+    fs.writeFileSync(AddressesFilePath, updatedContent, 'utf8');
+    console.log('Addresses updated successfully.');
+  } catch (err) {
+    console.error('Error updating addresses:', err);
+  }
+}
+
+function replaceContractsABI() {
+  try {
+    // Read the source JSON file
+    const sourceTasksABI = fs.readFileSync(sourceTasksABIpath, 'utf8');
+    const sourceTasksamaABI = fs.readFileSync(sourceTasksamaABIpath, 'utf8');
+    const sourceTasksObject = JSON.parse(sourceTasksABI);
+    const sourceTasksamaObject = JSON.parse(sourceTasksamaABI);
+  
+    // Extract the desired value from the source object
+    const tasksABI = sourceTasksObject.abi; 
+    const tasksamaABI = sourceTasksamaObject.abi; 
+  
+    // Create a new JSON object with the copied value
+    const targetTasksABI = { abi: tasksABI };    
+    const targetTasksamaABI = { abi: tasksamaABI };
+  
+    // Write the new JSON object to the target JSON file
+    fs.writeFileSync(targetTasksABIpath, JSON.stringify(targetTasksABI, null, 2), 'utf8');
+    fs.writeFileSync(targetTasksamaABIpath, JSON.stringify(targetTasksamaABI, null, 2), 'utf8');
+  
+    console.log('Value copied successfully.');
+  } catch (err) {
+    console.error('Error copying value:', err);
+  }
+}
 
 module.exports = async function (deployer) {
   // Give test funds to your metamask account
   const accounts = await web3.eth.getAccounts()
   const sender = accounts[9]
-  const receiver = "0xA2385363b4e4B33d31bEB12FF1a350A9e37a6195"
+  const receiver = "0x9f62F799bac42A660d1F240a5BFa7Fa54B8Bf0Df"
   const amount = web3.utils.toWei("400", "ether")
   await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
 
@@ -50,10 +99,15 @@ module.exports = async function (deployer) {
   await tasks.chooseWinner(5, accounts[6], 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4');
   
   // check 
-  console.log(await tasksama.getVideos())
+  //console.log(await tasksama.getVideos())
 
+  console.log("########### WRITE CONTRACT INSTANCES ADDRESSES #############")
+  updateAddresses(tasks.address, tasksama.address)
   console.log("tasks: ", tasks.address)
   console.log("tasksama: ", tasksama.address)
+
+  console.log("########### REPLACE CONTRACT INSTANCES ABI #############")
+  replaceContractsABI();
 
 };
 

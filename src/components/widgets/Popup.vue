@@ -11,7 +11,7 @@ watch(() => popupStore.showPopup, (newValue, oldValue) => {
     if(popupStore.showPopup){
       setTimeout(() => {
         popupStore.setPopup(false, '', '', 'noModal');
-      }, 5000);
+      }, 50000);
     }
 });
 </script>

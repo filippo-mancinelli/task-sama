@@ -32,7 +32,7 @@ export const useVideoStore = defineStore('videoNFTs', {
                 return this.videoMetadata;
         },
 
-         //fetch total likes per video, an array of wallets who liked it, and the status (isLiked). Then check for each video 
+         //fetch total likes per video, an array of wallets who liked it, and the status (isLiked)
         async initLikes(walletAddress) {
             const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/initLikes', {walletAddress}).then(response => { 
                 response.data.data.forEach(video => {

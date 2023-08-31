@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { Web3Provider } from '@ethersproject/providers';
-import { networkConfigs } from '../helpers/networks';
+import { tasksAddress, tasksamaAddress } from '../helpers/contractAddresses';
 import { defineStore } from 'pinia'
 import { watch, markRaw  } from 'vue';
 import TasksABI from "../helpers/TasksABI.json";
@@ -13,11 +13,11 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         provider: null,
         signer: null,
         walletAddress: null,
-        isConnected: false,
-        tasksABI: TasksABI,
-        tasksamaABI: TasksamaABI,
-        tasksAddress: "0x1328E60775100d6835eC97924f784F1eDa99FbAB", // ganache generated
-        tasksamaAddress: "0x82C08e4049FF893Ee49F9A38d7847995606DF1C1", //ganache generated
+        isConnected: !localStorage.getItem('disconnectPreference') === 'true',
+        tasksABI: TasksABI.abi,
+        tasksamaABI: TasksamaABI.abi,
+        tasksAddress: tasksAddress, // ganache generated
+        tasksamaAddress: tasksamaAddress, //ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
         isAllSetUp: false
@@ -36,27 +36,30 @@ export const useConnectionStore = defineStore('metamaskConnection', {
     actions: {
       async initConnectionWatcher() {
         await this.setProvider(); //in any case we need a provider (ganache or infura)
-
         watch(
           () => this.isConnected,
           async (newValue) => {
             await this.setProvider();
             
             if(newValue == true) {
-              await this.setSigner();
-              await this.setWalletAddress();
+              if(localStorage.getItem('disconnectPreference') === 'false') {
+                await this.setSigner();
+                await this.setWalletAddress();
+              } else {
+                this.isConnected = false;
+              }
             }
             this.setAllSetUp()
           });
         
         if(this.hasMetamask()){
-
-          window.ethereum.on('accountsChanged', (accounts) => {
-            if (accounts.length > 0) {
+          window.ethereum.on('accountsChanged', async (accounts) => {
+            if (accounts.length > 0 && localStorage.getItem('disconnectPreference') === 'false') {
               this.isConnected = true;
             } else {
               this.isConnected = false;
               this.walletAddress = null;
+              await this.setProvider();
             }
           });        
         } 
@@ -75,14 +78,16 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       },
       
       async connect() {
-        if(!this.isConnected) {
-          if(this.hasMetamask()){
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            await this.setProvider();
-            await this.setSigner();
-            await this.setWalletAddress();  
-          }
-        } 
+        if(this.hasMetamask()){
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          await this.setProvider();
+          await this.setSigner();
+          await this.setWalletAddress();  
+          this.isConnected = true;
+          localStorage.setItem('disconnectPreference', 'false');
+        } else {
+          console.log("install metamask!")
+        }
       },
 
       async disconnect() {
@@ -92,6 +97,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
             this.walletAddress = null;
             await this.setProvider();
             await this.setSigner();
+            localStorage.setItem('disconnectPreference', 'true')
           }
         }
       },
