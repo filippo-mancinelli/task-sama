@@ -1,15 +1,21 @@
 <script setup>
     import { useConnectionStore } from '../stores/useConnectionStore'
     import { computed } from '@vue/reactivity';
-    import { ref, onMounted, onUnmounted, watch, getCurrentInstance } from 'vue';
+    import { ref, onMounted, watch, getCurrentInstance } from 'vue';
     import { UserIcon  } from '@heroicons/vue/24/solid';
+    import { useTaskStore } from '../stores/useTaskStore';
+    import { useVideoStore } from '../stores/useVideoStore';
 
-    const { ctx } = getCurrentInstance();
+    const videoStore = useVideoStore();
+    const taskStore = useTaskStore();
     const connectionStore = useConnectionStore();
     const isConnected = computed(() => { return connectionStore.isConnected});
     const avatarImgHtml1 = ref('');
     const avatarImgHtml2 = ref('');
     const showDropdown = ref(false);
+    const listed = ref('');
+    const participated = ref('');
+    const won = ref('');
 
     function toggleDropdown() {
       if (showDropdown.value) {
@@ -22,18 +28,36 @@
       }
     }
 
-      function handleDropdownOutsideClick(event) {
-        const dropdownElement = document.querySelector('.dropdown');
-        const targetElement = event.target;
+    function handleDropdownOutsideClick(event) {
+      const dropdownElement = document.querySelector('.dropdown');
+      const targetElement = event.target;
 
-        if (!dropdownElement.contains(targetElement)) {
-          showDropdown.value = false;
-        } else {
-          document.activeElement.focus();
-        }
+      if (!dropdownElement.contains(targetElement)) {
+        showDropdown.value = false;
+      } else {
+        document.activeElement.focus();
       }
+    }
+
+    function setUserTasksData() {
+      if(videoStore.videoMetadata != null && videoStore.videoMetadata != undefined && taskStore.tasksMetadata != null && taskStore.tasksMetadata != undefined && connectionStore.walletAddress) {
+        won.value = videoStore.videoMetadata.filter(metadata => metadata.winner == connectionStore.walletAddress).length;
+        
+        listed.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress).length;
+
+        participated.value = taskStore.tasksMetadata.filter(metadata => {
+            const isParticipant = metadata.participants.some(participant => participant === connectionStore.walletAddress);
+            return isParticipant;
+        }).length;
+
+      }
+    }
 
     onMounted(() => {
+      watch(() => videoStore.isDataReady, (ready) => {
+        if(ready) setUserTasksData();
+      })
+
       watch(() => connectionStore.isAllSetUp, (newValue, oldValue) => {
         if(newValue == true) {
           const seed = Math.round(Math.random() * 10000000);
@@ -47,7 +71,6 @@
           document.removeEventListener('click', handleDropdownOutsideClick);
         }
       });
-
     });
 
 </script>
@@ -70,9 +93,9 @@
               <div v-html="avatarImgHtml2" class=""></div>
               <h5 class="card-title text-sm mb-0">{{ connectionStore.walletAddress }}</h5>
             </div>
-            <p>Tasks listed:</p>
-            <p>Tasks participated: </p>
-            <p>Tasks won:</p>
+            <p>Tasks listed: {{ listed }}</p>
+            <p>Tasks participated: {{ participated }}</p>
+            <p>Tasks won: {{ won }}</p>
             <div class="flex gap-2">
               <router-link to="/profile" @click="toggleDropdown" class="btn btn-warning flex-grow mt-1 text-white"> <UserIcon class="h-6 w-6" /> Profile</router-link>
               <button @click="connectionStore.disconnect" class="btn btn-warning flex-grow px-2 mt-1 text-white"> 

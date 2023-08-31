@@ -5,7 +5,8 @@ import { defineStore } from 'pinia'
 import { watch, markRaw  } from 'vue';
 import TasksABI from "../helpers/TasksABI.json";
 import TasksamaABI from "../helpers/TasksamaABI.json";
-import jazzicon from "@metamask/jazzicon"
+import jazzicon from "@metamask/jazzicon";
+import axios from 'axios';
 
 export const useConnectionStore = defineStore('metamaskConnection', {
 
@@ -45,12 +46,17 @@ export const useConnectionStore = defineStore('metamaskConnection', {
               if(localStorage.getItem('disconnectPreference') === 'false') {
                 await this.setSigner();
                 await this.setWalletAddress();
+                axios.defaults.headers.common['X-Wallet-Address'] = this.walletAddress;
               } else {
                 this.isConnected = false;
               }
             }
             this.setAllSetUp()
           });
+
+        watch(() => this.walletAddress, (address)=> {
+          axios.defaults.headers.common['X-Wallet-Address'] = address;
+        });
         
         if(this.hasMetamask()){
           window.ethereum.on('accountsChanged', async (accounts) => {

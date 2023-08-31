@@ -8,6 +8,7 @@ export const useVideoStore = defineStore('videoNFTs', {
     state: () => ({
         videoMetadata: [], //fetch from blockchain
         likesMetadata: new Map(), //fetch from backend
+        isDataReady: false //just a flag used by components to watch metadata to be defined or not empty
     }),
 
     getters: {
@@ -30,6 +31,10 @@ export const useVideoStore = defineStore('videoNFTs', {
                 });
                 this.videoMetadata = modifiedMetadata;
                 return this.videoMetadata;
+        },
+
+        async getParticipantsVideos() {
+            //const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/getParticipantsVideos', {})
         },
 
          //fetch total likes per video, an array of wallets who liked it, and the status (isLiked)

@@ -101,6 +101,7 @@ const resizeEventListener = function(event){
 async function refreshMetadata() {
   cards.value = await videoStore.initVideoMetadata();  //fetch videos metadata on-chain
   videoStore.likesMetadata = await videoStore.initLikes(connectionStore.walletAddress ? connectionStore.walletAddress : null); // Fetch likes metadata from backend. If we pass "null", the backend will respond with the like count but with isLiked false for every video
+  if(cards.value.length > 0 && videoStore.likesMetadata.size > 0) videoStore.isDataReady = true;
 } 
 
 onMounted(async () => {

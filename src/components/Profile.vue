@@ -5,7 +5,6 @@ import { useConnectionStore } from '../stores/useConnectionStore';
 import { useTaskStore } from '../stores/useTaskStore';
 import { ref, onMounted, watch } from 'vue';
 import { PlayCircleIcon } from "@heroicons/vue/24/solid"
-import Modal from './widgets/Modal.vue';
 
 const connectionStore = useConnectionStore();
 const videoStore = useVideoStore();

@@ -1,2 +1,4 @@
-export const tasksAddress = '0xE1fA511C165C976ddAeFB77251c4F4a5671bA8A4';
-export const tasksamaAddress = '0xb08F13343D904F1ECE22b85Ef0920b7aBca1439C';
+export const tasksAddress = '0x21256114889d25221c845a8d3253DaebB6caB981';
+export const tasksamaAddress = '0x8709946C0bB42C4CdA6C3DdDc9C8724487DC6cFD';
+
+//0x614c23cc9306df4cef0424cff117fdab331353d2b24a87139b98fc0620e94c0b

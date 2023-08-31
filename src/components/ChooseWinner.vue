@@ -1,22 +1,25 @@
-<script>
-import Task from './Task.vue';
+<script setup>
+import { useBackgroundStore } from '../stores/useBackgroundStore';
+import { useVideoStore } from '../stores/useVideoStore';
+import { useConnectionStore } from '../stores/useConnectionStore';
+import { useTaskStore } from '../stores/useTaskStore';
+import { ref, onMounted } from 'vue';
+
+
+const connectionStore = useConnectionStore();
+const videoStore = useVideoStore();
+const taskStore = useTaskStore();
+const backgroundStore = useBackgroundStore();
+backgroundStore.changeBackgroundClass('bg-teal-200');
+
+onMounted(async ()=> {
+  
+});
+
 </script>
 
 <template>
-  <div id="cards" class="my-8 content-center">
-    <p class="text-center text-4xl font-bold text-black drop-shadow-lg drop-shadow-orange-500">Choose a winner 🏆</p>
-  </div>
-
-  <Task
-    :tokenId="task.tokenId"
-    :title="task.title"
-    :description="task.description"
-    :reward="task.reward"
-    :participants="task.participants"
-    :isParticipanting="task.isParticipanting"
-    @sentParticipation="() => refreshTasksMetadata()"
-    class="bg-white text-black"
-    />
+sdas
 </template>
 
 <style>

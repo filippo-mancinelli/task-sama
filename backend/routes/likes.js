@@ -15,7 +15,6 @@ router.post('/initLikes', async (ctx, next) => {
       const collection = db.collection('likes');
       const walletAddress = ctx.request.body.walletAddress;
       const documents = await collection.find({}, {projection: {_id: 0, tokenId: 1, likes: 1, likeWallets: 1}}).toArray();
-      console.log("walletAddress",walletAddress)
       
       documents.forEach(video => {
         video["isLiked"] = false; //"push" a new attribute to the object

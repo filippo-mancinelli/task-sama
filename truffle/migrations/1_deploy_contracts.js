@@ -54,7 +54,7 @@ module.exports = async function (deployer) {
   // Give test funds to your metamask account
   const accounts = await web3.eth.getAccounts()
   const sender = accounts[9]
-  const receiver = "0x9f62F799bac42A660d1F240a5BFa7Fa54B8Bf0Df"
+  const receiver = "0x2178BA9B2EF2d9b0d10C4eA913A15E7F4A3D2911"
   const amount = web3.utils.toWei("400", "ether")
   await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
 

@@ -12,12 +12,12 @@ const fs = require('fs');
 */
 router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
   if (ctx.request.path === '/uploadVideoToDB') {
-    console.log("\n ####################################### \n '/uploadVideoToDB' \n ####################################### \n ");
-    console.log("\n ####################################### \n", ctx.request.file, "\n ####################################### \n ");
+    console.log("\n ####################################### \n '/uploadVideoToDB' " + new Date() + "\n ####################################### \n ");
 
     const video = ctx.request.file; 
-    const tokenId = ctx.request.body.tokenId;
-
+    const taskId = ctx.request.body.tokenId;
+    const walletAddress = ctx.headers['x-wallet-address'];
+    console.log("walletAddress",walletAddress)
     try {
       // Rename file
       const oldFilePath = 'uploads/videos/' + video.filename;
@@ -42,9 +42,58 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
         path: newFilePath,
         uploadDate: formattedDate,
         size: video.size,
-        tokenId: tokenId,
-        likes: 0,
-        likeWallets: [],
+        taskId: taskId,
+        senderAddress: walletAddress
+      };
+
+      await collection.insertOne(videoData);
+      console.log("doc inserted");
+
+      ctx.body = {
+        message: 'Video uploaded and saved successfully.',
+        data: videoData,
+      };
+    } catch (error) {
+      ctx.throw(500, 'Failed to upload and save the video.', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
+
+/* 
+###############################################################
+################### getParticipantsVideos #####################
+############################################################### 
+*/
+router.get('/getParticipantsVideos', async (ctx, next) => {
+  if (ctx.request.path === '/getParticipantsVideos') { 
+    console.log("\n ####################################### \n '/getParticipantsVideos' \n ####################################### \n ");
+
+    const walletAddress = ctx.headers['X-Wallet-Address'];
+
+    const video = ctx.request.file; 
+    const tokenId = ctx.request.body.tokenId;
+
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('videos');
+      
+      const currentDate = new Date();
+      const formattedDate = formatDateToString(currentDate);
+
+      // Insert the video information into the "videos" collection
+      const videoData = {
+        name: video.originalname,
+        path: newFilePath,
+        uploadDate: formattedDate,
+        size: video.size,
       };
 
       await collection.insertOne(videoData);
