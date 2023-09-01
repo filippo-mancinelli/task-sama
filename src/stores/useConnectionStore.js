@@ -14,6 +14,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         provider: null,
         signer: null,
         walletAddress: null,
+        accounts: [],
         isConnected: !localStorage.getItem('disconnectPreference') === 'true',
         tasksABI: TasksABI.abi,
         tasksamaABI: TasksamaABI.abi,
@@ -60,6 +61,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         
         if(this.hasMetamask()){
           window.ethereum.on('accountsChanged', async (accounts) => {
+            this.accounts = accounts;
             if (accounts.length > 0 && localStorage.getItem('disconnectPreference') === 'false') {
               this.isConnected = true;
             } else {
@@ -74,6 +76,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       async checkConnection() {
         if (this.hasMetamask()) {
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          this.accounts = accounts;
           this.isConnected = accounts.length > 0;
           await this.setProvider();
           await this.setSigner();
@@ -106,6 +109,10 @@ export const useConnectionStore = defineStore('metamaskConnection', {
             localStorage.setItem('disconnectPreference', 'true')
           }
         }
+      },
+
+      changeAccount() {
+
       },
       
       hasMetamask() {

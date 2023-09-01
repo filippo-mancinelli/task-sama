@@ -18,6 +18,7 @@ const showModal = ref(false);
 const showModalResult = ref(false);
 const modalType = ref('');
 const message = ref('');
+const isLoading = ref(false);
 const showAreaError = ref(false);
 const showInputError = ref(false);
 const showTokenError = ref(false);
@@ -46,6 +47,7 @@ function createTask() {
     if(argStore.getArguments.numberInput == '' || argStore.getArguments.numberInput < 10) 
       showTokenError.value = true;
   } else if(connectionStore.isConnected) {
+     isLoading.value = true;
      const {file, numberInput: _reward, textInput: _title, textArea: _description} = argStore.getArguments;
      connectionStore.callContractFunction('Tasks', 'createTask', 'payable', [_title,  _description ], _reward.toString())
       .then(response => {
@@ -53,6 +55,7 @@ function createTask() {
         message.value = 'Task created successfully!';
         showModalResult.value = true;
         showModal.value = false;
+        isLoading.value = false;
         
         //after the task NFT is created and if the user uploaded an image, we upload it to our DB for moderation reasons
         taskStore.uploadImageToDB();
@@ -61,6 +64,7 @@ function createTask() {
         modalType.value = 'danger';
         message.value = 'Error creating task: ' + error;
         showModalResult.value = true;
+        isLoading.value = false;
         console.log("errore Nella creazione del task: ", error)
       } );
   } else {
@@ -101,9 +105,9 @@ onMounted(() => {
     </div>
 
     <div class="flex justify-center">
-      <button @click="createTask" class="btn bg-orange-400 mt-2 w-40">
-        <!-- <svg class="animate-spin h-5 w-5 mr-3 fill-current text-white " viewBox="0 0 24 24"> </svg> -->
-        Create
+      <button @click="createTask" class="btn mt-2 w-40 bg-orange-400 text-white">
+        <span v-if="!isLoading">Create</span>
+        <span v-else class="loading loading-ring loading-md -translate-x-1"></span>
       </button>
 
     </div>
