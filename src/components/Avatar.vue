@@ -5,17 +5,22 @@
     import { UserIcon  } from '@heroicons/vue/24/solid';
     import { useTaskStore } from '../stores/useTaskStore';
     import { useVideoStore } from '../stores/useVideoStore';
+    import { useArgStore } from '../stores/useArgStore';
     import Modal from './widgets/Modal.vue';
     import Selector from './widgets/Selector.vue'
 
+    const argStore = useArgStore();
     const videoStore = useVideoStore();
     const taskStore = useTaskStore();
     const connectionStore = useConnectionStore();
     const isConnected = computed(() => { return connectionStore.isConnected});
     const avatarImgHtml1 = ref('');
     const avatarImgHtml2 = ref('');
+
     const showDropdown = ref(false);
     const showModal = ref(false);
+    const changeButtonState = ref(false);
+
     const listed = ref('');
     const participated = ref('');
     const won = ref('');
@@ -43,10 +48,11 @@
       }
     }
 
-    function setUserTasksData() {
+    function refreshUserData() {
       if(videoStore.videoMetadata != null && videoStore.videoMetadata != undefined && taskStore.tasksMetadata != null && taskStore.tasksMetadata != undefined && connectionStore.walletAddress) {
+        // ### TASKS OVERVIEW ### //
         won.value = videoStore.videoMetadata.filter(metadata => metadata.winner == connectionStore.walletAddress).length;
-        
+        console.log("won.value",won.value)
         listed.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress).length;
 
         participated.value = taskStore.tasksMetadata.filter(metadata => {
@@ -54,6 +60,10 @@
             return isParticipant;
         }).length;
 
+        // ### CONNECTED ACCOUNTS LIST ### //
+        filteredAccounts.value = connectionStore.accounts.filter(account => {
+            return account.toLowerCase() !== connectionStore.walletAddress.toLowerCase();
+        });
       }
     }
 
@@ -61,17 +71,29 @@
       showModal.value = true;
     }
 
+    function setChangeButtonState() {
+      changeButtonState.value = argStore.getArguments.selector == 'Choose one of your accounts' ? false : true;
+    }
+
     function changeAccount() {
-      connectionStore.changeAccount();
+      if(changeButtonState.value) {
+        connectionStore.changeAccount(argStore.getArguments.selector).then(()=>{
+          refreshUserData();
+        });  
+        showModal.value = false;
+      }
+    }
+
+    function connectMoreAccounts() {
+      connectionStore.connect().then(() => {
+        refreshUserData();
+      });
     }
 
     onMounted(() => {
       watch(() => videoStore.isDataReady, (ready) => {
         if(ready) {
-          setUserTasksData();
-          filteredAccounts.value = connectionStore.accounts.filter(account => {
-            return account.toLowerCase() !== connectionStore.walletAddress.toLowerCase();
-          });
+          refreshUserData();
         } 
       })
 
@@ -136,6 +158,7 @@
     <!-- MODAL - CHANGE ACCOUNT -->
     <Modal @close-modal="showModal = false" :showModal="showModal" :modalType="''">
       <template v-slot:title>Change your account</template>
+
       <template v-slot:content>
         <div class="mb-2">
           <span class="text-lg italic">👤Current account: </span>
@@ -143,15 +166,18 @@
         </div>
         <div class="flex flex-col gap-1 mb-2">
           <span class="text-lg italic">🔂 Change to: </span>
-          <Selector :optionsArray="filteredAccounts" :defaultText="'Choose one of your accounts'" />
+          <Selector :optionsArray="filteredAccounts" :defaultText="'Choose one of your accounts'" @selection-changed="setChangeButtonState()" />
         </div>
-        <div class="flex flex-col items-end">
-          <label @click="changeAccount" class="btn btn-primary pr-1 pl-4 w-25 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
+        <div class="flex gap-4 items-end">
+          <label @click="changeAccount" class="btn btn-primary pr-1 pl-4 w-25 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black" :class="{'bg-orange-600 cursor-default': !changeButtonState}">
                 Change
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
           </label>
+          <label @click="connectMoreAccounts" class="btn btn-primary pr-1 pl-4 w-25 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black">
+                Connect more accounts
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+          </label>
         </div>
-
       </template>
     </Modal>
 </template>

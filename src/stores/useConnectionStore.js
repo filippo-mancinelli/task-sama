@@ -88,7 +88,14 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       
       async connect() {
         if(this.hasMetamask()){
-          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          await window.ethereum.request({
+            method: "wallet_requestPermissions",
+            params: [
+              {
+                eth_accounts: {}
+              }
+            ]
+          });
           await this.setProvider();
           await this.setSigner();
           await this.setWalletAddress();  
@@ -111,8 +118,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         }
       },
 
-      changeAccount() {
-
+      async changeAccount(newAddress) {
+        this.walletAddress = newAddress;
       },
       
       hasMetamask() {
@@ -166,7 +173,9 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         }
       },
 
-      async callContractFunction(contractName, functionName, functionType, params, eth) {        
+      async callContractFunction(contractName, functionName, functionType, params, eth) {    
+        console.log(this.signer.getAddress())
+
         let result;
         let transactionReceipt;
         if(contractName == "TaskSama") {

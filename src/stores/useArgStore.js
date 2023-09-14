@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 export const useArgStore = defineStore('arguments', {
 
     state: () => ({
-        //similar hashMap
         arguments: {  }
     }),
 
