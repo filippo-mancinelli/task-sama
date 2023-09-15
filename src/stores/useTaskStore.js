@@ -51,24 +51,37 @@ export const useTaskStore = defineStore('api', {
 
         // ###### TASKS ####### //
 
-        //fetch NFT metadata from blockchain
+        // Fetch the list of tasks NFT metadata from blockchain
         async fetchTasksMetadata() { 
-                const promise = useConnectionStore().callContractFunction("Tasks", "_getTasks").then(response => {
-                    const { result } = response;
-                    const modifiedMetadata = result.map(task => {
-                        return {
-                            ...task,
-                            tokenId: parseInt(task.tokenId),
-                            reward: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(task.reward))).toFixed(2)
-                        }
-                    });
-                    this.tasksMetadata = modifiedMetadata;
-                    return this.tasksMetadata;
+            const promise = useConnectionStore().callContractFunction("Tasks", "_getTasks").then(response => {
+                const { result } = response;
+                const modifiedMetadata = result.map(task => {
+                    return {
+                        ...task,
+                        tokenId: parseInt(task.tokenId),
+                        reward: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(task.reward))).toFixed(2)
+                    }
                 });
-                return promise;
+                this.tasksMetadata = modifiedMetadata;
+                return this.tasksMetadata;
+            });
+            return promise;
         },
 
-        //fetch user activity on-chain about tasks TODO
+        //fetch a single task NFT metadata from blockchain
+        async fetchTaskMetadata(tokenId) {
+            // We need to convert a number to a BigNumber in order to pass it as a parameter to a smart contract function
+            const taskId = ethers.BigNumber.from(tokenId).toString(); 
+            const promise = useConnectionStore().callContractFunction("Tasks", "_getTask", "", [taskId]).then(response => {
+                response.tokenId = parseInt(response.tokenId),
+                response.reward = parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(response.reward))).toFixed(2)
+                console.log("RESPONSE",response)
+                return response;
+            });
+            return promise;
+        },
+
+        // Fetch user activity on-chain about tasks TODO
         fetchUserMetadata() {  
             const promise = useConnectionStore().callContractFunction("TaskSama", "getVideos").then(response => {
                 const { result } = response;

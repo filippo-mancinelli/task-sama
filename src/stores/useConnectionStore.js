@@ -174,8 +174,6 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       },
 
       async callContractFunction(contractName, functionName, functionType, params, eth) {    
-        console.log(this.signer.getAddress())
-
         let result;
         let transactionReceipt;
         if(contractName == "TaskSama") {

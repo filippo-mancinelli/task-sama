@@ -52,7 +52,7 @@
       if(videoStore.videoMetadata != null && videoStore.videoMetadata != undefined && taskStore.tasksMetadata != null && taskStore.tasksMetadata != undefined && connectionStore.walletAddress) {
         // ### TASKS OVERVIEW ### //
         won.value = videoStore.videoMetadata.filter(metadata => metadata.winner == connectionStore.walletAddress).length;
-        console.log("won.value",won.value)
+
         listed.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress).length;
 
         participated.value = taskStore.tasksMetadata.filter(metadata => {
@@ -66,6 +66,8 @@
         });
       }
     }
+
+    /* //#### ACCOUNT CHANGES FUNCTIONALITY ON HOLD, NOT POSSIBLE NOW FOR METAMASK ACCOUNT DESIGN ####//
 
     function openModal() {
       showModal.value = true;
@@ -89,7 +91,8 @@
         refreshUserData();
       });
     }
-
+    
+    */
     onMounted(() => {
       watch(() => videoStore.isDataReady, (ready) => {
         if(ready) {
@@ -136,12 +139,14 @@
             <p>Tasks participated: {{ participated }}</p>
             <p>Tasks won: {{ won }}</p>
 
-            <div class="flex flex-col">
+
+          <div class="flex flex-col">
+              <!--
               <button @click="openModal" class="btn btn-warning flex-grow px-2 mt-1 text-white"> 
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
                   Change Account
               </button>
-
+              -->
               <div class="flex gap-2">
                 <router-link to="/profile" @click="toggleDropdown" class="btn btn-warning flex-grow mt-1 text-white"> <UserIcon class="h-6 w-6" /> Profile</router-link>
                 <button @click="connectionStore.disconnect" class="btn btn-warning flex-grow px-2 mt-1 text-white"> 
@@ -155,7 +160,9 @@
       </div>
     </div>
 
-    <!-- MODAL - CHANGE ACCOUNT -->
+    <!-- NOT POSSIBLE BECAUSE OF METAMASK ACCOUNTS DESIGN  -->
+
+    <!-- MODAL - CHANGE ACCOUNT 
     <Modal @close-modal="showModal = false" :showModal="showModal" :modalType="''">
       <template v-slot:title>Change your account</template>
 
@@ -180,6 +187,7 @@
         </div>
       </template>
     </Modal>
+    -->
 </template>
 
 <style scoped>
