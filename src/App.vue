@@ -11,16 +11,12 @@ const backgroundStore = useBackgroundStore();
 onMounted(() => {
       connectionStore.initConnectionWatcher();
       connectionStore.checkConnection();
-
-      watch(() => {
-
-      })
 });
 
 </script>
 
 <template>
-  <div id="app" class="z-10" :class="[backgroundStore.backgroundClass, backgroundStore.backgroundClass === 'bg-background-image' ? 'h-full' : 'h-screen']">
+  <div id="app" class="z-10" :class="backgroundStore.backgroundClass">
     <Navbar />
     <Popup />
 

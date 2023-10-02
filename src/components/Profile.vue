@@ -10,7 +10,7 @@ const connectionStore = useConnectionStore();
 const videoStore = useVideoStore();
 const taskStore = useTaskStore();
 const backgroundStore = useBackgroundStore();
-backgroundStore.changeBackgroundClass('bg-orange-50');
+backgroundStore.changeBackgroundClass('bg-orange-50 h-screen');
 
 
 const selected = ref('created');

@@ -78,10 +78,10 @@ onMounted(async () => {
 <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
   <!-- video player -->
   <div class="video-container" @mouseenter="showControls = true" @mouseleave="showControls = false">
-  <div class="video-wrapper">
-    <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
+    <div class="video-wrapper">
+      <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
+    </div>
   </div>
-</div>
 
   <div class="card-body gap-1 p-5">
     <h2 class="card-title">

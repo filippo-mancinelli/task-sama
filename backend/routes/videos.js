@@ -5,6 +5,7 @@ const multer = require('@koa/multer');
 const upload = multer({ dest: "uploads/videos" }); 
 const fs = require('fs');
 
+
 /* 
 ###############################################################
 ####################### uploadVideoToDB #######################
@@ -17,12 +18,15 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
     const video = ctx.request.file; 
     const taskId = ctx.request.body.tokenId;
     const walletAddress = ctx.headers['x-wallet-address'];
-    console.log("walletAddress",walletAddress)
+   
     try {
-      // Rename file
-      const oldFilePath = 'uploads/videos/' + video.filename;
-      const newFilePath = './uploads/videos/' + video.originalname;
-      fs.rename(oldFilePath, newFilePath, (err) => {
+      const dir = `./uploads/videos/${taskId}/${walletAddress}`;
+      if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      const tempFilePath = 'uploads/videos/' + video.filename;
+      const newFilePath = `uploads/videos/${taskId}/${walletAddress}/` + video.originalname;
+      fs.rename(tempFilePath, newFilePath, (err) => {
         if (err) {
           console.error('Error renaming file:', err);
         } else {
@@ -104,6 +108,53 @@ router.get('/getParticipantsVideos', async (ctx, next) => {
       };
     } catch (error) {
       ctx.throw(500, 'Failed to upload and save the video.', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
+
+/* 
+###############################################################
+################### getParticipantVideo #####################
+############################################################### 
+*/
+router.get('/getParticipantVideo', async (ctx, next) => {
+  if (ctx.request.path === '/getParticipantVideo') { 
+    console.log("\n ####################################### \n '/getParticipantVideo' \n ####################################### \n ");
+
+    const participantAddress = ctx.request.query.participantAddress;
+    const tokenId = ctx.request.query.tokenId;
+
+    let videoData;
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('videos');
+      const video = await collection.findOne({ 'taskId': tokenId, 'senderAddress': participantAddress });
+      console.log("video.path", video.path);
+
+      const filePath = video.path
+      console.log('Looking for: ',filePath)
+      if (fs.existsSync(filePath)) {
+        videoData = fs.readFileSync(filePath);
+        console.log('Found!')
+      } else {
+        ctx.throw(404, 'Video not found');
+      }
+      
+      ctx.type = 'video/mp4';
+      ctx.body = {
+        message: 'Video retrieved successfully.',
+        data: videoData,
+      };
+    } catch (error) {
+      ctx.throw(500, 'Failed to retrieve video.', error);
     }
   }
   await next();

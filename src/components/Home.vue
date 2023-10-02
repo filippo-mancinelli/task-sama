@@ -5,7 +5,7 @@ import TaskTable from './TaskTable.vue';
 import { useBackgroundStore } from '../stores/useBackgroundStore';
 
 const backgroundStore = useBackgroundStore();
-backgroundStore.changeBackgroundClass('bg-background-image');
+backgroundStore.changeBackgroundClass('bg-background-image h-full');
 
 
 </script>

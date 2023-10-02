@@ -5,17 +5,22 @@ import { useTaskStore } from '../stores/useTaskStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
 
 let route;
-const tokenId = ref(0)
+const taskObject = ref({})
 
 onMounted(() => {
     route = useRoute();
-    tokenId.value = route.params.tokenId;
+    taskObject.value.tokenId = route.params.tokenId;
 
+    if(useConnectionStore().isAllSetUp) {
+        taskObject.value = useTaskStore().fetchTaskMetadata(taskObject.value.tokenId);
+    }
     watch(() => useConnectionStore().isAllSetUp, (newValue, oldValue) => {
         if(newValue) {
-            console.log(useTaskStore().fetchTaskMetadata(tokenId.value))
+            taskObject.value = useTaskStore().fetchTaskMetadata(taskObject.value.tokenId);
         }
     });
+
+    console.log("taskObject", taskObject.value)
 })
 
 </script>

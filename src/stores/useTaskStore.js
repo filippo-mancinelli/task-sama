@@ -73,9 +73,8 @@ export const useTaskStore = defineStore('api', {
             // We need to convert a number to a BigNumber in order to pass it as a parameter to a smart contract function
             const taskId = ethers.BigNumber.from(tokenId).toString(); 
             const promise = useConnectionStore().callContractFunction("Tasks", "_getTask", "", [taskId]).then(response => {
-                response.tokenId = parseInt(response.tokenId),
-                response.reward = parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(response.reward))).toFixed(2)
-                console.log("RESPONSE",response)
+                response.tokenId = tokenId;
+                response.reward = parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(response.result.reward))).toFixed(2);
                 return response;
             });
             return promise;

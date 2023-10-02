@@ -173,7 +173,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         }
       },
 
-      async callContractFunction(contractName, functionName, functionType, params, eth) {    
+      async callContractFunction(contractName, functionName, functionType, params, eth) {
         let result;
         let transactionReceipt;
         if(contractName == "TaskSama") {
@@ -195,7 +195,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
             result = await this.tasksInstance[functionName](...(params ? [...params] : []), { value: ethers.utils.parseEther(eth) });
             transactionReceipt = await result.wait();
             console.log("transactionReceipt",transactionReceipt);
-          } 
+          }
           else {
             result = await this.tasksInstance[functionName](...(params ? [...params] : []));
             if(functionType=="stateChanging") {
@@ -204,7 +204,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
             }
           }
         }
-        
+
         return { result, transactionReceipt} 
       },
 
