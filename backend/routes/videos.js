@@ -73,55 +73,6 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
 
 /* 
 ###############################################################
-################### getParticipantsVideos #####################
-############################################################### 
-*/
-router.get('/getParticipantsVideos', async (ctx, next) => {
-  if (ctx.request.path === '/getParticipantsVideos') { 
-    console.log("\n ####################################### \n '/getParticipantsVideos' \n ####################################### \n ");
-
-    const walletAddress = ctx.headers['X-Wallet-Address'];
-
-    const video = ctx.request.file; 
-    const tokenId = ctx.request.body.tokenId;
-
-    try {
-      const db = await connectToDatabase();
-      const collection = db.collection('videos');
-      
-      const currentDate = new Date();
-      const formattedDate = formatDateToString(currentDate);
-
-      // Insert the video information into the "videos" collection
-      const videoData = {
-        name: video.originalname,
-        path: newFilePath,
-        uploadDate: formattedDate,
-        size: video.size,
-      };
-
-      await collection.insertOne(videoData);
-
-      ctx.body = {
-        message: 'Video uploaded and saved successfully.',
-        data: videoData,
-      };
-    } catch (error) {
-      ctx.throw(500, 'Failed to upload and save the video.', error);
-    }
-  }
-  await next();
-
-  if (ctx.status === 404) {
-    ctx.body = {
-      message: 'Not found',
-    };
-  }
-});
-
-
-/* 
-###############################################################
 ################### getParticipantVideo #####################
 ############################################################### 
 */
