@@ -35,10 +35,11 @@ function previous() {
 
 async function fetchBackendVideo(tokenId, participantAddress) {
   const response = await videoStore.getParticipantVideo(tokenId, participantAddress);
-  console.log("res",response.data.data.data)
-  const blob = new Blob([response.data.data.data], { type: 'video/mp4' });
-  videoPlayer.value.src = URL.createObjectURL(blob);
+  const videoBlob = new Blob([response.data], { type: 'video/mp4' });
+  videoPlayer.value.src = URL.createObjectURL(videoBlob);
 }
+
+
 
 onMounted(async ()=> {
     //#### TASK METADATA FETCH ####//
@@ -78,6 +79,7 @@ onMounted(async ()=> {
         <div class="card-body">
             <h2 class="card-title">#{{ taskObject.tokenId }} - {{ taskObject.result.title }} </h2>
             <p>{{ taskObject.result.description }}</p>
+            <p>Participants: {{ participants.length }}</p>
             
 
             <div class="card-actions flex justify-between">
@@ -120,8 +122,6 @@ onMounted(async ()=> {
     </div>
 
 </div>
-
-
 </template>
 
 <style>

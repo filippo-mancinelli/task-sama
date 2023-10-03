@@ -38,7 +38,7 @@ export const useVideoStore = defineStore('videoNFTs', {
         },
 
         async getParticipantVideo(tokenId, participantAddress) {
-            const promise = axios.get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getParticipantVideo?tokenId=${tokenId}&participantAddress=${participantAddress}`);
+            const promise = axios .get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getParticipantVideo?tokenId=${tokenId}&participantAddress=${participantAddress}`, { responseType: 'arraybuffer', })
             return promise;
         },
 

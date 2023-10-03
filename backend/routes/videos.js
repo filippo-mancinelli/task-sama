@@ -4,6 +4,7 @@ const router = new Router();
 const multer = require('@koa/multer');
 const upload = multer({ dest: "uploads/videos" }); 
 const fs = require('fs');
+const { PassThrough } = require('stream'); 
 
 
 /* 
@@ -24,6 +25,7 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
       if (!fs.existsSync(dir)){
         fs.mkdirSync(dir, { recursive: true });
       }
+
       const tempFilePath = 'uploads/videos/' + video.filename;
       const newFilePath = `uploads/videos/${taskId}/${walletAddress}/` + video.originalname;
       fs.rename(tempFilePath, newFilePath, (err) => {
@@ -83,27 +85,32 @@ router.get('/getParticipantVideo', async (ctx, next) => {
     const participantAddress = ctx.request.query.participantAddress;
     const tokenId = ctx.request.query.tokenId;
 
-    let videoData;
     try {
       const db = await connectToDatabase();
       const collection = db.collection('videos');
       const video = await collection.findOne({ 'taskId': tokenId, 'senderAddress': participantAddress });
       console.log("video.path", video.path);
 
-      const filePath = video.path
-      console.log('Looking for: ',filePath)
+      const filePath = video.path;
+
       if (fs.existsSync(filePath)) {
-        videoData = fs.readFileSync(filePath);
-        console.log('Found!')
+        // Create a readable stream from the file
+        const fileStream = fs.createReadStream(filePath);
+
+        // Set the response type to 'video/mp4'
+        ctx.type = 'video/mp4';
+
+        // Create a PassThrough stream to pass data to the response
+        const passThroughStream = new PassThrough();
+
+        // Pipe the file stream to the PassThrough stream
+        fileStream.pipe(passThroughStream);
+
+        // Set the response body to the PassThrough stream
+        ctx.body = passThroughStream;
       } else {
         ctx.throw(404, 'Video not found');
       }
-      
-      ctx.type = 'video/mp4';
-      ctx.body = {
-        message: 'Video retrieved successfully.',
-        data: videoData,
-      };
     } catch (error) {
       ctx.throw(500, 'Failed to retrieve video.', error);
     }
@@ -116,7 +123,6 @@ router.get('/getParticipantVideo', async (ctx, next) => {
     };
   }
 });
-
 /* 
 ###############################################################
 ############################ UTILS ############################
