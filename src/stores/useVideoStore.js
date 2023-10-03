@@ -33,15 +33,6 @@ export const useVideoStore = defineStore('videoNFTs', {
                 return this.videoMetadata;
         },
 
-        async getParticipantsVideos() {
-            //const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/getParticipantsVideos', {})
-        },
-
-        async getParticipantVideo(tokenId, participantAddress) {
-            const promise = axios .get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getParticipantVideo?tokenId=${tokenId}&participantAddress=${participantAddress}`, { responseType: 'arraybuffer', })
-            return promise;
-        },
-
          //fetch total likes per video, an array of wallets who liked it, and the status (isLiked)
         async initLikes(walletAddress) {
             const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/initLikes', {walletAddress}).then(response => { 

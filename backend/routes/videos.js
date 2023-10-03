@@ -5,6 +5,19 @@ const multer = require('@koa/multer');
 const upload = multer({ dest: "uploads/videos" }); 
 const fs = require('fs');
 const { PassThrough } = require('stream'); 
+const { FilebaseClient, File } = require('@filebase/client');
+const filebaseClient = new FilebaseClient({ token: process.env.FILEBASE_API_TOKEN });
+require('dotenv').config();
+
+// HELIA/IPFS NODE SETUP 
+let createHelia;
+let helia;
+(async () => {
+  const heliaModule = await import('helia');
+  createHelia = heliaModule.createHelia;
+  helia = await createHelia();
+  console.log(helia.pins.ls())
+})();
 
 
 /* 
@@ -73,6 +86,79 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
 });
 
 
+
+/* 
+###############################################################
+##################### uploadVideoToIPFS #######################
+############################################################### 
+*/
+router.post('/uploadVideoToIpfs', async (ctx, next) => {
+  if (ctx.request.path === '/uploadVideoToIpfs') {
+    console.log("\n ####################################### \n '/uploadVideoToIpfs' " + new Date() + "\n ####################################### \n ");
+
+    const taskId = ctx.request.body.tokenId;
+    const winnerAddress = ctx.request.body.winnerAddress;
+   
+    try {
+      const db = await connectToDatabase();
+      var collection = db.collection('videos');
+      const video = await collection.findOne({ 'taskId': taskId, 'senderAddress': winnerAddress });
+
+      if (fs.existsSync(video.path)){
+        try {
+          // Retrieve video to be uploaded to IPFS
+          const fileData = fs.readFileSync(video.path);
+          console.log("Video found.")
+
+          // Upload video to IPFS and pin it via Filebase
+          const metadata = await filebaseClient.store({
+            name: video.name,
+            description: `A TaskSama winner video made by ${video.senderAddress}.`,
+            image: new File([fileData], video.senderAddress, { type: 'video/mp4' }),
+          });
+          console.log("video succesfully uploaded to IPFS. metadata: ",metadata);
+
+          // Insert the uploaded video information into the "IPFSvideos" collection
+          const currentDate = new Date();
+          const formattedDate = formatDateToString(currentDate);
+          const videoData = {
+            name: video.name,
+            IPFSMetadataUrl: metadata.url,
+            IPFSVideoUrl: 'to be fetched',
+            nftId: 'to be minted',
+            winnerAddress: winnerAddress,
+            uploadDate: formattedDate,
+          };
+          
+          collection = db.collection('IPFSvideos');
+          await collection.insertOne(videoData);
+          console.log("doc inserted into IPFSvideos");
+
+          ctx.body = {
+            message: 'Video uploaded to IPFS successfully.',
+            data: videoData,
+          };
+        } catch (error) {
+          console.log(`Failed to retrieve video locally at path ${video.path}: ${error}`);
+        }
+      } else {
+        ctx.throw(404, 'Video to be uploaded to IPFS not found locally.');
+      }
+
+    } catch (error) {
+      ctx.throw(500, 'Failed to upload the video to IPFS.', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
+
 /* 
 ###############################################################
 ################### getParticipantVideo #####################
@@ -123,6 +209,7 @@ router.get('/getParticipantVideo', async (ctx, next) => {
     };
   }
 });
+
 /* 
 ###############################################################
 ############################ UTILS ############################

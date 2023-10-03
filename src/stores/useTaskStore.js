@@ -31,12 +31,15 @@ export const useTaskStore = defineStore('api', {
                 console.error('Error uploading video:', error);
                 throw error;
               });
-          },
+        },
 
-        uploadVideoToIpfs(show, msgType, msg) {
-            const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadVideoToIpfs').then(response => {
+        uploadVideoToIpfs(tokenId, winnerAddress) {
+            const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadVideoToIpfs', { tokenId, winnerAddress });
+            return promise;
+        },
 
-            });
+        async getParticipantVideo(tokenId, participantAddress) {
+            const promise = axios .get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getParticipantVideo?tokenId=${tokenId}&participantAddress=${participantAddress}`, { responseType: 'arraybuffer', })
             return promise;
         },
 
