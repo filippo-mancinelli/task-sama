@@ -21,6 +21,7 @@ const currentParticipantCounter = ref(0);
 const showModalResult = ref(false);
 const modalType = ref('');
 const message = ref('');
+const isLoading = ref(false);
 var isReady = ref(false);
 
 
@@ -64,12 +65,14 @@ async function fetchBackendVideo(tokenId, participantAddress) {
 // in order to retrieve the IPFS URL which will be passed to the contract function, which will mint a new completed NFT with it.
 function chooseWinner() {
     if(selectedWinner.value != '') {
+        isLoading.value = true;
         taskStore.uploadVideoToIpfs(taskObject.value.tokenId, selectedWinner.value).then(result => {
+            isLoading.value = false;
             if(result.status == 200) {
-                connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, ipfsUrl]).then(res => {
+                connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, result.data.data.IPFSMetadataUrl]).then(res => {
                     console.log("RESPONSE callContractFunction",res);
                     modalType.value = 'success';
-                    message.value = '🏆 The winner has been chosen!';
+                    message.value = '🏆 The winner has been chosen! \nYour NFT has been minted and transferred to your account.';
                     showModalResult.value = true;
 
                 }).catch(error => {
@@ -79,10 +82,13 @@ function chooseWinner() {
                     console.log("Error while choosing winner: ", error)
                 });
             } else {
-                usePopupStore().setPopup(true, 'danger', 'There was a problem uploading the video to IPFS. Please try again', 'noModal')
+                usePopupStore().setPopup(true, 'danger', 'There was a problem uploading the video to IPFS. Please try again', 'modal');
+                isLoading.value = false;
             }
         }).catch(error => {
             console.log(error);
+            isLoading.value = false;
+            usePopupStore().setPopup(true, 'danger', 'There was a problem uploading the video to IPFS. Please try again', 'modal')
         });
     }
 }
@@ -125,7 +131,10 @@ onMounted(async ()=> {
             <p>{{ taskObject.result.description }}</p>
             <p>Participants: {{ participants.length }}</p>
             <span>Winner: <span class="text-orange-600">{{ selectedWinner }}</span></span>
-            <button class="btn self-start mt-1 bg-orange-400 hover:bg-orange-500 text-white" @click="chooseWinner">Choose <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" /></svg></button>
+            <button class="btn self-start mt-1 bg-orange-400 hover:bg-orange-500 text-white" @click="chooseWinner">
+                <span v-if="!isLoading" class="flex gap-1 items-center">Choose <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" /></svg></span>
+                <span v-else class="loading loading-ring loading-md -translate-x-1"></span>
+            </button>
         </div>
     </div>
 
@@ -159,6 +168,11 @@ onMounted(async ()=> {
         </div>
 
 
+     <!-- RESULT MODAL -->   
+    <Modal @close-modal="showModalResult = false" :showModal="showModalResult" :modalType="modalType">
+        <template v-slot:title></template>
+        <template v-slot:content>{{ message }}</template>
+    </Modal>
     </div>
 
 </div>

@@ -6,15 +6,13 @@ export const usePopupStore = defineStore('popup', {
         showPopup: false,
         messageType: '',
         message: '',
-        popupType: 'noModal'  //if we show the popup when a modal is open, we set the height differently
     }),
 
     actions: {
-        setPopup(show, msgType, msg, popType) {
+        setPopup(show, msgType, msg) {
             this.messageType = msgType;
             this.message = msg;
             this.showPopup = show;
-            this.popupType = popType;
         }
     }
 
