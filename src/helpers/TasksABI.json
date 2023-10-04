@@ -94,6 +94,12 @@
           "internalType": "address",
           "name": "winner",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newTokenId",
+          "type": "uint256"
         }
       ],
       "name": "TaskCompleted",

@@ -9,7 +9,7 @@ const { connectToDatabase } = require('../db');
 
 router.post('/initLikes', async (ctx, next) => {
     if(ctx.request.path === '/initLikes') {
-      console.log("Chiamata: 'http://localhost:3000/initLikes'")
+      console.log("\n ####################################### \n '/initLikes' " + new Date() + "\n ####################################### \n ");
   
       const db = await connectToDatabase();
       const collection = db.collection('likes');
@@ -44,7 +44,7 @@ router.post('/initLikes', async (ctx, next) => {
 
 router.post('/like', async (ctx, next) => {
     if(ctx.request.path == '/like') {
-      console.log("Chiamata: 'http://localhost:3000/like'")
+      console.log("\n ####################################### \n '/like' " + new Date() + "\n ####################################### \n ");
 
       const db = await connectToDatabase();
       const collection = db.collection('likes');
@@ -75,6 +75,32 @@ router.post('/like', async (ctx, next) => {
     
     await next();
   });
+
+
+/* Initialize a new document to DB collection "likes" in order to be able to display the newly minted NFT in the homepage
+###############################################################
+################ addNewNftLikeDocument ########################
+############################################################### */
+
+router.post('/addNewNftLikeDocument', async (ctx, next) => {
+  if(ctx.request.path == '/addNewNftLikeDocument') {
+    console.log("\n ####################################### \n '/addNewNftLikeDocument' " + new Date() + "\n ####################################### \n ");
+
+    const db = await connectToDatabase();
+    const collection = db.collection('likes');
+    const tokenId = ctx.request.body.tokenId;
+    
+    const result = await collection.insertOne({
+      tokenId: tokenId,
+      likes: 0,
+      likeWallets: []
+    });
+
+    ctx.body = result;
+  }
+  
+  await next();
+});
 
 
 module.exports = router;

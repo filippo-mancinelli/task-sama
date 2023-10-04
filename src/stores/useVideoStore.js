@@ -21,6 +21,8 @@ export const useVideoStore = defineStore('videoNFTs', {
                 const { result } = await useConnectionStore().callContractFunction("TaskSama", "getVideos");
                 const fetchedMetadata = result;
 
+                //
+                
                 // Create a new array with modified objects
                 const modifiedMetadata = fetchedMetadata.map(metadata => {
                     return {
@@ -29,6 +31,7 @@ export const useVideoStore = defineStore('videoNFTs', {
                     rewardEarned: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned))).toFixed(2)
                     };
                 });
+                console.log("MODIFIEDMETADATA",modifiedMetadata)
                 this.videoMetadata = modifiedMetadata;
                 return this.videoMetadata;
         },
@@ -53,6 +56,12 @@ export const useVideoStore = defineStore('videoNFTs', {
             tempMetadata.likeCount = result.data;
             this.likesMetadata.set(tokenId, tempMetadata);
             return result.data;
+        },
+
+        // Initialize a new document to DB collection "likes" in order to be able to display the newly minted NFT in the homepage
+        async addNewNftLikeDocument(tokenId) {
+            const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/addNewNftLikeDocument', {tokenId});
+            return promise;
         },
 
 

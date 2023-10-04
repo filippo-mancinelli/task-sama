@@ -30,7 +30,7 @@ contract Tasks is ERC721, Ownable {
     uint256 public minimumReward = 10 ether; // Minimum reward is 5 GLMR tokens //900
 
     event TaskCreated(uint256 indexed taskId, address owner, string title, string description, uint256 reward);
-    event TaskCompleted(uint256 indexed taskId, address winner);
+    event TaskCompleted(uint256 indexed taskId, address winner, uint256 newTokenId);
 
     constructor(address taskSamaContractAddress) ERC721("Tasks", "TASK") {
         _taskSamaContract = ITasksSamaContract(taskSamaContractAddress);
@@ -78,12 +78,12 @@ contract Tasks is ERC721, Ownable {
         _winner.transfer(task.reward * 1 wei);
 
         // Mints the video NFT
-        _taskSamaContract.mintVideoNFT(_winner, msg.sender, task.title, task.description, ipfsUrl, task.reward, task.participants);
+        uint256 newTokenId = _taskSamaContract.mintVideoNFT(_winner, msg.sender, task.title, task.description, ipfsUrl, task.reward, task.participants);
 
         // Delete the task from the mapping
         delete tasks[_taskId];
 
-        emit TaskCompleted(_taskId, _winner);
+        emit TaskCompleted(_taskId, _winner, newTokenId);
     }
 
     function _isParticipant(Task storage task, address _participant) internal view returns (bool) {

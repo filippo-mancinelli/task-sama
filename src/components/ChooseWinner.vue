@@ -5,10 +5,13 @@ import { useTaskStore } from '../stores/useTaskStore';
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router'
 import { usePopupStore } from '../stores/usePopupStore';
+import { useVideoStore } from '../stores/useVideoStore';
+import Modal from './widgets/Modal.vue';
 
 // Stores
 let route;
 const connectionStore = useConnectionStore();
+const videoStore = useVideoStore();
 const taskStore = useTaskStore();
 const backgroundStore = useBackgroundStore();
 backgroundStore.changeBackgroundClass('bg-teal-200 h-full');
@@ -67,18 +70,24 @@ function chooseWinner() {
     if(selectedWinner.value != '') {
         isLoading.value = true;
         taskStore.uploadVideoToIpfs(taskObject.value.tokenId, selectedWinner.value).then(result => {
-            isLoading.value = false;
+            console.log("result",result)
             if(result.status == 200) {
                 connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, result.data.data.IPFSMetadataUrl]).then(res => {
-                    console.log("RESPONSE callContractFunction",res);
                     modalType.value = 'success';
                     message.value = '🏆 The winner has been chosen! \nYour NFT has been minted and transferred to your account.';
                     showModalResult.value = true;
+                    isLoading.value = false;
+                    
 
+                    // Now we need to add the new NFT to the DB "like" structure in order to be able to display it in the homepage
+                    // We need to retrieve the newly minted tokenId from the Tasks contract event emitted "TaskCompleted"
+                    const tokenId = parseInt(res.transactionReceipt.events[1].args[2]);
+                    videoStore.addNewNftLikeDocument(tokenId);
                 }).catch(error => {
                     modalType.value = 'danger';
                     message.value = 'Error creating task: ' + error;
                     showModalResult.value = true;
+                    isLoading.value = false;
                     console.log("Error while choosing winner: ", error)
                 });
             } else {
@@ -167,15 +176,16 @@ onMounted(async ()=> {
             </div>
         </div>
 
-
-     <!-- RESULT MODAL -->   
-    <Modal @close-modal="showModalResult = false" :showModal="showModalResult" :modalType="modalType">
-        <template v-slot:title></template>
-        <template v-slot:content>{{ message }}</template>
-    </Modal>
     </div>
-
 </div>
+
+
+<!-- RESULT MODAL -->   
+<Modal @close-modal="showModalResult = false" :showModal="showModalResult" :modalType="modalType">
+    <template v-slot:title></template>
+    <template v-slot:content>{{ message }}</template>
+</Modal>
+
 </template>
 
 <style>
