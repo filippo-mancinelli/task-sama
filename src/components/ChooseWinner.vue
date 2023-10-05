@@ -72,7 +72,8 @@ function chooseWinner() {
         taskStore.uploadVideoToIpfs(taskObject.value.tokenId, selectedWinner.value).then(result => {
             console.log("result",result)
             if(result.status == 200) {
-                connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, result.data.data.IPFSMetadataUrl]).then(res => {
+                const formattedMetadataURL = result.data.data.IPFSMetadataUrl.replace('ipfs://', 'ipfs/');
+                connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, formattedMetadataURL]).then(res => {
                     modalType.value = 'success';
                     message.value = '🏆 The winner has been chosen! \nYour NFT has been minted and transferred to your account.';
                     showModalResult.value = true;
@@ -81,7 +82,7 @@ function chooseWinner() {
 
                     // Now we need to add the new NFT to the DB "like" structure in order to be able to display it in the homepage
                     // We need to retrieve the newly minted tokenId from the Tasks contract event emitted "TaskCompleted"
-                    const tokenId = parseInt(res.transactionReceipt.events[1].args[2]);
+                    const tokenId = parseInt(res.transactionReceipt.events[2].args[2]);
                     videoStore.addNewNftLikeDocument(tokenId);
                 }).catch(error => {
                     modalType.value = 'danger';

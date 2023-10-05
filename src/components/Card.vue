@@ -56,7 +56,9 @@ const videoPlayer = ref(null);
 const showControls = ref(false);
 
 async function fetchIPFSVideo() {
-  const response = await fetch(props.ipfsUrl);
+  const metadataUrl = await props.ipfsUrl;
+  const response = await fetch(metadataUrl.result);
+  console.log("RESS",response)
   const blob = await response.blob();
   videoPlayer.value.src = URL.createObjectURL(blob);
 }

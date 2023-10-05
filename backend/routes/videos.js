@@ -9,6 +9,11 @@ const { FilebaseClient, File } = require('@filebase/client');
 const filebaseClient = new FilebaseClient({ token: process.env.FILEBASE_API_TOKEN });
 require('dotenv').config();
 
+//TODO
+fetch('https://ipfs.io/ipfs/bafyreielrgvakgwvv3ms6xdz4z4vtb35d2hrbpmxarqisijx5rmcafy3n4/metadata.json').then(res => {
+  console.log(res.json().then(response=>{console.log(response)}))
+})
+
 /*
 // IPFS NODE SETUP 
 let node;
