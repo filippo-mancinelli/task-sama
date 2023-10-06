@@ -9,10 +9,6 @@ const { FilebaseClient, File } = require('@filebase/client');
 const filebaseClient = new FilebaseClient({ token: process.env.FILEBASE_API_TOKEN });
 require('dotenv').config();
 
-//TODO
-fetch('https://ipfs.io/ipfs/bafyreielrgvakgwvv3ms6xdz4z4vtb35d2hrbpmxarqisijx5rmcafy3n4/metadata.json').then(res => {
-  console.log(res.json().then(response=>{console.log(response)}))
-})
 
 /*
 // IPFS NODE SETUP 
@@ -144,12 +140,22 @@ router.post('/uploadVideoToIpfs', async (ctx, next) => {
           });
           console.log("video succesfully uploaded to IPFS. metadata: ",metadata);
 
+          // Retrieve from the ipfsMetadataUrl, the video's ipfsUrl, so we can store it and retrieve it easily from IPFSvideos collection
+          let IPFSVideoUrl;
+          const formattedMetadataURL = 'https://ipfs.io/' + metadata.url.replace('ipfs://', 'ipfs/');
+          fetch(formattedMetadataURL).then(res => {
+            res.json().then(response => {
+              IPFSVideoUrl = response.image;
+            })
+          });
+
           // Insert the uploaded video information into the "IPFSvideos" collection
           const currentDate = new Date();
           const formattedDate = formatDateToString(currentDate);
           const videoData = {
             name: video.name,
             IPFSMetadataUrl: metadata.url,
+            IPFSVideoUrl: IPFSVideoUrl,
             nftId: 'to be minted',
             winnerAddress: winnerAddress,
             uploadDate: formattedDate,

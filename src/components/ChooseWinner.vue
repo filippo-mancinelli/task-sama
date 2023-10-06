@@ -72,8 +72,10 @@ function chooseWinner() {
         taskStore.uploadVideoToIpfs(taskObject.value.tokenId, selectedWinner.value).then(result => {
             console.log("result",result)
             if(result.status == 200) {
+                console.log("RESULT",result);
                 const formattedMetadataURL = result.data.data.IPFSMetadataUrl.replace('ipfs://', 'ipfs/');
-                connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, formattedMetadataURL]).then(res => {
+                const formattedVideoURL = result.data.data.IPFSMetadataUrl.replace('ipfs://', 'ipfs/');
+                connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, formattedMetadataURL, formattedVideoURL]).then(res => {
                     modalType.value = 'success';
                     message.value = '🏆 The winner has been chosen! \nYour NFT has been minted and transferred to your account.';
                     showModalResult.value = true;

@@ -15,6 +15,7 @@ contract TaskSama is ERC721, ERC721URIStorage, Ownable {
         uint256 tokenId;
         string title;
         string description;
+        string ipfsVideoUrl;
         uint256 rewardEarned;
         address creator;
         address winner;
@@ -48,17 +49,18 @@ contract TaskSama is ERC721, ERC721URIStorage, Ownable {
     }
     
 
-    function mintVideoNFT(address winner, address creator, string memory title, string memory description, string memory ipfsUrl, uint256 rewardEarned, address[] memory participants) public returns (uint256) {
+    function mintVideoNFT(address winner, address creator, string memory title, string memory description, string memory ipfsMetadataUrl, string memory ipfsVideoUrl, uint256 rewardEarned, address[] memory participants) public returns (uint256) {
         _tokenIdCounter.increment();
         uint256 newTokenId = _tokenIdCounter.current();
 
         _safeMint(creator, newTokenId);
-        _setTokenURI(newTokenId, ipfsUrl);
+        _setTokenURI(newTokenId, ipfsMetadataUrl);
 
         tasksama.push(Video({
             tokenId: newTokenId,
             title: title,
             description: description,
+            ipfsVideoUrl: ipfsVideoUrl,
             rewardEarned: rewardEarned,
             creator: creator,
             winner: winner,

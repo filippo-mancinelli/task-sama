@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 interface ITasksSamaContract {
-    function mintVideoNFT(address winner, address creator, string calldata title, string calldata description, string calldata ipfsUrl, uint256 rewardEarned, address[] calldata participants) external returns (uint256);
+    function mintVideoNFT(address winner, address creator, string calldata title, string calldata description, string calldata ipfsMetadataUrl, string calldata ipfsVideoUrl, uint256 rewardEarned, address[] calldata participants) external returns (uint256);
 }
 
 contract Tasks is ERC721, Ownable {
@@ -66,7 +66,7 @@ contract Tasks is ERC721, Ownable {
         task.participants.push(msg.sender);
     }
 
-    function chooseWinner(uint256 _taskId, address payable _winner, string memory ipfsUrl) public {
+    function chooseWinner(uint256 _taskId, address payable _winner, string memory ipfsMetadataUrl, string memory ipfsVideoUrl) public {
         Task storage task = tasks[_taskId];
         require(_taskExists(_taskId), "Task does not exist");
         require(_isParticipant(task, _winner), "The user chosen did not participate");
@@ -78,7 +78,7 @@ contract Tasks is ERC721, Ownable {
         _winner.transfer(task.reward * 1 wei);
 
         // Mints the video NFT
-        uint256 newTokenId = _taskSamaContract.mintVideoNFT(_winner, msg.sender, task.title, task.description, ipfsUrl, task.reward, task.participants);
+        uint256 newTokenId = _taskSamaContract.mintVideoNFT(_winner, msg.sender, task.title, task.description, ipfsMetadataUrl, ipfsVideoUrl, task.reward, task.participants);
 
         // Delete the task from the mapping
         delete tasks[_taskId];

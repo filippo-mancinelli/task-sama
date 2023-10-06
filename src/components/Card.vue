@@ -16,7 +16,7 @@ const props = defineProps([
   'rewardEarned',
   'creatorAddress',
   'winnerAddress',
-  'ipfsUrl',
+  'ipfsVideoUrl',
   'txhash',
   'likeCount',
   'isLiked'
@@ -56,8 +56,9 @@ const videoPlayer = ref(null);
 const showControls = ref(false);
 
 async function fetchIPFSVideo() {
-  const metadataUrl = await props.ipfsUrl;
-  const response = await fetch(metadataUrl.result);
+  console.log("props.ipfsVideoUrl",props.ipfsVideoUrl)
+
+  const response = await fetch(props.ipfsVideoUrl);
   console.log("RESS",response)
   const blob = await response.blob();
   videoPlayer.value.src = URL.createObjectURL(blob);

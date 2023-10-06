@@ -26,7 +26,6 @@ export const useVideoStore = defineStore('videoNFTs', {
                 const modifiedMetadata = fetchedMetadata.map(metadata => {
                     return {
                     ...metadata,
-                    ipfsUrl: useConnectionStore().callContractFunction("TaskSama", "tokenURI", "", [parseInt(metadata.tokenId)]), // The ipfs url to the metadata is stored on the contract
                     tokenId: parseInt(metadata.tokenId),
                     rewardEarned: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned))).toFixed(2)
                     };
