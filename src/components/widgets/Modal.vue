@@ -43,7 +43,7 @@ watchEffect(() => {
                         </h3>
                     </div>
                     <div class="break-words "> 
-                        <slot name="content">Default content</slot> 
+                        <slot name="content" class="">Default content</slot> 
                     </div>
 
                     <div class="flex justify-end">

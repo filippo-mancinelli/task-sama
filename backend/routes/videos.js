@@ -141,13 +141,11 @@ router.post('/uploadVideoToIpfs', async (ctx, next) => {
           console.log("video succesfully uploaded to IPFS. metadata: ",metadata);
 
           // Retrieve from the ipfsMetadataUrl, the video's ipfsUrl, so we can store it and retrieve it easily from IPFSvideos collection
-          let IPFSVideoUrl;
           const formattedMetadataURL = 'https://ipfs.io/' + metadata.url.replace('ipfs://', 'ipfs/');
-          fetch(formattedMetadataURL).then(res => {
-            res.json().then(response => {
-              IPFSVideoUrl = response.image;
-            })
-          });
+          
+          const fetchResult = await fetch(formattedMetadataURL);
+          const jsonResult = await fetchResult.json();
+          const IPFSVideoUrl = jsonResult.image;
 
           // Insert the uploaded video information into the "IPFSvideos" collection
           const currentDate = new Date();

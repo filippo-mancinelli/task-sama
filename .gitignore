@@ -30,5 +30,9 @@ bin/src/contracts/TaskSama-solc-output.json
 bin/src/contracts/TaskSama.json
 .env
 
+# Frontend temp data
+src/helpers/TasksABI.json
+src/helpers/TasksamaABI.json
+
 # Backend
 backend/uploads/
