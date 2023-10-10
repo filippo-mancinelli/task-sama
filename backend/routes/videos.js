@@ -22,6 +22,20 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
     const taskId = ctx.request.body.tokenId;
     const walletAddress = ctx.headers['x-wallet-address'];
    
+    //#### video checks ####//
+    if (!video) {
+      ctx.throw(400, 'No file uploaded.');
+    }
+    const allowedVideoFormats = ['video/mp4', 'video/webm'];
+    if (!allowedVideoFormats.includes(video.mimetype)) {
+      ctx.throw(400, 'Invalid video format. Only MP4 and WebM formats are allowed.');
+    }
+    const maxVideoSize = 15 * 1024 * 1024;
+    if (video.size > maxVideoSize) {
+      ctx.throw(400, 'Video size exceeds the 15MB limit.');
+    }
+    //#### checks end ####//
+
     try {
       const dir = `./uploads/videos/${taskId}/${walletAddress}`;
       if (!fs.existsSync(dir)){

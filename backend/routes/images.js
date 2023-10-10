@@ -14,66 +14,83 @@ require('dotenv').config();
 ############################################################### 
 */
 router.post('/uploadImageToDB', upload.single('file'), async (ctx, next) => {
-    if (ctx.request.path === '/uploadImageToDB') {
-      console.log("\n ####################################### \n '/uploadImageToDB' " + new Date() + "\n ####################################### \n ");
+  if (ctx.request.path === '/uploadImageToDB') {
+    console.log("\n ####################################### \n '/uploadImageToDB' " + new Date() + "\n ####################################### \n ");
   
-      const image = ctx.request.file; 
-      const taskId = ctx.request.body.tokenId;
-      const walletAddress = ctx.headers['x-wallet-address'];
-      console.log("image",image)
+    const image = ctx.request.file; 
+    const taskId = ctx.request.body.tokenId;
+    const walletAddress = ctx.headers['x-wallet-address'];
 
-      try {
-        const dir = `./uploads/images/${taskId}/${walletAddress}`;
-        if (!fs.existsSync(dir)){
-          fs.mkdirSync(dir, { recursive: true });
-        }
-  
-        const tempFilePath = 'uploads/images/' + image.filename;
-        const newFilePath = `uploads/images/${taskId}/${walletAddress}/` + image.originalname;
-        fs.rename(tempFilePath, newFilePath, (err) => { 
-          if (err) {
-            console.error('Error renaming file:', err);
-          } else {
-            console.log('File renamed successfully.');
-          }
-        });
-  
-        const db = await connectToDatabase();
-        const collection = db.collection('images');
-        
-        const currentDate = new Date();
-        const formattedDate = formatDateToString(currentDate);
-  
-        // Insert the image information into the "images" collection
-        const imageData = {
-          name: image.originalname,
-          path: newFilePath,
-          uploadDate: formattedDate,
-          size: image.size,
-          taskId: taskId,
-          senderAddress: walletAddress
-        };
-  
-        await collection.insertOne(imageData);
-        console.log("doc inserted");
-  
-        ctx.body = {
-          message: 'Image uploaded and saved successfully.',
-          data: imageData,
-        };
-      } catch (error) {
-        ctx.throw(500, 'Failed to upload and save the image.', error);
+
+    //### Uploaded image checks ###//
+    if (!image) {
+      ctx.throw(400, 'No file uploaded.');
+    }
+
+    const allowedFileExtensions = ['jpeg', 'jpg', 'png'];
+    const fileExtension = image.originalname.split('.').pop().toLowerCase();
+    if (!allowedFileExtensions.includes(fileExtension)) {
+      ctx.throw(400, 'Invalid file format. Only JPEG, JPG, and PNG are allowed.');
+    }
+
+    const maxFileSize = 2 * 1024 * 1024; // 2MB in bytes
+    if (image.size > maxFileSize) {
+      ctx.throw(400, 'File size exceeds the 2MB limit.');
+    }
+    //### Checks end ###//
+
+
+    try {
+      const dir = `./uploads/images/${taskId}/${walletAddress}`;
+      if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir, { recursive: true });
       }
-    }
-    await next();
-  
-    if (ctx.status === 404) {
-      ctx.body = {
-        message: 'Not found',
-      };
-    }
-  });
 
+      const tempFilePath = 'uploads/images/' + image.filename;
+      const newFilePath = `uploads/images/${taskId}/${walletAddress}/` + image.originalname;
+      fs.rename(tempFilePath, newFilePath, (err) => { 
+        if (err) {
+          console.error('Error renaming file:', err);
+        } else {
+          console.log('File renamed successfully.');
+        }
+      });
+
+      const db = await connectToDatabase();
+      const collection = db.collection('images');
+      
+      const currentDate = new Date();
+      const formattedDate = formatDateToString(currentDate);
+
+      // Insert the image information into the "images" collection
+      const imageData = {
+        name: image.originalname,
+        path: newFilePath,
+        uploadDate: formattedDate,
+        size: image.size,
+        taskId: taskId,
+        senderAddress: walletAddress
+      };
+
+      await collection.insertOne(imageData);
+      console.log("doc inserted");
+
+      ctx.body = {
+        message: 'Image uploaded and saved successfully.',
+        data: imageData,
+      };
+    } catch (error) {
+      ctx.throw(500, 'Failed to upload and save the image.', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
 
   
 /* 

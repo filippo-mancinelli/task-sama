@@ -119,11 +119,11 @@ export const useTaskStore = defineStore('api', {
 
         //fetch task image from DB
         fetchTasksImages() {
-            const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTasksImages').then(response => {
-                this.tasksImages = response.data;
-                return response.data;
-            });
-            return promise;
+          const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTasksImages').then(response => {
+              this.tasksImages = response.data;
+              return response.data;
+          });
+          return promise;
         },
 
     }

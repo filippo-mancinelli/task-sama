@@ -17,44 +17,54 @@ const uploadedFile = ref({
 const showError = ref(false);
 const errorMessage = ref('');
 
+function pushArgument(key, value) {
+  argStore.pushArg({
+    key: key,
+    value: {
+      value
+    }
+  })
+}
+
 function onFileChange(event) {
   const file = event.target.files[0];
-  argStore.pushArg({ 
-      key: 'fileData', 
-      value: {
-        file
-      }
-    });
+  pushArgument('fileData', file);
   
   if(props.uploadType == 'image') {
     if (file && (file.type == 'image/jpeg' || file.type == 'image/png')) {
-      uploadedFile.value.name = file.name
-      uploadedFile.value.size = file.size
-      uploadedFile.value.date = new Date()
-      showError.value = false;
-    } else {
-      if(file.type !== 'image/jpeg' && file.type !== 'image/png'){
-        errorMessage.value = 'File format must be jpeg or png.';
-      }
-      if(file.size > 2000000) {
+      if(file.size > 2 * 1024 * 1024) {
         errorMessage.value = 'File size must be under 2 MB.';
+        showError.value = true;
+        pushArgument('error', true); // This is used to inform that external components that the user entered an invalid file and he cannot proceed
+      } else {
+        uploadedFile.value.name = file.name
+        uploadedFile.value.size = file.size
+        uploadedFile.value.date = new Date()
+        showError.value = false;
+        pushArgument('error', false); 
       }
-      showError.value = true;
+    } else if(file.type !== 'image/jpeg' && file.type !== 'image/png') {
+        errorMessage.value = 'File format must be jpeg or png.';
+        showError.value = true; 
+        pushArgument('error', true); 
     }
   } else if(props.uploadType == 'video') {
     if (file && (file.type == 'video/mp4' || file.type == 'video/webm')) {
       if(file.size > 15000000) {
         errorMessage.value = 'Video size must be under 15 MB.';
         showError.value = true;
+        pushArgument('error', true); 
       } else {
         uploadedFile.value.name = file.name
         uploadedFile.value.size = file.size
         uploadedFile.value.date = new Date()
         showError.value = false;
+        pushArgument('error', false); 
       }
     } else {
       errorMessage.value = 'Video format must be mp4 or webm.';
       showError.value = true;
+      pushArgument('error', true); 
     }
   }
 

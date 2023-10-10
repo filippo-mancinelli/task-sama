@@ -37,7 +37,7 @@ function closeModalEvent() {
 }
 
 function createTask() {
-  if(argStore.getArguments.textArea == '' || argStore.getArguments.textInput == '' || argStore.getArguments.numberInput == '') {
+  if(argStore.getArguments.textArea == '' || argStore.getArguments.textInput == '' || argStore.getArguments.numberInput == '' || argStore.getArguments.error.value == true) {
     if(argStore.getArguments.textArea == '') 
     showAreaError.value = true;
     
