@@ -6,6 +6,7 @@ import axios from 'axios';
 export const useTaskStore = defineStore('api', {
     state: () => ({
         tasksMetadata: [], //fetch from blockchain
+        tasksImages: [], //fetch from backend
         userMetadata: {}
     }),
 
@@ -44,11 +45,26 @@ export const useTaskStore = defineStore('api', {
         },
 
         // ###### IMAGES API ###### //
-        uploadImageToDB(file) {
-            const promise =  axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadImageToDB').then(response => {
-                
-            });
-            return promise;
+        
+        uploadImageToDB(file, tokenId) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('tokenId', tokenId);
+
+            return axios
+              .post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadImageToDB', formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              })
+              .then((response) => {
+                console.log('Image uploaded successfully:', response.data);
+                return response.data;
+              })
+              .catch((error) => {
+                console.error('Error uploading image:', error);
+                throw error;
+              });
         },
 
 
@@ -71,7 +87,7 @@ export const useTaskStore = defineStore('api', {
             return promise;
         },
 
-        //fetch a single task NFT metadata from blockchain
+        // Fetch a single task NFT metadata from blockchain
         async fetchTaskMetadata(tokenId) {
             // We need to convert a number to a BigNumber in order to pass it as a parameter to a smart contract function
             const taskId = ethers.BigNumber.from(tokenId).toString(); 
@@ -102,10 +118,9 @@ export const useTaskStore = defineStore('api', {
         },
 
         //fetch task image from DB
-        fetchTaskImages() {
-            const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTaskImages').then(response => {
-                console.log("response",response);
-                this.tasksMetadata = response.data;
+        fetchTasksImages() {
+            const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTasksImages').then(response => {
+                this.tasksImages = response.data;
                 return response.data;
             });
             return promise;

@@ -19,7 +19,8 @@ const props = defineProps([
   'description',
   'reward',
   'participants',
-  'isParticipating'
+  'isParticipating',
+  'base64Image'
 ]);
 const isLoading = ref(false);
 const showModal1 = ref(false);
@@ -38,6 +39,18 @@ function openModal() {
   showModal1.value = true;
 }
 
+// ### IMAGE ### //
+const getImageUrl = computed(() => {
+  if(props.base64Image != undefined) {
+    if (props.base64Image != 'noimage') {
+      return `data:image/jpeg;base64,${props.base64Image}`;
+    } else {
+      return 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
+    }
+  }
+});
+
+
 function participateTask() {
   if(isLoading.value === true) {
     popupStore.setPopup(true, 'alert', 'Wait for the current participation request to finish', 'modal');
@@ -46,7 +59,8 @@ function participateTask() {
   if(argStore.getArguments.file.size == 0) { 
     popupStore.setPopup(true, 'danger', 'You must upload a valid video to participate', 'modal');
     return;
-  } else if(!connectionStore.isConnected){
+  } 
+  else if(!connectionStore.isConnected){
      popupStore.setPopup(true, 'warning', 'You need to connect your wallet first', 'modal');
      return;
   }
@@ -77,7 +91,9 @@ function participateTask() {
 
 <template>
   <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
-    <figure><img src="https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427" alt="Shoes" /></figure>
+    <figure>
+      <img :src="getImageUrl" alt="image" />
+    </figure>
     <div class="card-body gap-1 p-5">
       <h2 class="card-title">
         {{ title }}   #{{ tokenId  }}

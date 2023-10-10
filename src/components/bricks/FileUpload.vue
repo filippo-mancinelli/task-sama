@@ -1,7 +1,6 @@
 <script setup>
 import Error from './Error.vue';
 import { useArgStore } from '../../stores/useArgStore'
-import { useTaskStore } from '../../stores/useTaskStore'
 import { watchEffect, ref, defineProps } from 'vue';
 import { TrashIcon } from "@heroicons/vue/24/solid"
 
@@ -20,7 +19,6 @@ const errorMessage = ref('');
 
 function onFileChange(event) {
   const file = event.target.files[0];
-
   argStore.pushArg({ 
       key: 'fileData', 
       value: {
@@ -38,7 +36,7 @@ function onFileChange(event) {
       if(file.type !== 'image/jpeg' && file.type !== 'image/png'){
         errorMessage.value = 'File format must be jpeg or png.';
       }
-      if(file.size > 2000000) {22550186
+      if(file.size > 2000000) {
         errorMessage.value = 'File size must be under 2 MB.';
       }
       showError.value = true;
@@ -55,7 +53,7 @@ function onFileChange(event) {
         showError.value = false;
       }
     } else {
-      errorMessage.value = 'Video format must be mp4 or mkv.';
+      errorMessage.value = 'Video format must be mp4 or webm.';
       showError.value = true;
     }
   }

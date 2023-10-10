@@ -46,10 +46,12 @@ function createTask() {
     
     if(argStore.getArguments.numberInput == '' || argStore.getArguments.numberInput < 10) 
       showTokenError.value = true;
+
   } else if(connectionStore.isConnected) {
      isLoading.value = true;
-     const {file, numberInput: _reward, textInput: _title, textArea: _description} = argStore.getArguments;
-     connectionStore.callContractFunction('Tasks', 'createTask', 'payable', [_title,  _description ], _reward.toString())
+     const { numberInput: _reward, textInput: _title, textArea: _description } = argStore.getArguments;
+
+     connectionStore.callContractFunction('Tasks', 'createTask', 'payable', [_title,  _description], _reward.toString())
       .then(response => {
         modalType.value = 'success';
         message.value = 'Task created successfully!';
@@ -57,15 +59,20 @@ function createTask() {
         showModal.value = false;
         isLoading.value = false;
         
-        //after the task NFT is created and if the user uploaded an image, we upload it to our DB for moderation reasons
-        taskStore.uploadImageToDB();
+        // After the task NFT is created and if the user uploaded an image, we upload it to our DB for moderation reasons
+        if(argStore.getArguments.file != undefined) {
+          if(argStore.getArguments.file.size > 0) {
+            const taskId = parseInt(response.transactionReceipt.events[1].args.taskId);
+            taskStore.uploadImageToDB(argStore.arguments.fileData.file, taskId);
+          }
+        }
       })
       .catch(error => {
         modalType.value = 'danger';
-        message.value = 'Error creating task: ' + error;
+        message.value = 'Error creating task: ' + error.code;
         showModalResult.value = true;
         isLoading.value = false;
-        console.log("errore Nella creazione del task: ", error)
+        console.log("errore Nella creazione del task: ", error.code)
       } );
   } else {
     usePopupStore().setPopup(true, 'alert', 'You need to connect your wallet before creating the task', 'noModal')
@@ -107,7 +114,7 @@ onMounted(() => {
     <div class="flex justify-center">
       <button @click="createTask" class="btn mt-2 w-40 bg-orange-400 text-white">
         <span v-if="!isLoading">Create</span>
-        <span v-else class="loading loading-ring loading-md -translate-x-1"></span>
+        <span v-else class="flex items-center gap-3">Create <span class="loading loading-ring loading-md -translate-x-1"></span> </span>
       </button>
 
     </div>

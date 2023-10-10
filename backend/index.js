@@ -17,8 +17,10 @@ app.use(bodyParser());
 
 // Import and use route files
 const videosRouter = require('./routes/videos');
+const imagesRouter = require('./routes/images');
 const likesRouter = require('./routes/likes');
 app.use(videosRouter.routes());
+app.use(imagesRouter.routes());
 app.use(likesRouter.routes());
 
 app.listen(3000, () => {

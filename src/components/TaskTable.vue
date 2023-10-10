@@ -9,6 +9,7 @@ const taskStore = useTaskStore();
 const connectionStore = useConnectionStore();
 
 const { tasksMetadata: tasks } = toRefs(taskStore);
+const { tasksImages: images } = toRefs(taskStore);
 
 //### SEARCH FILTERS ####
 const searchQuery = ref("");
@@ -70,6 +71,17 @@ const screenSizeColumns =  ref(calculateColumnNumber());
 //### REFRESH METADATA ####
 async function refreshTasksMetadata() {
   tasks.value = await taskStore.fetchTasksMetadata();
+  images.value = await taskStore.fetchTasksImages();
+
+  images.value.data.forEach((image) => {
+    tasks.value.forEach((task) => {
+      if(parseInt(image.taskId) == task.tokenId) {
+        task.base64Image = image.data;
+      } else if(task.base64Image == undefined){
+        task.base64Image = 'noimage';
+      }
+    });
+  });
 }
 
 //Define callback function for event listeners for updating columns on screen resize 
@@ -135,6 +147,7 @@ onBeforeUnmount(() => {
           :reward="task.reward"
           :participants="task.participants"
           :isParticipating="task.isParticipating"
+          :base64Image="task.base64Image"
           @sentParticipation="() => refreshTasksMetadata()"
           class="bg-white text-black"
         />

@@ -9,39 +9,6 @@ const { FilebaseClient, File } = require('@filebase/client');
 const filebaseClient = new FilebaseClient({ token: process.env.FILEBASE_API_TOKEN });
 require('dotenv').config();
 
-
-/*
-// IPFS NODE SETUP 
-let node;
-async function createIPFSNode() {
-  const ipfsCoreModule = await import('ipfs-core');
-  node = await ipfsCoreModule.create();
-}
-
-let create;
-let client;
-async function fetchIPFSContent() {
-  const ipfsModule = await import('ipfs-http-client');
-  create = ipfsModule.create;
-  client = create('http://localhost:4003');
-
-  const data = client.cat('ipfs://bafyreiflow4tomncjhdqfzalwaevjsipcgyu7xtf6o5puiycgctsgnyab4/metadata.json');
-  
-  let content = '';
-  console.log('Fetching content... ');
-  for await (const chunk of data) {
-    content += chunk.toString('utf-8');
-  }
-  console.log('IPFS Content:', content);
-}
-
-createIPFSNode().then(() => {
-  console.log("IPFS node created.");
-  fetchIPFSContent(); 
-});
-*/
-
-
 /* 
 ###############################################################
 ####################### uploadVideoToDB #######################
