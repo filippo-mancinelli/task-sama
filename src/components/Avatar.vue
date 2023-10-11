@@ -6,8 +6,6 @@
     import { useTaskStore } from '../stores/useTaskStore';
     import { useVideoStore } from '../stores/useVideoStore';
     import { useArgStore } from '../stores/useArgStore';
-    import Modal from './widgets/Modal.vue';
-    import Selector from './widgets/Selector.vue'
 
     const argStore = useArgStore();
     const videoStore = useVideoStore();
@@ -49,22 +47,24 @@
     }
 
     function refreshUserData() {
-      if(videoStore.videoMetadata != null && videoStore.videoMetadata != undefined && taskStore.tasksMetadata != null && taskStore.tasksMetadata != undefined && connectionStore.walletAddress) {
-        // ### TASKS OVERVIEW ### //
-        won.value = videoStore.videoMetadata.filter(metadata => metadata.winner == connectionStore.walletAddress).length;
+      taskStore.fetchTasksMetadata().then(() => {
+        if(videoStore.videoMetadata != null && videoStore.videoMetadata != undefined && taskStore.tasksMetadata != null && taskStore.tasksMetadata != undefined && connectionStore.walletAddress) {
+          // ### TASKS OVERVIEW ### //
+          won.value = videoStore.videoMetadata.filter(metadata => metadata.winner == connectionStore.walletAddress).length;
 
-        listed.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress).length;
+          listed.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress).length;
 
-        participated.value = taskStore.tasksMetadata.filter(metadata => {
-            const isParticipant = metadata.participants.some(participant => participant === connectionStore.walletAddress);
-            return isParticipant;
-        }).length;
+          participated.value = taskStore.tasksMetadata.filter(metadata => {
+              const isParticipant = metadata.participants.some(participant => participant === connectionStore.walletAddress);
+              return isParticipant;
+          }).length;
 
-        // ### CONNECTED ACCOUNTS LIST ### //
-        filteredAccounts.value = connectionStore.accounts.filter(account => {
-            return account.toLowerCase() !== connectionStore.walletAddress.toLowerCase();
-        });
-      }
+          // ### CONNECTED ACCOUNTS LIST ### //
+          filteredAccounts.value = connectionStore.accounts.filter(account => {
+              return account.toLowerCase() !== connectionStore.walletAddress.toLowerCase();
+          });
+        }
+      })
     }
 
     /* //#### ACCOUNT CHANGES FUNCTIONALITY ON HOLD, NOT POSSIBLE NOW FOR METAMASK ACCOUNT DESIGN ####//
@@ -94,11 +94,11 @@
     
     */
     onMounted(() => {
-      watch(() => videoStore.isDataReady, (ready) => {
-        if(ready) {
+      watch([() => videoStore.isDataReady, () => connectionStore.triggerEvent], ([isDataReady, triggerEvent], [prevIsDataReady, prevTriggerEvent]) => {
+        if (isDataReady || triggerEvent !== prevTriggerEvent) {
           refreshUserData();
-        } 
-      })
+        }
+      });
 
       watch(() => connectionStore.isAllSetUp, (newValue, oldValue) => {
         if(newValue == true) {

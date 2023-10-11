@@ -14,6 +14,7 @@ const connectionStore = useConnectionStore();
 const argStore = useArgStore();
 const taskStore = useTaskStore();
 
+const maximumChars = 200;
 const showModal = ref(false);
 const showModalResult = ref(false);
 const modalType = ref('');
@@ -23,6 +24,7 @@ const showAreaError = ref(false);
 const showInputError = ref(false);
 const showTokenError = ref(false);
 const showSecondTyper = ref(false);
+const availableChars = ref(maximumChars);
 
 function openModal() {
   showModal.value = true;
@@ -39,7 +41,7 @@ function closeModalEvent() {
 function createTask() {
   if(argStore.getArguments.textArea == '' || argStore.getArguments.textInput == '' || argStore.getArguments.numberInput == '' || argStore.getArguments.error.value == true) {
     if(argStore.getArguments.textArea == '') 
-    showAreaError.value = true;
+      showAreaError.value = true;
     
     if(argStore.getArguments.textInput == '') 
       showInputError.value = true;
@@ -58,12 +60,13 @@ function createTask() {
         showModalResult.value = true;
         showModal.value = false;
         isLoading.value = false;
-        
+        connectionStore.triggerEvent = !connectionStore.triggerEvent;
+
         // After the task NFT is created and if the user uploaded an image, we upload it to our DB for moderation reasons
         if(argStore.getArguments.file != undefined) {
           if(argStore.getArguments.file.size > 0) {
             const taskId = parseInt(response.transactionReceipt.events[1].args.taskId);
-            taskStore.uploadImageToDB(argStore.arguments.fileData.file, taskId);
+            taskStore.uploadImageToDB(argStore.arguments.fileData.value, taskId);
           }
         }
       })
@@ -80,6 +83,7 @@ function createTask() {
 }
 
 watchEffect(() => {
+  argStore.arguments.textArea != undefined ? availableChars.value = maximumChars - argStore.arguments.textArea.length : 'doNothing';
   argStore.arguments.textArea !== '' ? showAreaError.value = false : 'doNothing';
   argStore.arguments.textInput !== '' ? showInputError.value = false : 'doNothing';
   argStore.arguments.numberInput > 10 ? showTokenError.value = false : 'doNothing';
@@ -102,8 +106,15 @@ onMounted(() => {
 <Modal @close-modal="closeModalEvent" :showModal="showModal" :modalType="''">
   <template v-slot:title> Create a new Task </template>
   <template v-slot:content>
-    <TextInput :showError="showInputError" :errorMessage="'Title cannot be empty.'"><template v-slot:text-input>Task title:</template></TextInput>
-    <TextArea :showError="showAreaError" :errorMessage="'Description cannot be empty.'"><template v-slot:text-area>Task description:</template></TextArea>
+    <TextInput :showError="showInputError" :errorMessage="'Title cannot be empty.'" :maxLength=50><template v-slot:text-input>Task title:</template></TextInput>
+    <TextArea :showError="showAreaError" :errorMessage="textAreaErrorMessage" :maxLength="maximumChars">
+      <template v-slot:text-area>
+        <div class="flex flex-col"> 
+          <span>Task description:</span>
+          <span class="text-sm">Characters available: {{ availableChars }}</span>
+        </div>
+      </template>
+    </TextArea>
     <FileUpload :uploadType="'image'" />
     <div class="flex flex-nowrap just">
       <div class="w-1/3">

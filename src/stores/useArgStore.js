@@ -3,7 +3,9 @@ import { defineStore } from 'pinia'
 export const useArgStore = defineStore('arguments', {
 
     state: () => ({
-        arguments: {  }
+        arguments: { 
+            error: false
+         }
     }),
 
     getters: {

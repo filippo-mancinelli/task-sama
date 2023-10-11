@@ -5,30 +5,37 @@ import { useTaskStore } from '../stores/useTaskStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
 
 let route;
+var tokenId;
 const taskObject = ref({})
 
-onMounted(() => {
+onMounted(async () => {
     route = useRoute();
-    taskObject.value.tokenId = route.params.tokenId;
+    tokenId = route.params.tokenId;
 
     if(useConnectionStore().isAllSetUp) {
-        taskObject.value = useTaskStore().fetchTaskMetadata(taskObject.value.tokenId);
+        taskObject.value = await useTaskStore().fetchTaskMetadata(tokenId);
     }
-    watch(() => useConnectionStore().isAllSetUp, (newValue, oldValue) => {
+    watch(() => useConnectionStore().isAllSetUp, async (newValue, oldValue) => {
         if(newValue) {
-            taskObject.value = useTaskStore().fetchTaskMetadata(taskObject.value.tokenId);
+            taskObject.value = await useTaskStore().fetchTaskMetadata(tokenId);
         }
     });
 
-    console.log("taskObject", taskObject.value)
+    console.log("taskObject", await useTaskStore().fetchTaskMetadata(tokenId))
 })
 
 </script>
 
 <template>
-<div>
-    {{ useTaskStore().tasksMetadata[tokenId] }}
-</div>
+   <div class="flex gap-4 py-10 justify-center border-2">
+        <div>
+            left
+        </div>
+
+        <div>
+            right
+        </div>
+   </div>
 </template>
 
 <style>

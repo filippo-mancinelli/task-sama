@@ -21,7 +21,6 @@ router.post('/uploadImageToDB', upload.single('file'), async (ctx, next) => {
     const taskId = ctx.request.body.tokenId;
     const walletAddress = ctx.headers['x-wallet-address'];
 
-
     //### Uploaded image checks ###//
     if (!image) {
       ctx.throw(400, 'No file uploaded.');
@@ -73,7 +72,7 @@ router.post('/uploadImageToDB', upload.single('file'), async (ctx, next) => {
       };
 
       await collection.insertOne(imageData);
-      console.log("doc inserted");
+      console.log("doc inserted:", imageData);
 
       ctx.body = {
         message: 'Image uploaded and saved successfully.',

@@ -19,10 +19,11 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         tasksABI: TasksABI.abi,
         tasksamaABI: TasksamaABI.abi,
         tasksAddress: tasksAddress, // ganache generated
-        tasksamaAddress: tasksamaAddress, //ganache generated
+        tasksamaAddress: tasksamaAddress, // ganache generated
         tasksInstance: null,
         tasksamaInstance: null,
-        isAllSetUp: false
+        isAllSetUp: false,
+        triggerEvent: false  // generic state to watch from component to trigger a refresh of something
     }),
 
     getters: {

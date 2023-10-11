@@ -3,7 +3,7 @@ import { useBackgroundStore } from '../stores/useBackgroundStore';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useTaskStore } from '../stores/useTaskStore';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { PlayCircleIcon } from "@heroicons/vue/24/solid"
 
 const connectionStore = useConnectionStore();
@@ -15,7 +15,15 @@ backgroundStore.changeBackgroundClass('bg-orange-50 h-screen');
 
 const selected = ref('created');
 const elements = ref([]);
+const imageMapping = ref({});
 
+function getImageUrl(tokenId) {
+  if (imageMapping.value[tokenId] !== undefined) {
+    return `data:image/jpeg;base64,${imageMapping.value[tokenId]}`;
+  } else {
+    return 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
+  }
+}
 
 watch(() => selected.value, (newSelected) => {
     if(videoStore.videoMetadata != null && videoStore.videoMetadata != undefined && taskStore.tasksMetadata != null && taskStore.tasksMetadata != undefined && connectionStore.walletAddress) {
@@ -42,6 +50,24 @@ watch(() => selected.value, (newSelected) => {
 
 onMounted(async () => {
     elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
+
+    watch(() => connectionStore.isAllSetUp, (value) => {
+        if (value) {
+            connectionStore.triggerEvent = !connectionStore.triggerEvent;
+            taskStore.fetchTasksMetadata().then(() => {
+                elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
+                taskStore.fetchTasksImages().then(response => {
+                    for(var i = 0; i < elements.value.length; i++) {
+                        for(var j = 0; j < response.data.length; j++) {
+                            if(elements.value[i].tokenId == response.data[j].taskId) {
+                                imageMapping.value[elements.value[i].tokenId] = response.data[j].data;
+                            }
+                        }
+                    }
+                })
+            });
+        }
+      });
 });
 
 </script>
@@ -68,9 +94,9 @@ onMounted(async () => {
     <div v-for="element in elements" class=" border-2 rounded-sm">
         <div class="flex items-center justify-between bg-orange-100">
             <div class="flex gap-2 items-center">
-                <figure><img class="h-20 w-20" src="https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427" alt="Shoes" /></figure>
-                <div class="flex flex-col">
-                    <span class="text-md font-medium">{{ element.title }}</span>
+                <figure class="w-40"><img class="h-25 max-w-40" :src="getImageUrl(element.tokenId)" alt="Image" /></figure>
+                <div class="flex flex-col ml-1">
+                    <span class="text-md font-medium">#{{ element.tokenId }} - {{ element.title }}</span>
                     <span class="text-sm">{{ element.description }}</span>
                     <span class="text-sm">{{ element.reward }} GLMR</span>
                 </div>

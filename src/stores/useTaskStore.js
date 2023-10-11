@@ -66,7 +66,14 @@ export const useTaskStore = defineStore('api', {
                 throw error;
               });
         },
-
+        
+        fetchTasksImages() {
+          const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTasksImages').then(response => {
+              this.tasksImages = response.data;
+              return response.data;
+          });
+          return promise;
+        },
 
         // ###### TASKS ####### //
 
@@ -115,15 +122,6 @@ export const useTaskStore = defineStore('api', {
                 return this.tasksMetadata;
             });
             return promise;
-        },
-
-        //fetch task image from DB
-        fetchTasksImages() {
-          const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTasksImages').then(response => {
-              this.tasksImages = response.data;
-              return response.data;
-          });
-          return promise;
         },
 
     }
