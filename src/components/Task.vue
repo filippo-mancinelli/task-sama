@@ -91,7 +91,7 @@ function participateTask() {
 <template>
   <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
     <router-link :to="`/task/${tokenId}`">
-      <figure  class="max-h-52 rounded-t-lg">
+      <figure  class="max-h-52 rounded-t-xl">
           <img :src="getImageUrl" alt="image" />
       </figure>
     </router-link>

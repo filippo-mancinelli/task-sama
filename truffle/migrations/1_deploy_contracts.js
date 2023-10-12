@@ -1,7 +1,8 @@
 const TaskSama = artifacts.require("TaskSama");
 const Tasks = artifacts.require("Tasks");
 const fs = require('fs');
-const AddressesFilePath = '../src/helpers/contractAddresses.js';
+const frontendAddressesFilePath = '../src/helpers/contractAddresses.js';
+const backendAddressesFilePath = '../backend/contractAddresses.js';
 const sourceTasksABIpath = './build/contracts/Tasks.json';
 const sourceTasksamaABIpath = './build/contracts/TaskSama.json';
 const targetTasksABIpath = '../src/helpers/TasksABI.json';
@@ -9,15 +10,19 @@ const targetTasksamaABIpath = '../src/helpers/TasksamaABI.json';
 
 function updateAddresses(taskAdd, tasksamaAdd) {
   try {
-    const data = fs.readFileSync(AddressesFilePath, 'utf8');
-    console.log('Original data:', data);
+    const backendData = fs.readFileSync(backendAddressesFilePath, 'utf8');
+    const frontendData = fs.readFileSync(frontendAddressesFilePath, 'utf8');
     
-    const updatedContent = data
+    const backendUpdatedContent = backendData
       .replace(/tasksAddress = '.+'/g, `tasksAddress = '${taskAdd}'`)
       .replace(/tasksamaAddress = '.+'/g, `tasksamaAddress = '${tasksamaAdd}'`);
-    console.log('Updated content:', updatedContent);
+
+    const frontendUpdatedContent = frontendData
+      .replace(/tasksAddress = '.+'/g, `tasksAddress = '${taskAdd}'`)
+      .replace(/tasksamaAddress = '.+'/g, `tasksamaAddress = '${tasksamaAdd}'`);
   
-    fs.writeFileSync(AddressesFilePath, updatedContent, 'utf8');
+    fs.writeFileSync(backendAddressesFilePath, backendUpdatedContent, 'utf8');
+    fs.writeFileSync(frontendAddressesFilePath, frontendUpdatedContent, 'utf8');
     console.log('Addresses updated successfully.');
   } catch (err) {
     console.error('Error updating addresses:', err);

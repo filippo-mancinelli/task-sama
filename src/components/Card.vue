@@ -85,7 +85,7 @@ onMounted(async () => {
 
   <div class="card-body gap-1 p-5">
     <h2 class="card-title">
-      {{ title }}   #{{ tokenId  }}
+      #{{ tokenId  }} - {{ title }}   
       <div class="badge badge-secondary">NEW</div>
     </h2>
     <p>{{ description }}</p>

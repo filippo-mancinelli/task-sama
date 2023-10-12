@@ -2,6 +2,7 @@ const Koa = require('koa');
 const cors = require('@koa/cors');
 const bodyParser = require('koa-bodyparser');
 const app = new Koa();
+const { spawn } = require("child_process");
 
 const corsOptions = {
   origin: '*',
@@ -25,4 +26,20 @@ app.use(likesRouter.routes());
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
+});
+
+
+// ### SPAWN BATCH JOB ### //
+const batchJob = spawn("node", ["batch.js"]);
+
+batchJob.stdout.on("data", (data) => {
+  console.log(`Job stdout: ${data}`);
+});
+
+batchJob.stderr.on("data", (data) => {
+  console.error(`Job stderr: ${data}`);
+});
+
+batchJob.on("close", (code) => {
+  console.log(`Job exited with code ${code}`);
 });
