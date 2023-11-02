@@ -1,4 +1,4 @@
-module.exports.tasksAddress = '0x1d687CDBa092A81a73D125D55081D3E6aCA810AA';
-module.exports.tasksamaAddress = '0xF499a29145deB48DE1622010c31D5C584d98596a';
+module.exports.tasksAddress = '0x81825C3d423556F52770CB94B6c415E004b23D50';
+module.exports.tasksamaAddress = '0xdAaF1623137625b4f865dF523Fa13064d0f782aa';
 
 //0x614c23cc9306df4cef0424cff117fdab331353d2b24a87139b98fc0620e94c0b
