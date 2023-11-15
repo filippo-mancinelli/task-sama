@@ -22,4 +22,4 @@ jobs:
             MONGO_PASSWORD="${{ secrets.MONGO_PASSWORD }}"
             VPS_PASSWORD="${{ secrets.VPS_PASSWORD }}"
             CONTAINER_NAME="ts-mongo"
-            echo "${VPS_PASSWORD}" | sudo docker exec ts-mongo mongodump --host localhost --port 27017 --username ${MONGO_USERNAME} --password ${MONGO_PASSWORD} --out /backup
+            echo "${VPS_PASSWORD}" | sudo -S docker exec ts-mongo mongodump --host localhost --port 27017 --username ${MONGO_USERNAME} --password ${MONGO_PASSWORD} --out /backup
