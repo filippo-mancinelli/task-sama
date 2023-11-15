@@ -22,7 +22,7 @@ async function fetchActiveTask() {
 
 // Fetch Tasks NFTs on-chain and compare with DB registry of videos stored on the server, if there is no matchup,
 // it means that the task has been completed and removed, hence we can remove all the non-winner participant videos on disk
-cron.schedule("*/15 * * * * *", async () => {
+cron.schedule("*/60 * * * * *", async () => {
   console.log("Fetching ongoing tasks from smart contract...");
   const tasks = await fetchActiveTask();
   console.log("Tasks fetched");
@@ -32,8 +32,6 @@ cron.schedule("*/15 * * * * *", async () => {
   const collection = db.collection('videos');
   const videoDocuments = await collection.find({}).toArray();
   console.log("Documents fetched");
-
-  console.log(tasks);
 
   for (const video of videoDocuments) {
     let found = false;
@@ -48,8 +46,11 @@ cron.schedule("*/15 * * * * *", async () => {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         console.log('File deleted successfully.');
+        
+        // Wait some time to complete the file deletion
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Delete the directory and its contents up to the "13" folder
+        // Delete the directory and its contents up to the folder corresponding to the taskId, for example "13"
         const directoryPath = path.dirname(filePath);
         const targetFolder = path.join(directoryPath, video.taskId);
 

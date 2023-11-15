@@ -83,35 +83,31 @@ module.exports = async function (deployer) {
   await tasks.createTask('TITLE 2', 'DESC 2', { value: web3.utils.toWei("12", "ether") });
   await tasks.createTask('TITLE 3', 'DESC 3', { value: web3.utils.toWei("15", "ether") });
   await tasks.createTask('TITLE 4', 'DESC 4', { value: web3.utils.toWei("20", "ether") });
-  await tasks.createTask('TITLE 5', 'DESC 5', { value: web3.utils.toWei("25", "ether") });
-  await tasks.createTask('TITLE 6', 'DESC 6', { value: web3.utils.toWei("21", "ether") });
-  await tasks.createTask('TITLE 7', 'DESC 7', { value: web3.utils.toWei("300", "ether") });
-  await tasks.createTask('TITLE 8', 'DESC 8', { value: web3.utils.toWei("120", "ether") });
-  await tasks.createTask('TITLE 9', 'DESC 9', { value: web3.utils.toWei("19", "ether") });
+  //await tasks.createTask('TITLE 5', 'DESC 5', { value: web3.utils.toWei("25", "ether") });
+  //await tasks.createTask('TITLE 6', 'DESC 6', { value: web3.utils.toWei("21", "ether") });
+  //await tasks.createTask('TITLE 7', 'DESC 7', { value: web3.utils.toWei("300", "ether") });
+  //await tasks.createTask('TITLE 8', 'DESC 8', { value: web3.utils.toWei("120", "ether") });
+  //await tasks.createTask('TITLE 9', 'DESC 9', { value: web3.utils.toWei("19", "ether") });
 
 
   // participate to tasks with various accounts
   await tasks.participate(1, {from: accounts[9]});
   await tasks.participate(2, {from: accounts[1]});
   await tasks.participate(3, {from: accounts[2]});
-  await tasks.participate(3, {from: accounts[3]});
-  await tasks.participate(4, {from: accounts[3]});
-  await tasks.participate(5, {from: accounts[4]});
-  await tasks.participate(5, {from: accounts[5]});
-  await tasks.participate(5, {from: accounts[6]});
-  await tasks.participate(8, {from: accounts[8]});
+  //await tasks.participate(5, {from: accounts[4]});
+  //await tasks.participate(5, {from: accounts[5]});
+  //await tasks.participate(5, {from: accounts[6]});
+  //await tasks.participate(8, {from: accounts[8]});
 
 
-  console.log("########### ACCOUNTS #############",accounts)
-  
   // choose winners
   await tasks.chooseWinner(1, accounts[9], 'https://ipfs.io/ipfs/QmaFA62X2511yUy5ZSbaQuXY177U1SaTPguaKYHrUscL4H?filename=visore.mp4', 'https://ipfs.io/ipfs/QmaFA62X2511yUy5ZSbaQuXY177U1SaTPguaKYHrUscL4H?filename=visore.mp4');
   await tasks.chooseWinner(2, accounts[1], 'https://ipfs.io/ipfs/QmRmTnWTRbKf1Cz5RRsmaib7wC3f3Yqo9JH7SG2YhxMW8k?filename=chimica.mp4', 'https://ipfs.io/ipfs/QmRmTnWTRbKf1Cz5RRsmaib7wC3f3Yqo9JH7SG2YhxMW8k?filename=chimica.mp4');
-  await tasks.chooseWinner(3, accounts[3], 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4', 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4');
-  await tasks.chooseWinner(5, accounts[6], 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4', 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4');
+  //await tasks.chooseWinner(3, accounts[3], 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4', 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4');
+  //await tasks.chooseWinner(5, accounts[6], 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4', 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4');
   
   // check 
-  //console.log(await tasksama.getVideos())
+  // console.log(await tasksama.getVideos())
 
   console.log("########### WRITE CONTRACT INSTANCES ADDRESSES #############")
   updateAddresses(tasks.address, tasksama.address)

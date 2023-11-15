@@ -33,6 +33,9 @@ bin/src/contracts/TaskSama.json
 # Frontend temp data
 src/helpers/TasksABI.json
 src/helpers/TasksamaABI.json
+src/helpers/contractAddresses.js
 
 # Backend
 backend/uploads/
+backend/contractAddresses.js
+src/helpers/contractAddresses.js
