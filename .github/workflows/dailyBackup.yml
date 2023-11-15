@@ -1,0 +1,24 @@
+name: Daily Backup
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  start_mongo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: daily backup MongoDB
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            MONGO_USERNAME="${{ secrets.MONGO_USERNAME }}"
+            MONGO_PASSWORD="${{ secrets.MONGO_PASSWORD }}"
+            VPS_PASSWORD="${{ secrets.VPS_PASSWORD }}"
+            CONTAINER_NAME="ts-mongo"
+            echo "${VPS_PASSWORD}" | sudo docker exec ts-mongo mongodump --host localhost --port 27017 --username ${MONGO_USERNAME} --password ${MONGO_PASSWORD} --out /backup
