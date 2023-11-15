@@ -1,3 +1,7 @@
+# - This workflow executes a mongodump to backup the running mongo container db and store it in the shared volume which
+# - containes all the backups. The backup is zipped and a date is appended to the file. The workflow eliminates backups 
+# - older than 14 days.
+
 name: Daily Backup
 
 on:
@@ -21,15 +25,14 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          env:
-            MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
-            MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-            VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
-            CONTAINER_NAME: "ts-mongo"
-            DATE: ${{ steps.set_date.outputs.date }}
           script: |
+            DATE: ${{ steps.set_date.outputs.date }}
             BACKUP_DIR="/backup"
             BACKUP_FILE="mongodump_${DATE}.tar.gz"
+            MONGO_USERNAME="${{ secrets.MONGO_USERNAME }}"
+            MONGO_PASSWORD="${{ secrets.MONGO_PASSWORD }}"
+            VPS_PASSWORD="${{ secrets.VPS_PASSWORD }}"
+            CONTAINER_NAME="ts-mongo"
 
             echo "${VPS_PASSWORD}" | sudo -S docker exec ${CONTAINER_NAME} mongodump --host localhost --port 27017 --username ${MONGO_USERNAME} --password ${MONGO_PASSWORD} --out ${BACKUP_DIR}/${DATE}
             
