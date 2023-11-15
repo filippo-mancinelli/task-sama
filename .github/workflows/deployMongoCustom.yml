@@ -65,7 +65,7 @@ jobs:
           port: 22
           script: |
             PASSWORD="${{ secrets.VPS_PASSWORD }}"
-            CONTAINER_NAME="mongo"
+            CONTAINER_NAME="ts-mongo"
             echo "${PASSWORD}" | sudo -S docker stop ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker pull crosta/ts-mongo:latest
