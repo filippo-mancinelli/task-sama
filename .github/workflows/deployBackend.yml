@@ -62,7 +62,7 @@ jobs:
           port: 22
           script: |
             PASSWORD="${{ secrets.VPS_PASSWORD }}"
-            CONTAINER_NAME="backend"
+            CONTAINER_NAME="ts-backend"
             echo "${PASSWORD}" | sudo -S docker stop ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker pull crosta/ts-backend:latest
