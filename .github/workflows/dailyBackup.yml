@@ -4,22 +4,37 @@ on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
-  
+
 jobs:
   start_mongo:
     runs-on: ubuntu-latest
 
     steps:
-      - name: daily backup MongoDB
+      - name: Set date variable
+        id: set_date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: Daily backup MongoDB
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
+          env:
+            MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
+            MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+            VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
+            CONTAINER_NAME: "ts-mongo"
+            DATE: ${{ steps.set_date.outputs.date }}
           script: |
-            MONGO_USERNAME="${{ secrets.MONGO_USERNAME }}"
-            MONGO_PASSWORD="${{ secrets.MONGO_PASSWORD }}"
-            VPS_PASSWORD="${{ secrets.VPS_PASSWORD }}"
-            CONTAINER_NAME="ts-mongo"
-            echo "${VPS_PASSWORD}" | sudo -S docker exec ts-mongo mongodump --host localhost --port 27017 --username ${MONGO_USERNAME} --password ${MONGO_PASSWORD} --out /backup
+            BACKUP_DIR="/backup"
+            BACKUP_FILE="mongodump_${DATE}.tar.gz"
+
+            echo "${VPS_PASSWORD}" | sudo -S docker exec ${CONTAINER_NAME} mongodump --host localhost --port 27017 --username ${MONGO_USERNAME} --password ${MONGO_PASSWORD} --out ${BACKUP_DIR}/${DATE}
+            
+            # Compress the backup
+            sudo -S tar -zcvf ${BACKUP_DIR}/${BACKUP_FILE} -C ${BACKUP_DIR} ${DATE}
+            
+            # Delete backups older than two weeks
+            sudo -S find ${BACKUP_DIR} -type f -name 'mongodump_*' -mtime +14 -exec rm -f {} \;
