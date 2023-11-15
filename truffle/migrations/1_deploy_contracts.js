@@ -94,16 +94,16 @@ module.exports = async function (deployer) {
   await tasks.participate(1, {from: accounts[9]});
   await tasks.participate(2, {from: accounts[1]});
   await tasks.participate(3, {from: accounts[2]});
-  //await tasks.participate(5, {from: accounts[4]});
-  //await tasks.participate(5, {from: accounts[5]});
-  //await tasks.participate(5, {from: accounts[6]});
+  await tasks.participate(4, {from: accounts[4]});
+  await tasks.participate(4, {from: accounts[5]});
+  await tasks.participate(4, {from: accounts[6]});
   //await tasks.participate(8, {from: accounts[8]});
 
 
   // choose winners
   await tasks.chooseWinner(1, accounts[9], 'https://ipfs.io/ipfs/QmaFA62X2511yUy5ZSbaQuXY177U1SaTPguaKYHrUscL4H?filename=visore.mp4', 'https://ipfs.io/ipfs/QmaFA62X2511yUy5ZSbaQuXY177U1SaTPguaKYHrUscL4H?filename=visore.mp4');
   await tasks.chooseWinner(2, accounts[1], 'https://ipfs.io/ipfs/QmRmTnWTRbKf1Cz5RRsmaib7wC3f3Yqo9JH7SG2YhxMW8k?filename=chimica.mp4', 'https://ipfs.io/ipfs/QmRmTnWTRbKf1Cz5RRsmaib7wC3f3Yqo9JH7SG2YhxMW8k?filename=chimica.mp4');
-  //await tasks.chooseWinner(3, accounts[3], 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4', 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4');
+  await tasks.chooseWinner(3, accounts[2], 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4', 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4');
   //await tasks.chooseWinner(5, accounts[6], 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4', 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4');
   
   // check 
