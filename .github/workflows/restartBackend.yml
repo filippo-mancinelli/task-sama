@@ -1,0 +1,23 @@
+name: Restart backend container remotely
+on:
+  workflow_dispatch:
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restart container
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            PASSWORD="${{ secrets.VPS_PASSWORD }}"
+            CONTAINER_NAME="ts-backend"
+            echo "${PASSWORD}" | sudo -S docker stop ${CONTAINER_NAME} || true
+            echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
+            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 3000:3000 crosta/ts-backend:latest
+            
