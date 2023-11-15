@@ -26,7 +26,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            DATE: ${{ steps.date.outputs.date }}
+            DATE=$(date +'%Y-%m-%d')
             BACKUP_DIR="/backup"
             BACKUP_FILE="mongodump_${DATE}.tar.gz"
             MONGO_USERNAME="${{ secrets.MONGO_USERNAME }}"
