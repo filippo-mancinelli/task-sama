@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set date variable
-        id: set_date
+      - name: Get current date
+        id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       - name: Daily backup MongoDB
@@ -26,7 +26,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            DATE: ${{ steps.set_date.outputs.date }}
+            DATE: ${{ steps.date.outputs.date }}
             BACKUP_DIR="/backup"
             BACKUP_FILE="mongodump_${DATE}.tar.gz"
             MONGO_USERNAME="${{ secrets.MONGO_USERNAME }}"
@@ -37,7 +37,7 @@ jobs:
             echo "${VPS_PASSWORD}" | sudo -S docker exec ${CONTAINER_NAME} mongodump --host localhost --port 27017 --username ${MONGO_USERNAME} --password ${MONGO_PASSWORD} --out ${BACKUP_DIR}/${DATE}
             
             # Compress the backup
-            sudo -S tar -zcvf ${BACKUP_DIR}/${BACKUP_FILE} -C ${BACKUP_DIR} ${DATE}
+            echo "${VPS_PASSWORD}" | sudo -S tar -zcvf ${BACKUP_DIR}/${BACKUP_FILE} -C ${BACKUP_DIR} ${DATE}
             
             # Delete backups older than two weeks
-            sudo -S find ${BACKUP_DIR} -type f -name 'mongodump_*' -mtime +14 -exec rm -f {} \;
+            echo "${VPS_PASSWORD}" | sudo -S find ${BACKUP_DIR} -type f -name 'mongodump_*' -mtime +14 -exec rm -f {} \;
