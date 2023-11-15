@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  start_mongo:
+  backup:
     runs-on: ubuntu-latest
 
     steps:
