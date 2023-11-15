@@ -3,7 +3,7 @@
 # - build the Dockerfile on ./backend/DockerfileMongo
 # - push the new image on Dockerhub with "latest" tag
 # - copy the mongo configuration file via scp into the server
-# - ssh into the server, pull the new image, run and replace mongo container.
+# - ssh into the server, pull the new image, replace running mongo container.
 
 name: Deploy mongo container with custom configuration file
 
@@ -68,7 +68,8 @@ jobs:
             CONTAINER_NAME="ts-mongo"
             echo "${PASSWORD}" | sudo -S docker stop ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
+            echo "${PASSWORD}" | sudo -S docker rmi crosta/ts-mongo:latest || true
             echo "${PASSWORD}" | sudo -S docker pull crosta/ts-mongo:latest
-            echo "${PASSWORD}" | sudo -S docker run -d -p 27117:27017 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db -v /home/carl/configurations/mongod.conf:/etc/mongod.conf mongo:latest --auth
+            echo "${PASSWORD}" | sudo -S docker run -d -p 27117:27017 --name ${CONTAINER_NAME} -v /home/carl/data/db:/data/db -v /home/carl/backup:/backup -v /home/carl/configurations/mongod.conf:/etc/mongod.conf mongo:latest --auth
 
 
