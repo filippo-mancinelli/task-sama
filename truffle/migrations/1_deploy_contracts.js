@@ -2,11 +2,13 @@ const TaskSama = artifacts.require("TaskSama");
 const Tasks = artifacts.require("Tasks");
 const fs = require('fs');
 const frontendAddressesFilePath = '../src/helpers/contractAddresses.js';
-const backendAddressesFilePath = '../backend/contractAddresses.js';
+const backendAddressesFilePath = '../backend/helpers/contractAddresses.js';
 const sourceTasksABIpath = './build/contracts/Tasks.json';
 const sourceTasksamaABIpath = './build/contracts/TaskSama.json';
 const targetTasksABIpath = '../src/helpers/TasksABI.json';
 const targetTasksamaABIpath = '../src/helpers/TasksamaABI.json';
+const backendTargetTasksABIpath = '../backend/helpers/TasksABI.json';
+const backendTargetTasksamaABIpath = '../backend/helpers/TasksamaABI.json';
 
 function updateAddresses(taskAdd, tasksamaAdd) {
   try {
@@ -48,6 +50,8 @@ function replaceContractsABI() {
     // Write the new JSON object to the target JSON file
     fs.writeFileSync(targetTasksABIpath, JSON.stringify(targetTasksABI, null, 2), 'utf8');
     fs.writeFileSync(targetTasksamaABIpath, JSON.stringify(targetTasksamaABI, null, 2), 'utf8');
+    fs.writeFileSync(backendTargetTasksABIpath, JSON.stringify(targetTasksABI, null, 2), 'utf8');
+    fs.writeFileSync(backendTargetTasksamaABIpath, JSON.stringify(targetTasksamaABI, null, 2), 'utf8');
   
     console.log('Value copied successfully.');
   } catch (err) {
@@ -83,7 +87,7 @@ module.exports = async function (deployer) {
   await tasks.createTask('TITLE 2', 'DESC 2', { value: web3.utils.toWei("12", "ether") });
   await tasks.createTask('TITLE 3', 'DESC 3', { value: web3.utils.toWei("15", "ether") });
   await tasks.createTask('TITLE 4', 'DESC 4', { value: web3.utils.toWei("20", "ether") });
-  //await tasks.createTask('TITLE 5', 'DESC 5', { value: web3.utils.toWei("25", "ether") });
+  await tasks.createTask('TITLE 5', 'DESC 5', { value: web3.utils.toWei("25", "ether") });
   //await tasks.createTask('TITLE 6', 'DESC 6', { value: web3.utils.toWei("21", "ether") });
   //await tasks.createTask('TITLE 7', 'DESC 7', { value: web3.utils.toWei("300", "ether") });
   //await tasks.createTask('TITLE 8', 'DESC 8', { value: web3.utils.toWei("120", "ether") });

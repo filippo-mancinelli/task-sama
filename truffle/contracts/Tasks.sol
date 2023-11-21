@@ -21,7 +21,6 @@ contract Tasks is ERC721, Ownable {
         string description;
         uint256 reward;
         address[] participants;
-        address winner;
     }
 
     ITasksSamaContract private _taskSamaContract;
@@ -47,8 +46,7 @@ contract Tasks is ERC721, Ownable {
             title: _title,
             description: _description,
             reward: msg.value,
-            participants: new address[](0),
-            winner: address(0)
+            participants: new address[](0)
         });
 
         tasks[tokenId] = newTask;
@@ -71,8 +69,6 @@ contract Tasks is ERC721, Ownable {
         require(_taskExists(_taskId), "Task does not exist");
         require(_isParticipant(task, _winner), "The user chosen did not participate");
         require(_isOwner(task, msg.sender), "Only the owner of the task can choose the winner");
-
-        task.winner = _winner;
 
         // Transfer the reward from the contract balance to the winner
         _winner.transfer(task.reward * 1 wei);

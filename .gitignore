@@ -38,6 +38,11 @@ src/helpers/contractAddresses.js
 # Backend
 backend/uploads/
 backend/contractAddresses.js
+backend/helpers/TasksABI.json
+backend/helpers/TasksamaABI.json
 src/helpers/contractAddresses.js
+
+
+# Others
 src/helpers/TasksABI.json
 src/helpers/TasksamaABI.json

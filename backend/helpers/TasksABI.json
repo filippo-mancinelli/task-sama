@@ -456,11 +456,6 @@
           "internalType": "uint256",
           "name": "reward",
           "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "winner",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -638,11 +633,6 @@
               "internalType": "address[]",
               "name": "participants",
               "type": "address[]"
-            },
-            {
-              "internalType": "address",
-              "name": "winner",
-              "type": "address"
             }
           ],
           "internalType": "struct Tasks.Task[]",
@@ -695,11 +685,6 @@
               "internalType": "address[]",
               "name": "participants",
               "type": "address[]"
-            },
-            {
-              "internalType": "address",
-              "name": "winner",
-              "type": "address"
             }
           ],
           "internalType": "struct Tasks.Task",

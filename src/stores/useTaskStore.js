@@ -44,6 +44,11 @@ export const useTaskStore = defineStore('api', {
             return promise;
         },
 
+        async reminder(tokenId, participantAddress) {
+          const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/reminder', { tokenId, participantAddress })
+          return promise;
+        },
+
         // ###### IMAGES API ###### //
         
         uploadImageToDB(file, tokenId) {

@@ -65,7 +65,8 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
         uploadDate: formattedDate,
         size: video.size,
         taskId: taskId,
-        senderAddress: walletAddress
+        senderAddress: walletAddress,
+        moderated: false
       };
 
       await collection.insertOne(videoData);
@@ -123,7 +124,7 @@ router.post('/uploadVideoToIpfs', async (ctx, next) => {
 
           ctx.body = {
             message: 'Video uploaded to IPFS successfully.',
-            data: videoData,
+            data: metadata,
           };
         } catch (error) {
           console.log(`Failed to retrieve video locally at path ${video.path}: ${error}`);
@@ -148,7 +149,7 @@ router.post('/uploadVideoToIpfs', async (ctx, next) => {
 
 /* 
 ###############################################################
-################### getParticipantVideo #####################
+################### getParticipantVideo ######################
 ############################################################### 
 */
 router.get('/getParticipantVideo', async (ctx, next) => {
@@ -162,27 +163,29 @@ router.get('/getParticipantVideo', async (ctx, next) => {
       const db = await connectToDatabase();
       const collection = db.collection('videos');
       const video = await collection.findOne({ 'taskId': tokenId, 'senderAddress': participantAddress });
-      console.log("video.path", video.path);
+      if(video.moderated == true) {
+        const filePath = video.path;
 
-      const filePath = video.path;
-
-      if (fs.existsSync(filePath)) {
-        // Create a readable stream from the file
-        const fileStream = fs.createReadStream(filePath);
-
-        // Set the response type to 'video/mp4'
-        ctx.type = 'video/mp4';
-
-        // Create a PassThrough stream to pass data to the response
-        const passThroughStream = new PassThrough();
-
-        // Pipe the file stream to the PassThrough stream
-        fileStream.pipe(passThroughStream);
-
-        // Set the response body to the PassThrough stream
-        ctx.body = passThroughStream;
+        if (fs.existsSync(filePath)) {
+          // Create a readable stream from the file
+          const fileStream = fs.createReadStream(filePath);
+  
+          // Set the response type to 'video/mp4'
+          ctx.type = 'video/mp4';
+  
+          // Create a PassThrough stream to pass data to the response
+          const passThroughStream = new PassThrough();
+  
+          // Pipe the file stream to the PassThrough stream
+          fileStream.pipe(passThroughStream);
+  
+          // Set the response body to the PassThrough stream
+          ctx.body = passThroughStream;
+        } else {
+          ctx.throw(404, 'Video not found');
+        }
       } else {
-        ctx.throw(404, 'Video not found');
+        ctx.throw(202, 'Video is not approved by moderators yet.');
       }
     } catch (error) {
       ctx.throw(500, 'Failed to retrieve video.', error);

@@ -1,6 +1,6 @@
 const cron = require("node-cron");
 const ethers = require("ethers");
-const { tasksAddress, tasksamaAddress } = require('./contractAddresses');
+const { tasksAddress, tasksamaAddress } = require('./helpers/contractAddresses');
 const TasksABI = require("./helpers/TasksABI.json");
 const TasksamaABI = require("./helpers/TasksamaABI.json");
 const fs = require('fs');
@@ -22,7 +22,7 @@ async function fetchActiveTask() {
 
 // Fetch Tasks NFTs on-chain and compare with DB registry of videos stored on the server, if there is no matchup,
 // it means that the task has been completed and removed, hence we can remove all the non-winner participant videos on disk
-cron.schedule("*/60 * * * * *", async () => {
+cron.schedule("*/5 * * * *", async () => {
   console.log("Fetching ongoing tasks from smart contract...");
   const tasks = await fetchActiveTask();
   console.log("Tasks fetched");

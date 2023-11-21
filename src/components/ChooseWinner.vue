@@ -26,6 +26,8 @@ const modalType = ref('');
 const message = ref('');
 const isLoading = ref(false);
 const loadingMessage = ref('')
+const videoBlocked = ref(false);
+const reminded = ref(false);
 var isReady = ref(false);
 
 
@@ -60,8 +62,21 @@ function first() {
 
 async function fetchBackendVideo(tokenId, participantAddress) {
   const response = await taskStore.getParticipantVideo(tokenId, participantAddress);
-  const videoBlob = new Blob([response.data], { type: 'video/mp4' });
-  videoPlayer.value.src = URL.createObjectURL(videoBlob);
+  if(response.status = 202) { // Video not moderated
+    videoBlocked.value = true;
+    return;
+  } else {
+    videoBlocked.value = false;
+    const videoBlob = new Blob([response.data], { type: 'video/mp4' });
+    videoPlayer.value.src = URL.createObjectURL(videoBlob);
+  }
+}
+
+function reminder() {
+    if(!reminded.value) {
+        reminded.value = true;
+        taskStore.reminder(route.params.tokenId, participants.value[currentParticipantCounter.value]);
+    }
 }
 
 //##### CHOOSE WINNER #####//
@@ -74,7 +89,7 @@ function chooseWinner() {
         taskStore.uploadVideoToIpfs(taskObject.value.tokenId, selectedWinner.value).then(result => {
             if(result.status == 200) {
                 loadingMessage.value = 'Waiting for transaction confirmation'
-
+                
                 const formattedMetadataURL = result.data.data.IPFSMetadataUrl.replace('ipfs://', 'ipfs/');
                 const formattedVideoURL = 'https://ipfs.io/' + result.data.data.IPFSVideoUrl.replace('ipfs://', 'ipfs/');
                 connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, formattedMetadataURL, formattedVideoURL]).then(res => {
@@ -168,13 +183,20 @@ onMounted(async ()=> {
                     <div class="card w-96 my-6 bg-base-100 shadow-xl">
                         <!-- VIDEO PLAYER -->
                         <div class="video-container" @mouseenter="showControls = true" @mouseleave="showControls = false">
-                            <div class="video-wrapper">
-                                <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
+                            <div class="video-wrapper" :class="{ 'pb-0': videoBlocked }">
+                                <video v-if="!videoBlocked" ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
+                                <div v-else class="flex flex-col mt-2 mx-3 bg-gray-100 rounded-xl">
+                                    <span class="p-4">This video was not yet reviewed by our moderation team. Click the button below to send us a reminder to review this video as soon as possible!</span>
+                                    <button class="btn btn-circle self-center mb-4 rounded-full bg-yellow-300 hover:bg-yellow-400 text-white" :class="{ 'btn-disabled': reminded, 'bg-yellow-400': reminded }" @click="reminder">
+                                        <svg v-if="!reminded" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1" stroke="black" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" stroke-width="1" stroke="black" class="w-6 h-6"><path d="M5.85 3.5a.75.75 0 00-1.117-1 9.719 9.719 0 00-2.348 4.876.75.75 0 001.479.248A8.219 8.219 0 015.85 3.5zM19.267 2.5a.75.75 0 10-1.118 1 8.22 8.22 0 011.987 4.124.75.75 0 001.48-.248A9.72 9.72 0 0019.266 2.5z" /><path fill-rule="evenodd" d="M12 2.25A6.75 6.75 0 005.25 9v.75a8.217 8.217 0 01-2.119 5.52.75.75 0 00.298 1.206c1.544.57 3.16.99 4.831 1.243a3.75 3.75 0 107.48 0 24.583 24.583 0 004.83-1.244.75.75 0 00.298-1.205 8.217 8.217 0 01-2.118-5.52V9A6.75 6.75 0 0012 2.25zM9.75 18c0-.034 0-.067.002-.1a25.05 25.05 0 004.496 0l.002.1a2.25 2.25 0 11-4.5 0z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body p-3">
                             <p>{{ participants[currentParticipantCounter] }}</p>
-                            <button class="btn bg-orange-400 hover:bg-orange-500 text-white" @click="() => selectedWinner = participants[currentParticipantCounter]">candidate</button>
+                            <button class="btn bg-orange-400 hover:bg-orange-500 text-white" :class="{ 'btn-disabled': videoBlocked, 'bg-orange-500': videoBlocked }" @click="() => selectedWinner = participants[currentParticipantCounter]">candidate</button>
                         </div>
                     </div>
                 <a class="btn btn-circle border-2 border-teal-200" @click="next">❯</a> 

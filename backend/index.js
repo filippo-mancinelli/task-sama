@@ -20,9 +20,11 @@ app.use(bodyParser());
 const videosRouter = require('./routes/videos');
 const imagesRouter = require('./routes/images');
 const likesRouter = require('./routes/likes');
+const taskRouter = require('./routes/tasks');
 app.use(videosRouter.routes());
 app.use(imagesRouter.routes());
 app.use(likesRouter.routes());
+app.use(taskRouter.routes());
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
