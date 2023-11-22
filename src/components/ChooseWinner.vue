@@ -62,7 +62,7 @@ function first() {
 
 async function fetchBackendVideo(tokenId, participantAddress) {
   const response = await taskStore.getParticipantVideo(tokenId, participantAddress);
-  if(response.status = 202) { // Video not moderated
+  if(response.status = 202 && response.statusText == "Accepted") { // Video not moderated
     videoBlocked.value = true;
     return;
   } else {
@@ -90,8 +90,8 @@ function chooseWinner() {
             if(result.status == 200) {
                 loadingMessage.value = 'Waiting for transaction confirmation'
                 
-                const formattedMetadataURL = result.data.data.IPFSMetadataUrl.replace('ipfs://', 'ipfs/');
-                const formattedVideoURL = 'https://ipfs.io/' + result.data.data.IPFSVideoUrl.replace('ipfs://', 'ipfs/');
+                const formattedMetadataURL = result.data.data.IPFSMetadataUrl;
+                const formattedVideoURL = 'https://cloudflare-ipfs.com/' + result.data.data.IPFSVideoUrl;  // TODO check gateway availability first and switch if necessary
                 connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, formattedMetadataURL, formattedVideoURL]).then(res => {
                     modalType.value = 'success';
                     message.value = '🏆 The winner has been chosen! \nYour NFT has been minted and transferred to your account.';

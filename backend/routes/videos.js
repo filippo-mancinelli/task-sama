@@ -122,12 +122,57 @@ router.post('/uploadVideoToIpfs', async (ctx, next) => {
           });
           console.log("video succesfully uploaded to IPFS. metadata: ",metadata);
 
+          // Retrieve from the ipfsMetadataUrl, the video's ipfsUrl, so we can store it and retrieve it easily from IPFSvideos collection
+          const cloudflareURL = 'https://cloudflare-ipfs.com/';
+          const ipfsioURL = 'https://ipfs.io/';
+
+          let formattedMetadataURL = cloudflareURL + metadata.url.replace('ipfs://', 'ipfs/');
+          let IPFSVideoUrl;
+          
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+          
+            const checkAvailability = await fetch(formattedMetadataURL, { method: 'HEAD', signal: controller.signal });
+            clearTimeout(timeoutId); // Clear the timeout since the request completed within the time limit
+          
+            if (!checkAvailability.ok) {
+              // Cloudflare IPFS gateway is unreachable, switch to ipfs.io
+              formattedMetadataURL = ipfsioURL + metadata.url.replace('ipfs://', 'ipfs/');
+            }
+          
+            const fetchResult = await fetch(formattedMetadataURL);
+            const jsonResult = await fetchResult.json();
+            IPFSVideoUrl = jsonResult.image;
+          } catch (error) {
+            console.error('Error occurred:', error);
+            ctx.throw(500, 'Failed to retrieve video metadata.', error);
+          }
+          
+          
+          // Insert the uploaded video information into the "IPFSvideos" collection
+          const currentDate = new Date();
+          const formattedDate = formatDateToString(currentDate);
+          const videoMetadata = {
+            name: video.name,
+            IPFSMetadataUrl: metadata.url.replace('ipfs://', 'ipfs/'),
+            IPFSVideoUrl: IPFSVideoUrl.replace('ipfs://', 'ipfs/'),
+            winnerAddress: winnerAddress,
+            uploadDate: formattedDate,
+            nftId: 'to be minted'
+          };
+
+          collection = db.collection('IPFSvideos');
+          await collection.insertOne(videoMetadata);
+          console.log("doc inserted into IPFSvideos");
+
+
           ctx.body = {
             message: 'Video uploaded to IPFS successfully.',
-            data: metadata,
+            data: videoMetadata,
           };
         } catch (error) {
-          console.log(`Failed to retrieve video locally at path ${video.path}: ${error}`);
+          console.log(`${error}`);
         }
       } else {
         ctx.throw(404, 'Video to be uploaded to IPFS not found locally.');
@@ -165,7 +210,6 @@ router.get('/getParticipantVideo', async (ctx, next) => {
       const video = await collection.findOne({ 'taskId': tokenId, 'senderAddress': participantAddress });
       if(video.moderated == true) {
         const filePath = video.path;
-
         if (fs.existsSync(filePath)) {
           // Create a readable stream from the file
           const fileStream = fs.createReadStream(filePath);

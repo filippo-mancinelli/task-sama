@@ -14,7 +14,7 @@ const connectionStore = useConnectionStore();
   <div class="sticky flex items-center gap-4 top-0 z-10 pt-4 px-4 sm:px-40 pb-20 sm:pb-5 drop-shadow-md">
     <div class="navbar  w-full   bg-yellow-100	 border-2 border-black rounded-full ">
   <div class="flex-1 border-solid border-2 border-black rounded-full bg-orange-100">
-    <a class="btn btn-ghost normal-case text-2xl">Task Sama</a>
+    <router-link to="/" class="btn btn-ghost normal-case text-2xl">Task Sama</router-link>
     <ul class="menu menu-horizontal px-1">
       <li class="hidden md:block"><router-link to="/" class=" hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out">Home</router-link></li>
       <li class="hidden md:block"><a href="#tasks" class="hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out">Tasks</a></li>
