@@ -105,10 +105,10 @@ module.exports = async function (deployer) {
 
 
   // choose winners
-  await tasks.chooseWinner(1, accounts[9], 'https://ipfs.io/ipfs/QmaFA62X2511yUy5ZSbaQuXY177U1SaTPguaKYHrUscL4H?filename=visore.mp4', 'https://ipfs.io/ipfs/QmaFA62X2511yUy5ZSbaQuXY177U1SaTPguaKYHrUscL4H?filename=visore.mp4');
-  await tasks.chooseWinner(2, accounts[1], 'https://ipfs.io/ipfs/QmRmTnWTRbKf1Cz5RRsmaib7wC3f3Yqo9JH7SG2YhxMW8k?filename=chimica.mp4', 'https://ipfs.io/ipfs/QmRmTnWTRbKf1Cz5RRsmaib7wC3f3Yqo9JH7SG2YhxMW8k?filename=chimica.mp4');
-  await tasks.chooseWinner(3, accounts[2], 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4', 'https://ipfs.io/ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4');
-  //await tasks.chooseWinner(5, accounts[6], 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4', 'https://ipfs.io/ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4');
+  await tasks.chooseWinner(1, accounts[9], 'ipfs/QmaFA62X2511yUy5ZSbaQuXY177U1SaTPguaKYHrUscL4H?filename=visore.mp4', 'ipfs/QmaFA62X2511yUy5ZSbaQuXY177U1SaTPguaKYHrUscL4H?filename=visore.mp4');
+  await tasks.chooseWinner(2, accounts[1], 'ipfs/QmRmTnWTRbKf1Cz5RRsmaib7wC3f3Yqo9JH7SG2YhxMW8k?filename=chimica.mp4', 'ipfs/QmRmTnWTRbKf1Cz5RRsmaib7wC3f3Yqo9JH7SG2YhxMW8k?filename=chimica.mp4');
+  await tasks.chooseWinner(3, accounts[2], 'ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4', 'ipfs/QmcjZ3HDDtxj17MYWGsUr6cuDnQFtzNq5RujEtK3GDLThT?filename=trama.mp4');
+  //await tasks.chooseWinner(5, accounts[6], 'ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4', 'ipfs/QmcwD7k4N6K9LcyuWBb3LqNUJCC4nAHMivx9CSWNhbnWgY?filename=girl.mp4');
   
   // check 
   // console.log(await tasksama.getVideos())

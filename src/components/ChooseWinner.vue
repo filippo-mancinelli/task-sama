@@ -90,9 +90,7 @@ function chooseWinner() {
             if(result.status == 200) {
                 loadingMessage.value = 'Waiting for transaction confirmation'
                 
-                const formattedMetadataURL = result.data.data.IPFSMetadataUrl;
-                const formattedVideoURL = 'https://cloudflare-ipfs.com/' + result.data.data.IPFSVideoUrl;  // TODO check gateway availability first and switch if necessary
-                connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, formattedMetadataURL, formattedVideoURL]).then(res => {
+                connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, result.data.data.IPFSMetadataUrl, result.data.data.IPFSVideoUrl]).then(res => {
                     modalType.value = 'success';
                     message.value = '🏆 The winner has been chosen! \nYour NFT has been minted and transferred to your account.';
                     showModalResult.value = true;

@@ -56,10 +56,40 @@ const videoPlayer = ref(null);
 const showControls = ref(false);
 
 async function fetchIPFSVideo() {
-  const response = await fetch(props.ipfsVideoUrl);
-  const blob = await response.blob();
-  videoPlayer.value.src = URL.createObjectURL(blob);
+  const gateways = ['https://ipfs.io/', 'https://cloudflare-ipfs.com/'];
+  let selectedGateway = '';
+
+  for (const gateway of gateways) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const checkAvailability = await fetch(gateway, { method: 'HEAD', signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (checkAvailability.ok) {
+        selectedGateway = gateway;
+        break;
+      }
+    } catch (error) {
+      console.error(`Error checking ${gateway}:`, error);
+    }
+  }
+
+  if (selectedGateway) {
+    const finalUrl = selectedGateway + props.ipfsVideoUrl;
+    try {
+      const response = await fetch(finalUrl);
+      const blob = await response.blob();
+      videoPlayer.value.src = URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('Error fetching video:', error);
+    }
+  } else {
+    console.error('No available IPFS gateway');
+  }
 }
+
 
 
 onMounted(async () => {

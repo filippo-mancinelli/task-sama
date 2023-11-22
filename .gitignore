@@ -48,3 +48,4 @@ src/helpers/TasksABI.json
 src/helpers/TasksamaABI.json
 backend/helpers/contractAddresses.js
 src/helpers/contractAddresses.js
+backend/helpers/contractAddresses.js
