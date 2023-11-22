@@ -23,6 +23,7 @@ async function fetchActiveTask() {
 // Fetch Tasks NFTs on-chain and compare with DB registry of videos stored on the server, if there is no matchup,
 // it means that the task has been completed and removed, hence we can remove all the non-winner participant videos 
 // both on disk and DB
+//cron.schedule('*/20 * * * * *', async () => {
 cron.schedule("*/5 * * * *", async () => {
   console.log("Starting job: PurgeVideos&DB");
 
@@ -41,24 +42,13 @@ cron.schedule("*/5 * * * *", async () => {
 
     // found === false means that for this video, there is no active task on-chain, hence we can delete it
     if (found === false) { 
-      const filePath = video.path;
-
-      if (fs.existsSync(filePath)) {
-        // Delete the directory and its contents up to the folder corresponding to the taskId, for example "13"
-        const directoryPath = path.dirname(filePath);
-        const targetFolder = path.join(directoryPath, video.taskId);
-
-        console.log('Target folder to delete:', targetFolder);
-
-        if (fs.existsSync(targetFolder)) {
-          fs.rmdirSync(targetFolder, { recursive: true });
-          console.log('Directory and its contents deleted successfully.');
-        } else {
-          console.log("Directory not found");
-        }
-
+      // Delete videos on disk
+      const dirPath = 'uploads/videos/' + video.taskId;
+      if (fs.existsSync(dirPath)) {
+        fs.rm(dirPath, { recursive: true });
+        console.log('Directory and its contents deleted successfully (video).');
       } else {
-        console.log("File not found");
+        console.log("Directory not found");
       }
 
       // In either case we find the file to be removed or not, we must still remove documents from DB 
@@ -74,21 +64,37 @@ cron.schedule("*/5 * * * *", async () => {
         if (err) {
           console.error("Error while deleting reminders document:", err);
         } else {
-          console.log("Document deleted successfully.");
+          console.log("Video document deleted successfully.");
         }
       });
-      collection = db.collection('images');
-      const resultImages = await collection.deleteMany({ taskId: video.taskId }, (err, result) => {
-        if (err) {
-          console.error("Error while deleting images document:", err);
-        } else {
-          console.log("Document deleted successfully.");
-        }
-      });
+
       console.log("video deletion from db: ",resultVideo)
       console.log("reminder deletion from db: ",resultReminder)
-      console.log("images deletion from db: ",resultImages)
     }
+  }
+
+
+  collection = db.collection('images');
+  const imageDocuments = await collection.find({}).toArray();
+  for (const image of imageDocuments) { 
+
+    // Delete images on disk
+    const dirPath = 'uploads/images/' + image.taskId;
+    if (fs.existsSync(dirPath)) {
+      fs.rm(dirPath, { recursive: true });
+      console.log('Directory and its contents deleted successfully (image).');
+    } else {
+      console.log("Directory not found");
+    }
+
+    const resultImages = await collection.deleteMany({ taskId: image.taskId }, (err, result) => {
+      if (err) {
+        console.error("Error while deleting images document:", err);
+      } else {
+        console.log("Image document deleted successfully.");
+      }
+    });
+    console.log("images deletion from db: ",resultImages)
   }
 
   console.log("Finished job: PurgeVideos&DB")
