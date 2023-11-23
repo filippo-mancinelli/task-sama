@@ -51,26 +51,27 @@ router.get('/getTasksToModerate', async (ctx, next) => {
   if(ctx.request.path === '/getTasksToModerate') {
     console.log("\n ####################################### \n '/getTasksToModerate' " + new Date() + "\n ####################################### \n ");
 
-      // Retrieve list of task ids on-chain
-      let taskList;
-      try {
-          taskList = await taskContract._getTasks(); 
-        } catch (error) {
-          console.error("Error calling _getTasks():", error);
-        }
-        const taskIds = taskList.map(task => task.tokenId.toString());
-        taskList = taskList.map(task => ({
-          tokenId: task.tokenId.toString(),
-          owner: task[1],
-          title: task[2],
-          description: task[3],
-          reward: parseFloat(ethers.formatEther(task[4])),
-          participants: task[5]
-        }));
-        console.log("taskIds",taskIds)
+    // Retrieve list of task ids on-chain
+    let taskList;
+    try {
+        taskList = await taskContract._getTasks(); 
+      } catch (error) {
+        console.error("Error calling _getTasks():", error);
+      }
+      const taskIds = taskList.map(task => task.tokenId.toString());
+      taskList = taskList.map(task => ({
+        tokenId: task.tokenId.toString(),
+        owner: task[1],
+        title: task[2],
+        description: task[3],
+        reward: parseFloat(ethers.formatEther(task[4])),
+        participants: task[5]
+      }));
+      console.log("taskIds",taskIds)
 
 
       // Find videos with moderated == false for the given taskIds
+      let taskIdsWithNotModeratedVideos;
       try {
         const db = await connectToDatabase();
         const collection = db.collection('videos');    
@@ -83,7 +84,7 @@ router.get('/getTasksToModerate', async (ctx, next) => {
 
 
         // Extract the unique taskIds from videos with unmoderated flag
-        const taskIdsWithNotModeratedVideos = [...new Set(videosNotModerated.map(video => video.taskId))];
+        taskIdsWithNotModeratedVideos = [...new Set(videosNotModerated.map(video => video.taskId))];
         console.log("taskIdsWithNotModeratedVideos",taskIdsWithNotModeratedVideos)
 
         // Filter taskList based on the taskIds that have unmoderated videos
@@ -94,7 +95,6 @@ router.get('/getTasksToModerate', async (ctx, next) => {
       } catch (error) {
         console.error("Error fetching videos from db():", error)
       }
-
 
     ctx.body = {
       message: 'list of current active tasks with videos to be moderated',

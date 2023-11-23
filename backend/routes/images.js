@@ -118,6 +118,9 @@ router.get('/fetchTasksImages', async (ctx, next) => {
             taskId: doc.taskId,
             data: base64Image
           });
+
+          // log task id and image name
+          console.log(doc.taskId, doc.name);
         }
       });
 
@@ -138,6 +141,55 @@ router.get('/fetchTasksImages', async (ctx, next) => {
   }
 });
 
+/* 
+###############################################################
+####################### fetchTaskImage #########################
+############################################################### 
+*/
+router.get('/fetchTaskImage', async (ctx, next) => {
+  if (ctx.request.path === '/fetchTaskImage') {
+    console.log("\n ####################################### \n '/fetchTaskImage/' " + new Date() + "\n ####################################### \n ");
+
+    const taskId = ctx.request.query.taskId;
+    const db = await connectToDatabase();
+    const collection = db.collection('images');
+
+    try {
+      const documents = await collection.find({ taskId }).toArray();
+      const images = [];
+
+      await documents.forEach((doc) => {
+        const dir = doc.path;
+        if (fs.existsSync(dir)){
+          const imageBuffer = fs.readFileSync(dir);
+          const base64Image = imageBuffer.toString('base64');
+          
+          images.push({
+            taskId: doc.taskId,
+            data: base64Image
+          });
+
+          // log task id and image name
+          console.log(doc.taskId, doc.name);
+        }
+      });
+
+      ctx.body = {
+        message: 'Image fetched correctly.',
+        data: images,
+      };
+    } catch (error) {
+      ctx.throw(500, 'Failed to fetch image.', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
 
 /* 
 ###############################################################

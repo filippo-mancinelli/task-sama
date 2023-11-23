@@ -29,7 +29,7 @@ cron.schedule("*/5 * * * *", async () => {
 
   const tasks = await fetchActiveTask();
   const db = await connectToDatabase();
-  const collection = db.collection('videos');
+  var collection = db.collection('videos');
   const videoDocuments = await collection.find({}).toArray();
 
   for (const video of videoDocuments) {
@@ -42,17 +42,21 @@ cron.schedule("*/5 * * * *", async () => {
 
     // found === false means that for this video, there is no active task on-chain, hence we can delete it
     if (found === false) { 
-      // Delete videos on disk
       const dirPath = 'uploads/videos/' + video.taskId;
       if (fs.existsSync(dirPath)) {
-        fs.rm(dirPath, { recursive: true });
-        console.log('Directory and its contents deleted successfully (video).');
+        fs.rm(dirPath, { recursive: true }, (error) => {
+          if (error) {
+            console.error("Error while deleting directory:", error);
+          } else {
+            console.log("Directory and its contents deleted successfully");
+          }
+        });
       } else {
         console.log("Directory not found");
       }
 
       // In either case we find the file to be removed or not, we must still remove documents from DB 
-      const resultVideo = await collection.deleteMany({ taskId: video.taskId }, (err, result) => {
+      const resultVideo = await collection.deleteMany({ taskId: video.taskId }, (err) => {
         if (err) {
           console.error("Error while deleting videos document:", err);
         } else {
@@ -60,7 +64,7 @@ cron.schedule("*/5 * * * *", async () => {
         }
       });
       collection = db.collection('reminders');
-      const resultReminder = await collection.deleteMany({ taskId: video.taskId }, (err, result) => {
+      const resultReminder = await collection.deleteMany({ taskId: video.taskId }, (err) => {
         if (err) {
           console.error("Error while deleting reminders document:", err);
         } else {
@@ -71,31 +75,57 @@ cron.schedule("*/5 * * * *", async () => {
       console.log("video deletion from db: ",resultVideo)
       console.log("reminder deletion from db: ",resultReminder)
     }
-  }
+  } 
 
+  try {
+    collection = db.collection('images');
+    const imageDocuments = await collection.find({}).toArray();
+  
+    for (const image of imageDocuments) {
+      let found = false;
+      tasks.forEach(task => {
+        if (task.tokenId == image.taskId) {
+          found = true;
+        }
+      });
 
-  collection = db.collection('images');
-  const imageDocuments = await collection.find({}).toArray();
-  for (const image of imageDocuments) { 
-
-    // Delete images on disk
-    const dirPath = 'uploads/images/' + image.taskId;
-    if (fs.existsSync(dirPath)) {
-      fs.rm(dirPath, { recursive: true });
-      console.log('Directory and its contents deleted successfully (image).');
-    } else {
-      console.log("Directory not found");
-    }
-
-    const resultImages = await collection.deleteMany({ taskId: image.taskId }, (err, result) => {
-      if (err) {
-        console.error("Error while deleting images document:", err);
-      } else {
-        console.log("Image document deleted successfully.");
+    // found === false means that for this image, there is no active task on-chain, hence we can delete it
+      if (found === false) { 
+        const dirPath = 'uploads/images/' + image.taskId;
+        if (fs.existsSync(dirPath)) {
+          try {
+            await new Promise((resolve, reject) => {
+              fs.rm(dirPath, { recursive: true }, (error) => {
+                if (error) {
+                  console.error("Error while deleting directory:", error);
+                  reject(error);
+                } else {
+                  console.log("Directory and its contents deleted successfully");
+                  resolve();
+                }
+              });
+            });
+          } catch (error) {
+            console.error("Error while deleting directory:", error);
+          }
+        } else {
+          console.log("Directory not found");
+        }
+    
+        const resultImages = await collection.deleteMany({ taskId: image.taskId }, (err) => {
+          if (err) {
+            console.error("Error while deleting images document:", err);
+          } else {
+            console.log("Image document deleted successfully.");
+          }
+        });
+        console.log("image deletion from db: ",resultImages);
       }
-    });
-    console.log("images deletion from db: ",resultImages)
+    }
+  } catch(error) {
+    console.error("Error while deleting directory:", error);
   }
+
 
   console.log("Finished job: PurgeVideos&DB")
 });
