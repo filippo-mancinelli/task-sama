@@ -147,7 +147,7 @@ router.get('/fetchTasksImages', async (ctx, next) => {
 ############################################################### 
 */
 router.get('/fetchTaskImage', async (ctx, next) => {
-  if (ctx.request.path === '/fetchTaskImage') {
+  if (ctx.request.path === '/fetchTaskImage/') {
     console.log("\n ####################################### \n '/fetchTaskImage/' " + new Date() + "\n ####################################### \n ");
 
     const taskId = ctx.request.query.taskId;

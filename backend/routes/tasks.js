@@ -43,6 +43,35 @@ router.get('/getTasks', async (ctx, next) => {
     await next();
 });
 
+/* 
+###############################################################
+######################## getTask ##############################
+############################################################### */
+
+router.get('/getTask', async (ctx, next) => {
+  if(ctx.request.path === '/getTask') {
+    console.log("\n ####################################### \n '/getTask' " + new Date() + "\n ####################################### \n ");
+    
+    const taskId = ctx.request.query.taskId;
+    
+    const taskObj = await taskContract._getTask(taskId); 
+    const taskResponse = { ...taskObj };
+
+    // Convert specific properties to desired types
+    taskResponse['0'] = taskResponse['0'].toString();
+    taskResponse['4'] = parseFloat(ethers.formatEther(taskResponse['4']));
+  
+
+    
+    console.log("taskResponse", taskResponse)
+    ctx.body = {
+      message: 'Task object retrieved successfully.',
+      data: taskResponse,
+    };
+  } 
+  await next();
+});
+
 /* Fetch all current active tasks on-chain that have videos still to be moderated.
 ###############################################################
 ################## getTasksToModerate ########################
