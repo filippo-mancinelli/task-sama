@@ -17,12 +17,24 @@ const selected = ref('created');
 const elements = ref([]);
 const imageMapping = ref({});
 
-function getImageUrl(tokenId) {
-  if (imageMapping.value[tokenId] !== undefined) {
-    return `data:image/jpeg;base64,${imageMapping.value[tokenId]}`;
-  } else {
-    return 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
-  }
+function fetchData() {
+    connectionStore.triggerEvent = !connectionStore.triggerEvent;
+    taskStore.fetchTasksMetadata().then(() => {
+        elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
+        taskStore.fetchTasksImages().then(response => {
+            for(var i = 0; i < elements.value.length; i++) {
+                for(var j = 0; j < response.data.length; j++) {
+                    if(elements.value[i].tokenId == response.data[j].taskId) {
+                        if(response.data[j].data !== undefined) {
+                            imageMapping.value[elements.value[i].tokenId] = 'data:image/jpeg;base64,' + response.data[j].data;
+                        } else {
+                            imageMapping.value[elements.value[i].tokenId] = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
+                        }
+                    }
+                }
+            }
+        })
+    });
 }
 
 watch(() => selected.value, (newSelected) => {
@@ -48,26 +60,15 @@ watch(() => selected.value, (newSelected) => {
     }
 });
 
+watch(() => connectionStore.isAllSetUp, (value) => {
+    if (value) {
+        fetchData();
+    }
+});
+
 onMounted(async () => {
     elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
-
-    watch(() => connectionStore.isAllSetUp, (value) => {
-        if (value) {
-            connectionStore.triggerEvent = !connectionStore.triggerEvent;
-            taskStore.fetchTasksMetadata().then(() => {
-                elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
-                taskStore.fetchTasksImages().then(response => {
-                    for(var i = 0; i < elements.value.length; i++) {
-                        for(var j = 0; j < response.data.length; j++) {
-                            if(elements.value[i].tokenId == response.data[j].taskId) {
-                                imageMapping.value[elements.value[i].tokenId] = response.data[j].data;
-                            }
-                        }
-                    }
-                })
-            });
-        }
-      });
+    fetchData();
 });
 
 </script>
@@ -94,7 +95,7 @@ onMounted(async () => {
     <div v-for="element in elements" class=" border-2 rounded-sm">
         <div class="flex items-center justify-between bg-orange-100">
             <div class="flex gap-2 items-center">
-                <figure class="w-40"><img class="h-25 max-w-40" :src="getImageUrl(element.tokenId)" alt="Image" /></figure>
+                <figure class="w-40"><img class="h-25 max-w-40" :src="imageMapping[element.tokenId]" alt="Image" /></figure>
                 <div class="flex flex-col ml-1">
                     <span class="text-md font-medium">#{{ element.tokenId }} - {{ element.title }}</span>
                     <span class="text-sm">{{ element.description }}</span>

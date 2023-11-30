@@ -80,6 +80,11 @@ export const useTaskStore = defineStore('api', {
           return promise;
         },
 
+        fetchTaskImage(taskId) {
+          const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTaskImage?taskId=' + taskId);
+          return promise;
+        },
+
         // ###### TASKS ####### //
 
         // Fetch the list of tasks NFT metadata from blockchain

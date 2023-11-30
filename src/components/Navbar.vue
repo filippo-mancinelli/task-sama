@@ -4,8 +4,9 @@ import Avatar from './Avatar.vue';
 
 const connectionStore = useConnectionStore();
 
-    function connect() {
-      connectionStore.connect();
+    async function connect() {
+      await connectionStore.connect();
+      connectionStore.triggerEvent = !connectionStore.triggerEvent;
     }
 
 </script>
@@ -17,7 +18,6 @@ const connectionStore = useConnectionStore();
     <router-link to="/" class="btn btn-ghost normal-case text-2xl">Task Sama</router-link>
     <ul class="menu menu-horizontal px-1">
       <li class="hidden md:block"><router-link to="/" class=" hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out">Home</router-link></li>
-      <li class="hidden md:block"><a href="#tasks" class="hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out">Tasks</a></li>
     </ul>
 
     </div>

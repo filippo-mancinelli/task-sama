@@ -192,7 +192,7 @@ router.post('/uploadVideoToIpfs', async (ctx, next) => {
 });
 
 
-/* 
+/* This blocks non moderated videos.
 ###############################################################
 ################### getParticipantVideo ######################
 ############################################################### 
@@ -230,6 +230,54 @@ router.get('/getParticipantVideo', async (ctx, next) => {
         }
       } else {
         ctx.throw(202, 'Video is not approved by moderators yet.');
+      }
+    } catch (error) {
+      ctx.throw(500, 'Failed to retrieve video.', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
+/* This does NOT block non moderated videos and should be restricted only to moderators and admins. 
+###############################################################
+################# getParticipantVideoADMIN ####################
+############################################################### 
+*/
+router.get('/getParticipantVideoADMIN', async (ctx, next) => {
+  if (ctx.request.path === '/getParticipantVideoADMIN') { 
+    console.log("\n ####################################### \n '/getParticipantVideoADMIN' \n ####################################### \n ");
+
+    const participantAddress = ctx.request.query.participantAddress;
+    const tokenId = ctx.request.query.tokenId;
+
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('videos');
+      const video = await collection.findOne({ 'taskId': tokenId, 'senderAddress': participantAddress });
+      const filePath = video.path;
+      if (fs.existsSync(filePath)) {
+        // Create a readable stream from the file
+        const fileStream = fs.createReadStream(filePath);
+
+        // Set the response type to 'video/mp4'
+        ctx.type = 'video/mp4';
+
+        // Create a PassThrough stream to pass data to the response
+        const passThroughStream = new PassThrough();
+
+        // Pipe the file stream to the PassThrough stream
+        fileStream.pipe(passThroughStream);
+
+        // Set the response body to the PassThrough stream
+        ctx.body = passThroughStream;
+      } else {
+        ctx.throw(404, 'Video not found');
       }
     } catch (error) {
       ctx.throw(500, 'Failed to retrieve video.', error);

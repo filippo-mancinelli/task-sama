@@ -61,9 +61,9 @@ router.get('/getTask', async (ctx, next) => {
     taskResponse['0'] = taskResponse['0'].toString();
     taskResponse['4'] = parseFloat(ethers.formatEther(taskResponse['4']));
   
+    console.log("taskResponse", taskResponse);
 
     
-    console.log("taskResponse", taskResponse)
     ctx.body = {
       message: 'Task object retrieved successfully.',
       data: taskResponse,
