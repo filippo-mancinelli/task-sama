@@ -91,11 +91,11 @@ onMounted(async () => {
   </button>
 </div>
 
-<div v-if="elements.length > 0" class="flex flex-col gap-2 mt-2">
-    <div v-for="element in elements" class=" border-2 rounded-sm">
-        <div class="flex items-center justify-between bg-orange-100">
-            <div class="flex gap-2 items-center">
-                <figure class="w-40"><img class="h-25 max-w-40" :src="imageMapping[element.tokenId]" alt="Image" /></figure>
+<div v-if="elements.length > 0" class="flex flex-col gap-2 mt-2 ">
+    <div v-for="element in elements" class="border-2 rounded-sm">
+        <div class="max-md:flex-col items-center justify-between bg-orange-100 md:flex">
+            <div class="max-md:flex-col gap-2 items-center md:flex">
+                <figure class="w-40"><img class="h-25 max-w-40 max-sm:self-center" :src="imageMapping[element.tokenId]" alt="Image" /></figure>
                 <div class="flex flex-col ml-1">
                     <span class="text-md font-medium">#{{ element.tokenId }} - {{ element.title }}</span>
                     <span class="text-sm">{{ element.description }}</span>

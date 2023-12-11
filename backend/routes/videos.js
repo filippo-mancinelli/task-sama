@@ -66,7 +66,7 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
         size: video.size,
         taskId: taskId,
         senderAddress: walletAddress,
-        moderated: false
+        moderated: 'null'  // null means that the video is not moderated yet
       };
 
       await collection.insertOne(videoData);
@@ -208,7 +208,7 @@ router.get('/getParticipantVideo', async (ctx, next) => {
       const db = await connectToDatabase();
       const collection = db.collection('videos');
       const video = await collection.findOne({ 'taskId': tokenId, 'senderAddress': participantAddress });
-      if(video.moderated == true) {
+      if(video.moderated == 'true') {
         const filePath = video.path;
         if (fs.existsSync(filePath)) {
           // Create a readable stream from the file
@@ -228,8 +228,10 @@ router.get('/getParticipantVideo', async (ctx, next) => {
         } else {
           ctx.throw(404, 'Video not found');
         }
-      } else {
-        ctx.throw(202, 'Video is not approved by moderators yet.');
+      } else if(video.moderated == 'false'){
+        ctx.throw(204, 'rejected');
+      } else if(video.moderated == 'null'){
+        ctx.throw(202, 'unmoderated');
       }
     } catch (error) {
       ctx.throw(500, 'Failed to retrieve video.', error);
@@ -255,7 +257,8 @@ router.get('/getParticipantVideoADMIN', async (ctx, next) => {
 
     const participantAddress = ctx.request.query.participantAddress;
     const tokenId = ctx.request.query.tokenId;
-
+    console.log("participantAddress: ",participantAddress);
+    console.log("tokenId: ",tokenId);
     try {
       const db = await connectToDatabase();
       const collection = db.collection('videos');
@@ -291,6 +294,85 @@ router.get('/getParticipantVideoADMIN', async (ctx, next) => {
     };
   }
 });
+
+
+/* 
+###############################################################
+################ getUnmoderatedParticipants ###################
+############################################################### 
+*/
+router.get('/getUnmoderatedParticipants', async (ctx, next) => {
+  if (ctx.request.path === '/getUnmoderatedParticipants') {
+    console.log("\n ####################################### \n '/getUnmoderatedParticipants' " + new Date() + "\n ####################################### \n ");
+
+    const taskId = ctx.request.query.taskId;
+    console.log("taskId", taskId);
+
+    let unmoderatedParticipants;
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('videos');
+
+      unmoderatedVideos = await collection.find({
+        taskId,
+        moderated: 'null',
+      }).toArray();
+
+      unmoderatedParticipants = unmoderatedVideos.map(video => video.senderAddress);
+      console.log("unmoderatedParticipants", unmoderatedParticipants);
+
+    } catch (error) {
+      console.error("Error fetching unmoderated participants from db():", error)
+    }
+
+    ctx.body = {
+      message: 'list of unmoderated participants',
+      data: unmoderatedParticipants,
+    };
+  }
+  await next();
+});
+
+
+/* 
+###############################################################
+###################### MODERATEVIDEO ##########################
+############################################################### 
+*/
+router.post('/moderateVideo', async (ctx, next) => {
+  if (ctx.request.path === '/moderateVideo') {
+    console.log("\n ####################################### \n '/moderateVideo' " + new Date() + "\n ####################################### \n ");
+
+    const taskId = ctx.request.body.taskId;
+    const senderAddress = ctx.request.body.senderAddress;
+    const moderated = ctx.request.body.moderated;
+   
+    try {
+      const db = await connectToDatabase();
+      var collection = db.collection('videos');
+      const result = await collection.updateOne(
+        { 'taskId': taskId, 'senderAddress': senderAddress },
+        { $set: { moderated: moderated} } 
+      );
+      if(result.modifiedCount == 1) {
+        ctx.body = {
+          message: 'Video moderated successfully.',
+        };
+      } 
+
+    } catch (error) {
+      ctx.throw(500, 'Failed to moderate video:', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
 
 /* 
 ###############################################################
