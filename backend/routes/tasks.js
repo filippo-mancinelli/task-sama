@@ -133,6 +133,45 @@ router.get('/getTasksToModerate', async (ctx, next) => {
   await next();
 });
 
+
+/* 
+###############################################################
+################ getUnmoderatedParticipants ###################
+############################################################### 
+*/
+router.get('/getUnmoderatedParticipants', async (ctx, next) => {
+  if (ctx.request.path === '/getUnmoderatedParticipants') {
+    console.log("\n ####################################### \n '/getUnmoderatedParticipants' " + new Date() + "\n ####################################### \n ");
+
+    const taskId = ctx.request.query.taskId;
+    console.log("taskId", taskId);
+
+    let unmoderatedParticipants;
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('videos');
+
+      unmoderatedVideos = await collection.find({
+        taskId,
+        moderated: false,
+      }).toArray();
+
+      unmoderatedParticipants = unmoderatedVideos.map(video => video.senderAddress);
+      console.log("unmoderatedParticipants", unmoderatedParticipants);
+
+    } catch (error) {
+      console.error("Error fetching unmoderated participants from db():", error)
+    }
+
+    ctx.body = {
+      message: 'list of unmoderated participants',
+      data: unmoderatedParticipants,
+    };
+  }
+  await next();
+});
+
+
 /* 
 ###############################################################
 ########################## reminder ###########################

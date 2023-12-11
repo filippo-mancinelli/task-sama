@@ -32,7 +32,7 @@ var isReady = ref(false);
 
 
 //##### VIDEO PLAYER #####//
-const videoPlayer = ref(null);
+const videoSource = ref(null);
 const showControls = ref(false);
 
 //##### NAVIGATION #####//
@@ -66,9 +66,10 @@ async function fetchBackendVideo(tokenId, participantAddress) {
     videoBlocked.value = true;
     return;
   } else {
+    console.log(response)
     videoBlocked.value = false;
     const videoBlob = new Blob([response.data], { type: 'video/mp4' });
-    videoPlayer.value.src = URL.createObjectURL(videoBlob);
+    videoSource.value = URL.createObjectURL(videoBlob);
   }
 }
 
@@ -182,7 +183,7 @@ onMounted(async ()=> {
                         <!-- VIDEO PLAYER -->
                         <div class="video-container" @mouseenter="showControls = true" @mouseleave="showControls = false">
                             <div class="video-wrapper" :class="{ 'pb-0': videoBlocked }">
-                                <video v-if="!videoBlocked" ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
+                                <video v-if="!videoBlocked" ref="videoPlayer" :src="videoSource" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
                                 <div v-else class="flex flex-col mt-2 mx-3 bg-gray-100 rounded-xl">
                                     <span class="p-4">This video was not yet reviewed by our moderation team. Click the button below to send us a reminder to review this video as soon as possible!</span>
                                     <button class="btn btn-circle self-center mb-4 rounded-full bg-yellow-300 hover:bg-yellow-400 text-white" :class="{ 'btn-disabled': reminded, 'bg-yellow-400': reminded }" @click="reminder">
