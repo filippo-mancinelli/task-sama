@@ -153,11 +153,11 @@ function participateTask() {
       </div>
       <FileUpload :upload-type="'video'" />
       <div class="flex flex-col items-end">
-      <label @click="participateTask" class="btn btn-primary pr-1 pl-4 w-25 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
-            Participate
-            <HandRaisedIcon v-if="!isLoading" class="h-6 w-6 pl-2 -translate-x-2" />
-            <span v-else class="loading loading-ring loading-md -translate-x-1"></span>
-      </label>
+        <label @click="participateTask" class="btn btn-primary pr-1 pl-4 w-25 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
+              Participate
+              <HandRaisedIcon v-if="!isLoading" class="h-6 w-6 pl-2 -translate-x-2" />
+              <span v-else class="loading loading-ring loading-md -translate-x-1"></span>
+        </label>
       </div>
 
     </template>

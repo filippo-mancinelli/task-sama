@@ -171,7 +171,7 @@ onMounted(async ()=> {
     </div>
 
     <!-- PARTICIPANTS VIDEOS -->
-    <div class="flex flex-col items-center my-6">
+    <div v-if="participants.length > 0" class="flex flex-col items-center my-6">
         <div class="flex flex-col items-center bg-teal-100 shadow-xl rounded-xl">
             <!-- PAGINATION -->
             <div class="join mt-2">
@@ -209,6 +209,11 @@ onMounted(async ()=> {
             </div>
         </div>
 
+    </div>
+    <div v-else>
+        <div class="flex justify-center bg-teal-100 shadow-xl rounded-xl my-6 mx-12 py-4">
+            There are no participants yet
+        </div>
     </div>
 </div>
 
