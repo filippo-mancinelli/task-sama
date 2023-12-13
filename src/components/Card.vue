@@ -19,9 +19,9 @@ const props = defineProps([
   'ipfsVideoUrl',
   'txhash',
   'likeCount',
-  'isLiked'
+  'isLiked',
+  'timestamp'
 ]);
-
 async function likeButton() {
   if(!isLikePlaying) { //prevents spamming like button
     if(useConnectionStore().isConnected) {
@@ -116,10 +116,11 @@ onMounted(async () => {
   <div class="card-body gap-1 p-5">
     <h2 class="card-title">
       #{{ tokenId  }} - {{ title }}   
-      <div class="badge badge-secondary">NEW</div>
+      <div class="badge badge-secondary text-white">NEW</div>
     </h2>
     <p>{{ description }}</p>
-    <div class="flex-container"> 
+    <div class="flex-container mt-2"> 
+      <p class="italic truncate">Created:  <span class="pl-1 text-xs">{{ timestamp }}</span></p>
       <p class="italic truncate">Creator:  <span class="pl-1 text-xs">{{ creatorAddress }}</span></p>
       <p class="italic truncate">Winner:  <span class="pl-1 text-xs">{{ winnerAddress }}</span></p> 
       <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ rewardEarned }} GLMR</span></p> 

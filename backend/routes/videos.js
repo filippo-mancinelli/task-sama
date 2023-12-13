@@ -192,6 +192,39 @@ router.post('/uploadVideoToIpfs', async (ctx, next) => {
 });
 
 
+/* 
+##############################################################
+####################### confirmNFTId #########################
+############################################################## 
+*/
+router.post('/confirmNFTId', async (ctx, next) => {
+  if (ctx.request.path === '/confirmNFTId') {
+    console.log("\n ####################################### \n '/confirmNFTId' " + new Date() + "\n ####################################### \n ");
+
+    const IPFSMetadataUrl = ctx.request.body.IPFSMetadataUrl;
+    const tokenId = ctx.request.body.tokenId;
+   
+    try {
+      const db = await connectToDatabase();
+      var collection = db.collection('IPFSVideos');
+      const updateResult = await collection.updateOne(
+        { 'IPFSMetadataUrl': IPFSMetadataUrl },
+        { $set: { nftId: tokenId} }
+      );
+
+    } catch (error) {
+      ctx.throw(500, 'Failed to update IPFSVideos document.', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
 /* This blocks non moderated videos.
 ###############################################################
 ################### getParticipantVideo ######################

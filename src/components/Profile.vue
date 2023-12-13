@@ -22,13 +22,14 @@ function fetchData() {
     taskStore.fetchTasksMetadata().then(() => {
         elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
         taskStore.fetchTasksImages().then(response => {
+            console.log(response);
             for(var i = 0; i < elements.value.length; i++) {
-                for(var j = 0; j < response.data.length; j++) {
-                    if(elements.value[i].tokenId == response.data[j].taskId) {
-                        if(response.data[j].data !== undefined) {
+                if(response.message == 'No images found.') {
+                    imageMapping.value[elements.value[i].tokenId] = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
+                } else {
+                    for(var j = 0; j < response.data.length; j++) {
+                        if(elements.value[i].tokenId == response.data[j].taskId) {
                             imageMapping.value[elements.value[i].tokenId] = 'data:image/jpeg;base64,' + response.data[j].data;
-                        } else {
-                            imageMapping.value[elements.value[i].tokenId] = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
                         }
                     }
                 }

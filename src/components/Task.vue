@@ -20,7 +20,8 @@ const props = defineProps([
   'reward',
   'participants',
   'isParticipating',
-  'base64Image'
+  'base64Image',
+  'timestamp'
 ]);
 const isLoading = ref(false);
 const showModal1 = ref(false);
@@ -100,9 +101,10 @@ function participateTask() {
         <router-link :to="`/task/${tokenId}`">
           #{{ tokenId  }} - {{ title }}  
         </router-link>
-        <div class="badge badge-secondary">NEW</div>
+        <div class="badge badge-secondary text-white">NEW</div>
       </h2>
       <p class="italic truncate">{{ description }}</p>
+      <span class="italic text-xs font-normal">{{ timestamp }}</span>
 
       <div class="flex border-t">
         <p class="italic truncate mt-2">Participating: <span class="pl-1 text-xs">{{ participants[0] }}</span></p>

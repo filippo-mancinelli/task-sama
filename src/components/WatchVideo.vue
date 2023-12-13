@@ -1,21 +1,21 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router'
-import { useConnectionStore } from '../stores/useConnectionStore';
+import { useCommentsStore } from '../stores/useCommentsStore';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useBackgroundStore } from '../stores/useBackgroundStore';
-import { usePopupStore } from '../stores/usePopupStore';
+import CommentSection from './CommentSection.vue';
 
 const backgroundStore = useBackgroundStore();
-const connectionStore = useConnectionStore();
+const commentsStore = useCommentsStore();
 const videoStore = useVideoStore();
-const popupStore = usePopupStore();
 
 backgroundStore.changeBackgroundClass('bg-background-image h-screen');
 
 let route;
 var tokenId;
 const tasksamaObject = ref({});
+const comments = ref([]);
 const isReady = ref(false);
 
 //##### video player #####//
@@ -60,17 +60,17 @@ async function fetchIPFSVideo() {
 onMounted(async () => {
     route = useRoute();
     tokenId = route.params.tokenId;
-    tasksamaObject.value = await videoStore.fetchTasksamaMetadata(1);
-    console.log("tasksamaObject.value", tasksamaObject.value)
+    tasksamaObject.value = await videoStore.fetchTasksamaMetadata(tokenId);
+    comments.value = await commentsStore.getComments(tokenId);
     isReady.value = true;
     fetchIPFSVideo();
-})
+});
 </script>
 
 <template>
 <div class="card lg:card-side bg-base-100 shadow-xl mx-12 my-6">
   <!--VIDEO PLAYER-->
-  <div class="video-container" @mouseenter="showControls = true" @mouseleave="showControls = false">
+  <div class="video-container max-w-xl" @mouseenter="showControls = true" @mouseleave="showControls = false">
     <div class="video-wrapper">
       <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
     </div>
@@ -79,11 +79,20 @@ onMounted(async () => {
   <!--CARD BODY-->
   <div class="card-body">
     <h2 class="card-title">New album is released!</h2>
-    <p>Click the button to listen on Spotiwhy app.</p>
-    <div class="card-actions justify-end">
-      <button class="btn btn-primary">Listen</button>
+    <div>
+      <p class="italic text-xs -mt-2">{{ tasksamaObject.timestamp }}</p>
+      <p>{{ tasksamaObject.description }}</p>
     </div>
+
   </div>
+</div>
+
+<!--COMMENT SECTION-->
+<div class="mx-12 my-6">
+  <CommentSection 
+    :tokenId="tokenId"
+    :comments-array="comments"
+  />
 </div>
 
 </template>

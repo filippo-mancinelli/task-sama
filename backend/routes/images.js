@@ -124,10 +124,17 @@ router.get('/fetchTasksImages', async (ctx, next) => {
         }
       });
 
-      ctx.body = {
-        message: 'Images fetched correctly.',
-        data: images,
-      };
+      if(images.length === 0){
+        ctx.body = {
+          message: 'No images found.',
+          data: images,
+        };
+      } else {
+        ctx.body = {
+          message: 'Images fetched correctly.',
+          data: images,
+        };
+      }
     } catch (error) {
       ctx.throw(500, 'Failed to fetch images.', error);
     }
@@ -173,11 +180,18 @@ router.get('/fetchTaskImage', async (ctx, next) => {
           console.log(doc.taskId, doc.name);
         }
       });
+      if(images.length === 0){
+        ctx.body = {
+          message: 'No images found.',
+          data: images,
+        };
+      } else {
+        ctx.body = {
+          message: 'Image fetched correctly.',
+          data: images,
+        };
+      }
 
-      ctx.body = {
-        message: 'Image fetched correctly.',
-        data: images,
-      };
     } catch (error) {
       ctx.throw(500, 'Failed to fetch image.', error);
     }

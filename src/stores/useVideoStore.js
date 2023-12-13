@@ -27,7 +27,8 @@ export const useVideoStore = defineStore('videoNFTs', {
                     return {
                     ...metadata,
                     tokenId: parseInt(metadata.tokenId),
-                    rewardEarned: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned))).toFixed(2)
+                    rewardEarned: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(metadata.rewardEarned))).toFixed(2),
+                    timestamp: getFormattedTimestampDate(parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(metadata.timestamp))))
                     };
                 });
                 this.videoMetadata = modifiedMetadata;
@@ -61,13 +62,26 @@ export const useVideoStore = defineStore('videoNFTs', {
             const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/addNewNftLikeDocument', {tokenId});
             return promise;
         },
-
+        
+        // Since we upload the video to IPFS regardless of the minting process, we need to tell the DB if the minting was successful or not by giving the tokenID
+        async confirmNFTId(IPFSMetadataUrl, tokenId) {
+            const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/confirmNFTId', {IPFSMetadataUrl, tokenId});
+            return promise;
+        },
 
         // Fetch the metadata of the video NFT from the blockchain
         async fetchTasksamaMetadata(tokenId) { 
             const { result } = await useConnectionStore().callContractFunction("TaskSama", "getVideo", '', [tokenId]);
             const fetchedMetadata = result;
-            return fetchedMetadata;
+            var modifiedMetadata = {};
+
+            modifiedMetadata.tokenId = parseInt(fetchedMetadata.tokenId)
+            modifiedMetadata.rewardEarned = parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(fetchedMetadata.rewardEarned))).toFixed(2)
+            modifiedMetadata.timestamp = getFormattedTimestampDate(parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(fetchedMetadata.timestamp))))
+
+            const finalMetadata = {...fetchedMetadata, ...modifiedMetadata}; 
+
+            return finalMetadata;
         },
 
 
@@ -79,5 +93,14 @@ export const useVideoStore = defineStore('videoNFTs', {
 
 });
 
-
+function getFormattedTimestampDate(timestamp) {
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Adding 1 as months are zero-indexed
+    const day = String(date.getDate()).padStart(2, '0');
   
+    // Create the formatted date string in YYYY/MM/DD format
+    const formattedDate = `${year}/${month}/${day} GMT+0100`; // Replace GMT+0100 with your timezone
+  
+    return formattedDate;
+};

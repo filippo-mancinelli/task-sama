@@ -29,6 +29,7 @@ const loadingMessage = ref('')
 const videoBlocked = ref(false);
 const videoRejected = ref(false);
 const reminded = ref(false);
+const imageSrc = ref('');
 var isReady = ref(false);
 
 
@@ -63,7 +64,6 @@ function first() {
 
 async function fetchBackendVideo(tokenId, participantAddress) {
   const response = await taskStore.getParticipantVideo(tokenId, participantAddress);
-  console.log(response)
   if(response.status == 202 && response.statusText == "Accepted") { // Video not moderated
     videoBlocked.value = true;
     return;
@@ -100,7 +100,7 @@ function chooseWinner() {
                     message.value = '🏆 The winner has been chosen! \nYour NFT has been minted and transferred to your account.';
                     showModalResult.value = true;
                     isLoading.value = false;
-                    
+                    videoStore.confirmNFTId(result.data.data.IPFSMetadataUrl, taskObject.value.tokenId);
 
                     // Now we need to add the new NFT to the DB "like" structure in order to be able to display it in the homepage
                     // We need to retrieve the newly minted tokenId from the Tasks contract event emitted "TaskCompleted"
@@ -130,6 +130,15 @@ onMounted(async ()=> {
     route = useRoute();
     taskObject.value.tokenId = route.params.tokenId;
 
+    // Image init
+    const fetchResponse = await useTaskStore().fetchTaskImage(taskObject.value.tokenId);
+    if(fetchResponse.data.message == 'Not found') {
+        imageSrc.value = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
+    } else {
+        imageSrc.value = 'data:image/jpeg;base64,' + fetchResponse.data.data[0].data;
+    }
+
+    // Onchain metadata + backend video init
     if(connectionStore.isAllSetUp) {
         taskStore.fetchTaskMetadata(taskObject.value.tokenId).then(response => {
                 taskObject.value = response;
@@ -139,6 +148,7 @@ onMounted(async ()=> {
         });
     }
 
+    // Watch for same things in case connection changes
     watch(() => connectionStore.isAllSetUp, (newValue, oldValue) => {
         if(newValue) {
             taskStore.fetchTaskMetadata(taskObject.value.tokenId).then(response => {
@@ -157,7 +167,8 @@ onMounted(async ()=> {
 <div v-if="isReady" class="flex flex-col w-screen">
     <!-- TASK SUMMARY -->
     <div class="card lg:card-side bg-base-100 shadow-xl mx-12 mt-6 ">
-        <figure ><img src="https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427" alt="Shoes" /></figure>
+        <figure  class="max-w-lg"><img :src="imageSrc" alt="Shoes" /></figure>
+        
         <div class="card-body">
             <h2 class="card-title">#{{ taskObject.tokenId }} - {{ taskObject.result.title }} </h2>
             <p class="whitespace-normal overflow-hidden">{{ taskObject.result.description }}</p>

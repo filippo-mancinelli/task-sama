@@ -21,6 +21,7 @@ contract Tasks is ERC721, Ownable {
         string description;
         uint256 reward;
         address[] participants;
+        uint256 timestamp;
     }
 
     ITasksSamaContract private _taskSamaContract;
@@ -46,7 +47,8 @@ contract Tasks is ERC721, Ownable {
             title: _title,
             description: _description,
             reward: msg.value,
-            participants: new address[](0)
+            participants: new address[](0),
+            timestamp: block.timestamp
         });
 
         tasks[tokenId] = newTask;

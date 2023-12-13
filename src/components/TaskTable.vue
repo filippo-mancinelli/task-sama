@@ -149,6 +149,7 @@ onBeforeUnmount(() => {
           :participants="task.participants"
           :isParticipating="task.isParticipating"
           :base64Image="task.base64Image"
+          :timestamp="task.timestamp"
           @sentParticipation="() => refreshTasksMetadata()"
           class="bg-white text-black"
         />

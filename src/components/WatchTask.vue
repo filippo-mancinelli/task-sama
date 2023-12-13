@@ -96,7 +96,7 @@ onMounted(async () => {
     }
 
     const fetchResponse = await useTaskStore().fetchTaskImage(tokenId);
-    if(fetchResponse.data.message == 'Not found') {
+    if(fetchResponse.data.message == 'No images found.') {
         imageSrc.value = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
     } else {
         imageSrc.value = 'data:image/jpeg;base64,' + fetchResponse.data.data[0].data;
@@ -111,6 +111,7 @@ onMounted(async () => {
             <figure ><img class="rounded-md border-black border-2 max-h-60 max-w-120" :src="imageSrc" alt="Movie"/></figure>
             <div v-if="taskObject.result != undefined" class="card-body max-w-xl">
                 <h2 class="card-title">#{{ taskObject.tokenId  }} -{{ taskObject.result.title }}</h2>
+                <p class="italic text-xs -mt-2">{{ taskObject.timestamp }}</p>
                 <p class="truncate ...">{{ taskObject.result.description }}</p>
                  <div class="italic truncate">Reward:<span class="pl-2 text-lg">{{ taskObject.reward }} GLMR</span></div> 
 

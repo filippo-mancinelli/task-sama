@@ -95,7 +95,8 @@ export const useTaskStore = defineStore('api', {
                     return {
                         ...task,
                         tokenId: parseInt(task.tokenId),
-                        reward: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(task.reward))).toFixed(2)
+                        reward: parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(task.reward))).toFixed(2),
+                        timestamp: getFormattedTimestampDate(parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(task.timestamp))))
                     }
                 });
                 this.tasksMetadata = modifiedMetadata;
@@ -111,6 +112,7 @@ export const useTaskStore = defineStore('api', {
             const promise = useConnectionStore().callContractFunction("Tasks", "_getTask", "", [taskId]).then(response => {
                 response.tokenId = tokenId;
                 response.reward = parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(response.result.reward))).toFixed(2);
+                response.timestamp = getFormattedTimestampDate(parseFloat(ethers.utils.formatEther(ethers.BigNumber.from(response.result.timestamp))));
                 return response;
             });
             return promise;
@@ -136,3 +138,15 @@ export const useTaskStore = defineStore('api', {
 
     }
 })
+
+function getFormattedTimestampDate(timestamp) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Adding 1 as months are zero-indexed
+  const day = String(date.getDate()).padStart(2, '0');
+
+  // Create the formatted date string in YYYY/MM/DD format
+  const formattedDate = `${year}/${month}/${day} GMT+0100`; // Replace GMT+0100 with your timezone
+
+  return formattedDate;
+};

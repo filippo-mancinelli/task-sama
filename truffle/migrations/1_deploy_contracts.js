@@ -83,7 +83,7 @@ module.exports = async function (deployer) {
   const tasks = await Tasks.deployed();
 
   // Initialize dummy data
-  await tasks.createTask('TITLE 1', 'DESC 1', { value: web3.utils.toWei("10", "ether") });
+  await tasks.createTask('TITLE 0', 'DESC 1', { value: web3.utils.toWei("10", "ether") });
   await tasks.createTask('TITLE 2', 'DESC 2', { value: web3.utils.toWei("12", "ether") });
   await tasks.createTask('TITLE 3', 'DESC 3', { value: web3.utils.toWei("15", "ether") });
   await tasks.createTask('TITLE 4', 'DESC 4', { value: web3.utils.toWei("20", "ether") });

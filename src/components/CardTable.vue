@@ -152,6 +152,7 @@ onBeforeUnmount(() => {
           :txhash="TODO"
           :likeCount="getCurrentLikeCount(card.tokenId)"
           :isLiked="getCurrentIsLiked(card.tokenId)"
+          :timestamp="card.timestamp"
           @like="(tokenId, likeValue, walletAddress) => like(tokenId, likeValue, walletAddress)"
           class="bg-white text-black"
         />
