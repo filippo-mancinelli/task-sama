@@ -1,7 +1,8 @@
 <script setup>
-import { onMounted, ref, watch, defineProps } from 'vue';
-import { ChevronDoubleUpIcon, ChevronDoubleDownIcon } from "@vue-hero-icons/outline"
+import { onMounted, ref, defineProps } from 'vue';
+import { ChevronDoubleUpIcon, ChevronDoubleDownIcon } from '@heroicons/vue/24/outline'
 import { useCommentsStore } from '../stores/useCommentsStore';
+import { useConnectionStore } from '../stores/useConnectionStore';
 
 
 const props = defineProps([
@@ -16,47 +17,81 @@ const props = defineProps([
   'isDown'
 ]);
 
-
 const avatarImgHtml1 = ref('');
-avatarImgHtml1.value = connectionStore.getAvatarImg(60, seed); 
+const isUpRef = ref(props.isUp);
+const isDownRef = ref(props.isDown);
+const upsRef = ref(props.ups);
+const downsRef = ref(props.downs);
+
+const seed = Math.round(Math.random() * 10000000);
+avatarImgHtml1.value = useConnectionStore().getAvatarImg(25, seed); 
 
 function up() {
-    useCommentsStore().upComment(commentId).then(response => {
-        console.log(response);
+    if (isDownRef.value) {
+        // If the user has already downvoted, disable it
+        useCommentsStore().downComment(props.commentId, false).then(response => {
+            downsRef.value = response.data.downs;
+            isDownRef.value = response.data.isDown;
+        });
+    }
+
+    useCommentsStore().upComment(props.commentId, !isUpRef.value).then(response => {
+        upsRef.value = response.data.ups;
+        isUpRef.value = response.data.isUp;
     });
 }
 
-function down(){
-    useCommentsStore().downComment(commentId).then(response => {
-        console.log(response);
+function down() {
+    if (isUpRef.value) {
+        // If the user has already upvoted, disable it
+        useCommentsStore().upComment(props.commentId, false).then(response => {
+            upsRef.value = response.data.ups;
+            isUpRef.value = response.data.isUp;
+        });
+    }
+
+    useCommentsStore().downComment(props.commentId, !isDownRef.value).then(response => {
+        downsRef.value = response.data.downs;
+        isDownRef.value = response.data.isDown;
     });
 }
+
 </script>
 
 <template>
-    <div class="flex flex-col bg-orange-100 rounded-sm border-2 shadow-sm">
+    <div class="flex flex-col bg-orange-100 rounded-md border-2 shadow-sm">
         <!-- COMMENT HEADER -->
         <div class="flex justify-between">
-            <div>
-                <div class="rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                    <div v-html="avatarImgHtml1" class=""></div>
+            <div class="flex gap-2 p-2">
+                <div v-html="avatarImgHtml1" class="rounded-full ring ring-primary avatar"></div>
+                <div class="tooltip" :data-tip="posterAddress">
+                    <div class="max-sm:w-24 max-sm:text-ellipsis max-sm:overflow-hidden max-sm:whitespace-nowrap">
+                        <span class="text-md">{{ posterAddress }}</span>
+                    </div>
                 </div>
-                <span class="text-md">{{ posterAddress }}</span>
             </div>
 
-            <span class="italic text-sm">{{ postDate }}</span>
+
+            <span class="italic text-xs mr-2">{{ postDate }}</span>
         </div>
 
         <!-- COMMENT BODY -->
-        <div>
+        <div class="p-1 text-lg">
             {{ commentBody }}
         </div>
 
         <!-- COMMENT FOOTER-->
-        <div class="flex gap-4">
-            <ChevronDoubleUpIcon class="h-4 w-4 text-white" :class="{ 'text-orange-500': isUp }" @click="up" />
-            <ChevronDoubleDownIcon class="h-4 w-4" :class="{ 'text-orange-500': isDown }" @click="down" />
+        <div class="flex gap-3 p-1">
+            <div class="flex gap-1">
+                <ChevronDoubleUpIcon class="h-5 w-5 cursor-pointer border rounded-full" :class="{ 'text-orange-500 border-orange-500': isUpRef, 'text-gray-400 border-gray-400': !isUpRef }" @click="up" />
+                <span>{{ upsRef }}</span>
+            </div>
+            <div class="flex gap-1">
+                <ChevronDoubleDownIcon class="h-5 w-5 cursor-pointer border rounded-full" :class="{ 'text-orange-500 border-orange-500': isDownRef, 'text-gray-400 border-gray-400': !isDownRef }" @click="down" />
+                <span>{{ downsRef }}</span>
+            </div>
         </div>
+
     </div>
 </template>
 

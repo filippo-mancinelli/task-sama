@@ -21,6 +21,7 @@ const isReady = ref(false);
 //##### video player #####//
 const videoPlayer = ref(null);
 const showControls = ref(false);
+const isVideoLoading = ref(true);
 
 async function fetchIPFSVideo() {
   const gateways = ['https://ipfs.io/', 'https://cloudflare-ipfs.com/'];
@@ -47,6 +48,7 @@ async function fetchIPFSVideo() {
     const finalUrl = selectedGateway + tasksamaObject.value.ipfsVideoUrl;
     try {
       const response = await fetch(finalUrl);
+      isVideoLoading.value = false;
       const blob = await response.blob();
       videoPlayer.value.src = URL.createObjectURL(blob);
     } catch (error) {
@@ -57,31 +59,40 @@ async function fetchIPFSVideo() {
   }
 }
 
+async function fetchComments() {
+  const commentsResponse = await commentsStore.getComments(tokenId);
+  comments.value = commentsResponse.data.message == 'Comments fetched correctly.' ? commentsResponse.data.data : [];
+}
+
 onMounted(async () => {
     route = useRoute();
     tokenId = route.params.tokenId;
-    tasksamaObject.value = await videoStore.fetchTasksamaMetadata(tokenId);
-    comments.value = await commentsStore.getComments(tokenId);
-    isReady.value = true;
     fetchIPFSVideo();
+    tasksamaObject.value = await videoStore.fetchTasksamaMetadata(tokenId);
+    await fetchComments();
+    isReady.value = true;
 });
 </script>
 
 <template>
 <div class="card lg:card-side bg-base-100 shadow-xl mx-12 my-6">
   <!--VIDEO PLAYER-->
-  <div class="video-container max-w-xl" @mouseenter="showControls = true" @mouseleave="showControls = false">
+  <div v-if="isVideoLoading" class="flex flex-col gap-2 items-center justify-center py-24 rounded-t-2xl bg-orange-100">
+        <span>Loading video from IPFS...</span>
+        <span class="loading loading-spinner text-neutral w-8"></span>
+      </div>
+  <div v-else class="video-container max-w-xl" @mouseenter="showControls = true" @mouseleave="showControls = false">
     <div class="video-wrapper">
       <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
     </div>
   </div>
 
   <!--CARD BODY-->
-  <div class="card-body">
-    <h2 class="card-title">New album is released!</h2>
+  <div class="card-body max-md:p-4">
+    <h2 class="card-title">{{ tasksamaObject.title }}</h2>
     <div>
-      <p class="italic text-xs -mt-2">{{ tasksamaObject.timestamp }}</p>
-      <p>{{ tasksamaObject.description }}</p>
+      <p class="italic text-xs -mt-3">{{ tasksamaObject.timestamp }}</p>
+      <p class="mt-2">{{ tasksamaObject.description }}</p>
     </div>
 
   </div>
@@ -91,7 +102,8 @@ onMounted(async () => {
 <div class="mx-12 my-6">
   <CommentSection 
     :tokenId="tokenId"
-    :comments-array="comments"
+    :commentsArray="comments"
+    @refreshComments="fetchComments"
   />
 </div>
 

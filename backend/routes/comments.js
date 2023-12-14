@@ -1,6 +1,7 @@
 const { connectToDatabase } = require('../db');
 const Router = require('@koa/router');
 const router = new Router();
+const { ObjectId } = require('mongodb');
 require('dotenv').config();
 
 
@@ -97,7 +98,107 @@ router.post('/postComment', async (ctx, next) => {
   }
 });
 
+/* 
+###############################################################
+########################## upComment ##########################
+############################################################### 
+*/
+router.post('/upComment', async (ctx, next) => {
+  if (ctx.request.path === '/upComment') {
+    console.log("\n ####################################### \n '/upComment' " + new Date() + "\n ####################################### \n ");
+  
+    // Ensure the commentId is converted to ObjectId if using MongoDB's default ObjectId
+    const commentId = new ObjectId(ctx.request.body.commentId); 
+    const isUp = ctx.request.body.isUp;
+    const walletAddress = ctx.headers['x-wallet-address'];
 
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('comments');
+      
+      const updateQuery = {};
+      if (isUp) {
+        updateQuery.$push = { upsAddresses: walletAddress };
+        updateQuery.$inc = { ups: 1 };
+      } else {
+        updateQuery.$pull = { upsAddresses: walletAddress };
+        updateQuery.$inc = { ups: -1 };
+      }
+      
+      const result = await collection.updateOne({ _id: commentId }, updateQuery);
+      
+      if (result.modifiedCount === 1) {
+        var updatedComment = await collection.findOne({ _id: commentId });
+        updatedComment.isUp = isUp;
+        ctx.body = updatedComment;
+      } else {
+        ctx.throw(400, 'Unable to update comment');
+      }
+    } catch (error) {
+      ctx.throw(500, 'Failed to up comment: ' + error.message);
+    }
+  }
+
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
+
+/* 
+###############################################################
+######################### downComment #########################
+############################################################### 
+*/
+router.post('/downComment', async (ctx, next) => {
+  if (ctx.request.path === '/downComment') {
+    console.log("\n ####################################### \n '/downComment' " + new Date() + "\n ####################################### \n ");
+  
+    // Ensure the commentId is converted to ObjectId if using MongoDB's default ObjectId
+    const commentId = new ObjectId(ctx.request.body.commentId); 
+    const isDown = ctx.request.body.isDown;
+    const walletAddress = ctx.headers['x-wallet-address'];
+
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('comments');
+
+      // Find the comment document by ID and increment/decrement the up count by 1 and push/pull walletAssociated
+      const updateQuery = { };
+      if (isDown) {
+        updateQuery.$push = { downsAddresses: walletAddress };
+        updateQuery.$inc = { downs: 1 };
+      } else {
+        updateQuery.$pull = { downsAddresses: walletAddress };
+        updateQuery.$inc = { downs: -1 };
+      }
+      
+      const result = await collection.updateOne({ _id: commentId }, updateQuery);
+  
+      // Check if the update was successful and return the updated like count
+      if (result.modifiedCount === 1) {
+        var updatedComment = await collection.findOne({ _id: commentId });
+        updatedComment.isDown = isDown;
+        ctx.body = updatedComment;
+      } else {
+        ctx.throw(400, 'Unable to update comment');
+      }
+    } catch (error) {
+      ctx.throw(500, 'Failed to down comment: ', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
 
 /* 
 ###############################################################
@@ -112,7 +213,7 @@ function formatDateToString(date) {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
 
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return `${year}/${month}/${day} ${hours}:${minutes}`;
 }
 
 module.exports = router;

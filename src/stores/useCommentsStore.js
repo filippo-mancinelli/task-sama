@@ -19,13 +19,14 @@ export const useCommentsStore = defineStore('commentsStore', {
           return promise;
         },
 
-        upComment(commentId) {
-            const promise = axios.post(`${import.meta.env.VITE_DEV_BACKEND_URL}/upComment`, { commentId })
+        // These two endpoints returns the updated comment document
+        upComment(commentId, isUp) {
+            const promise = axios.post(`${import.meta.env.VITE_DEV_BACKEND_URL}/upComment`, { commentId, isUp })
             return promise;
         },
 
-        downComment(commentId) {
-            const promise = axios.post(`${import.meta.env.VITE_DEV_BACKEND_URL}/downComment`, { commentId })
+        downComment(commentId, isDown) {
+            const promise = axios.post(`${import.meta.env.VITE_DEV_BACKEND_URL}/downComment`, { commentId, isDown })
             return promise;
         }
     }
