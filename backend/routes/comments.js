@@ -60,16 +60,16 @@ router.post('/postComment', async (ctx, next) => {
   
     // getting token from authorization header 
     const authToken = ctx.headers['authorization'];
+    var walletAddress;
     try {
       const { address, body } = await Web3Token.verify(authToken);
+      walletAddress = address;
     }catch (error) {
       console.log("Invalid token: ", error)
       ctx.throw(401, 'Invalid token: ', error);
     }
-    
     const tokenId = ctx.request.body.tokenId;
     const commentBody = ctx.request.body.commentBody;
-    const walletAddress = ctx.headers['x-wallet-address'];
     const currentDate = new Date();
     const formattedDate = formatDateToString(currentDate);
 
@@ -133,7 +133,6 @@ router.post('/deleteComment', async (ctx, next) => {
       ctx.throw(401, 'Invalid token: ', error);
     }
     
-
     try {
       const db = await connectToDatabase();
       const collection = db.collection('comments');
@@ -183,7 +182,6 @@ router.post('/upComment', async (ctx, next) => {
     }
     const commentId = new ObjectId(ctx.request.body.commentId); 
     const isUp = ctx.request.body.isUp;
-    const walletAddress = ctx.headers['x-wallet-address'];
 
     try {
       const db = await connectToDatabase();
@@ -191,10 +189,10 @@ router.post('/upComment', async (ctx, next) => {
       
       const updateQuery = {};
       if (isUp) {
-        updateQuery.$push = { upsAddresses: walletAddress };
+        updateQuery.$push = { upsAddresses: address };
         updateQuery.$inc = { ups: 1 };
       } else {
-        updateQuery.$pull = { upsAddresses: walletAddress };
+        updateQuery.$pull = { upsAddresses: address };
         updateQuery.$inc = { ups: -1 };
       }
       
@@ -241,7 +239,6 @@ router.post('/downComment', async (ctx, next) => {
     }
     const commentId = new ObjectId(ctx.request.body.commentId); 
     const isDown = ctx.request.body.isDown;
-    const walletAddress = ctx.headers['x-wallet-address'];
 
     try {
       const db = await connectToDatabase();
@@ -250,10 +247,10 @@ router.post('/downComment', async (ctx, next) => {
       // Find the comment document by ID and increment/decrement the up count by 1 and push/pull walletAssociated
       const updateQuery = { };
       if (isDown) {
-        updateQuery.$push = { downsAddresses: walletAddress };
+        updateQuery.$push = { downsAddresses: address };
         updateQuery.$inc = { downs: 1 };
       } else {
-        updateQuery.$pull = { downsAddresses: walletAddress };
+        updateQuery.$pull = { downsAddresses: address };
         updateQuery.$inc = { downs: -1 };
       }
       

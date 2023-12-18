@@ -42,12 +42,14 @@ export const useConnectionStore = defineStore('metamaskConnection', {
     actions: {
       async initConnectionWatcher() {
         await this.setProvider(); //in any case we need a provider (ganache or infura)
-        watch(
-          () => this.isConnected,
-          async (newValue) => {
+        watch(() => this.isConnected, async (newValue) => {
             await this.setProvider();
             
             if(newValue == true) {
+              if(this.authToken !== null) {
+                axios.defaults.headers.common['Authorization'] = this.authToken;
+              }
+
               if(localStorage.getItem('disconnectPreference') === 'false') {
                 await this.setSigner();
                 await this.setWalletAddress();
