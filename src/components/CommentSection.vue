@@ -39,18 +39,22 @@ const checkDown = computed(() => (commentId) => {
 
 function postComment() {
     isLoading.value = true;
-    if(commentText.value.length > 0 && commentText.value.length < 400) {
+    if(commentText.value.length > 0 && commentText.value.length < 1000) {
         useCommentsStore().postComment(props.tokenId, commentText.value).then(response => {
             commentText.value = '';
             emit('refreshComments');
             isLoading.value = false;
         }).catch(error => {
             console.log(error);
-            usePopupStore().setPopup(true, 'danger', 'Comments maximum length is 400 characters', 'noModal')
+            if(error.response.status == 401){
+                usePopupStore().setPopup(true, 'danger', 'You need to sign with your wallet to login first', 'noModal')
+            } else {
+                usePopupStore().setPopup(true, 'danger', error.response.data.message, 'noModal')
+            }
             isLoading.value = false;
         });
     } else {
-        usePopupStore().setPopup(true, 'danger', 'Comments maximum length is 400 characters', 'noModal')
+        usePopupStore().setPopup(true, 'danger', 'Comments maximum length is 1000 characters', 'noModal')
         isLoading.value = false;
     }
 }
@@ -59,7 +63,7 @@ function postComment() {
 
 <template>
 <!-- COMMENT LIST -->
-<div class="card bg-white shadow-lg flex flex-col gap-2 shadow-sm">
+<div class="card bg-white shadow-lg flex flex-col gap-2">
     <div v-for="comment in commentsArray">
         <span class="text-sm"> 
              <Comment 
@@ -72,6 +76,7 @@ function postComment() {
                 :postDate="comment.postDate"
                 :isUp="checkUp(comment._id)"
                 :isDown="checkDown(comment._id)"
+                @refreshComments="$emit('refreshComments')"
              />
         </span>
     </div>

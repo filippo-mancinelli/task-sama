@@ -34,7 +34,7 @@ watch(() => popupStore.showPopup, (newValue, oldValue) => {
           <span class="sr-only">Info</span>
         </div>
         <div>
-          <span class="font-medium">Danger:</span> {{ popupStore.message }}
+          <span class="font-medium">Error:</span> {{ popupStore.message }}
         </div>
       </div>
       <div v-if="popupStore.messageType == 'success'" @click="()=>popupStore.setPopup(false, '', '')" class="fixed flex p-1 top-1 right-1 md:p-4  text-md border hover:cursor-pointer border-black text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"  role="alert" >

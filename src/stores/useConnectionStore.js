@@ -3,6 +3,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { tasksAddress, tasksamaAddress } from '../helpers/contractAddresses';
 import { defineStore } from 'pinia'
 import { watch, markRaw  } from 'vue';
+import Web3Token from 'web3-token';
 import TasksABI from "../helpers/TasksABI.json";
 import TasksamaABI from "../helpers/TasksamaABI.json";
 import jazzicon from "@metamask/jazzicon";
@@ -11,6 +12,8 @@ import axios from 'axios';
 export const useConnectionStore = defineStore('metamaskConnection', {
 
     state: () => ({ 
+        authToken: localStorage.getItem('authToken') == null ? null : localStorage.getItem('authToken'),
+        isSigned: localStorage.getItem('isSigned') == 'true' ? true : false,
         provider: null,
         signer: null,
         walletAddress: null,
@@ -100,8 +103,10 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           await this.setProvider();
           await this.setSigner();
           await this.setWalletAddress();  
+
           this.isConnected = true;
           localStorage.setItem('disconnectPreference', 'false');
+          localStorage.setItem('isSigned', 'true');
         } else {
           console.log("install metamask!")
         }
@@ -112,9 +117,13 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           if (this.hasMetamask()) {
             this.isConnected = false;
             this.walletAddress = null;
+            this.authToken = null;
+            this.isSigned = false;
             await this.setProvider();
             await this.setSigner();
             localStorage.setItem('disconnectPreference', 'true')
+            localStorage.setItem('authToken', null);
+            localStorage.setItem('isSigned', 'false');
           }
         }
       },
@@ -156,6 +165,15 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       async setWalletAddress() {
         if(this.isConnected && this.signer != null) {
           this.walletAddress = await this.signer.getAddress();
+        }
+      },
+
+      async setAuthToken() {
+        if(this.signer && this.authToken == null) {
+          this.authToken = await Web3Token.sign(async msg => await this.signer.signMessage(msg), '1d');
+          axios.defaults.headers.common['Authorization'] = this.authToken;
+          localStorage.setItem('authToken', this.authToken);
+          this.isSigned = true;
         }
       },
 
