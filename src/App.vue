@@ -1,7 +1,7 @@
 <script setup>
 import { useConnectionStore } from './stores/useConnectionStore';
 import { useBackgroundStore } from './stores/useBackgroundStore';
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, ref } from 'vue';
 import Navbar from './components/Navbar.vue';
 import Popup from './components/widgets/Popup.vue';
 

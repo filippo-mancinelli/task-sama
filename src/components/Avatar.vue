@@ -6,6 +6,7 @@
     import { useTaskStore } from '../stores/useTaskStore';
     import { useVideoStore } from '../stores/useVideoStore';
     import { useArgStore } from '../stores/useArgStore';
+    import { PencilIcon } from '@heroicons/vue/24/solid';
 
     const argStore = useArgStore();
     const videoStore = useVideoStore();
@@ -128,7 +129,7 @@
 
       <!--DROPDOWN CONTENT-->
       <div tabindex="0" class="dropdown-content z-[1] top-15 card card-compact p-2 shadow drop-shadow-xl text-white bg-orange-500 -right-3" >
-        <div class="card-body p-2 ">
+        <div class="card-body p-2">
 
           <div class="flex flex-col gap-1">
             <div class="flex items-start gap-1">
@@ -139,22 +140,21 @@
             <p>Tasks participated: {{ participated }}</p>
             <p>Tasks won: {{ won }}</p>
 
-
-          <div class="flex flex-col">
-              <!--
-              <button @click="openModal" class="btn btn-warning flex-grow px-2 mt-1 text-white"> 
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
-                  Change Account
+            <!--PROFILE ACTIONS-->
+            <div class="flex flex-col gap-2">
+              <router-link to="/profile" @click="toggleDropdown" class="btn btn-warning text-white"> 
+                <UserIcon class="h-5 w-5 mr-1" /> Profile
+              </router-link>
+              <button @click="connectionStore.setAuthToken" class="btn btn-warning text-white" :class="{'cursor-auto bg-orange-300': connectionStore.isSigned}"> 
+                <PencilIcon tabindex="0" class="h-5 w-5 mr-1 cursor-pointer text-white" />
+                {{ connectionStore.isSigned ? 'Signed in' : 'Sign in'}}
               </button>
-              -->
-              <div class="flex gap-2">
-                <router-link to="/profile" @click="toggleDropdown" class="btn btn-warning flex-grow mt-1 text-white"> <UserIcon class="h-6 w-6" /> Profile</router-link>
-                <button @click="connectionStore.disconnect" class="btn btn-warning flex-grow px-2 mt-1 text-white"> 
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" clip-rule="evenodd" /></svg>
-                  Disconnect
-                </button>
-              </div>
+              <button @click="connectionStore.disconnect" class="btn btn-warning text-white"> 
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-1"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" clip-rule="evenodd" /></svg>
+                Disconnect
+              </button>
             </div>
+
           </div>
         </div>
       </div>

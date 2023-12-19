@@ -15,8 +15,13 @@ export const useCommentsStore = defineStore('commentsStore', {
         },
 
         async postComment(tokenId, commentBody) {
-          const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/postComment', { tokenId, commentBody })
+          const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/postComment', { tokenId, commentBody });
           return promise;
+        },
+
+        async deleteComment(commentId) {
+            const promise = axios.post(`${import.meta.env.VITE_DEV_BACKEND_URL}/deleteComment`, { commentId })
+            return promise;
         },
 
         // These two endpoints returns the updated comment document

@@ -2,10 +2,12 @@
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router'
 import { useCommentsStore } from '../stores/useCommentsStore';
+import { useConnectionStore } from '../stores/useConnectionStore';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useBackgroundStore } from '../stores/useBackgroundStore';
 import CommentSection from './CommentSection.vue';
 
+const connectionStore = useConnectionStore();
 const backgroundStore = useBackgroundStore();
 const commentsStore = useCommentsStore();
 const videoStore = useVideoStore();

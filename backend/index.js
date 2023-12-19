@@ -22,11 +22,13 @@ const imagesRouter = require('./routes/images');
 const likesRouter = require('./routes/likes');
 const taskRouter = require('./routes/tasks');
 const commentsRouter = require('./routes/comments');
+const usersRouter = require('./routes/users');
 app.use(videosRouter.routes());
 app.use(imagesRouter.routes());
 app.use(likesRouter.routes());
 app.use(taskRouter.routes());
 app.use(commentsRouter.routes());
+app.use(usersRouter.routes());
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

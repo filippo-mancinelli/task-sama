@@ -1,13 +1,43 @@
 <script setup>
+import { ref } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore'
+import Modal from './widgets/Modal.vue';
 import Avatar from './Avatar.vue';
 
 const connectionStore = useConnectionStore();
 
-    async function connect() {
-      await connectionStore.connect();
-      connectionStore.triggerEvent = !connectionStore.triggerEvent;
-    }
+// Modal
+const showModal = ref(false);
+const modalType = ref('');
+const message = ref('');
+const isLoading = ref(false);
+const showButton = ref(true);
+
+async function connect() {
+  await connectionStore.connect();
+  if (connectionStore.isConnected && connectionStore.authToken == 'null') {
+    message.value = 'If you want to access your account and use all of the functionalities like comments and participating tasks, you need to sign a message with your wallet. If you do not want to sign anything, you can ignore this message. If you want to sign in later, you can do it in the profile menu by clicking on the avatar on the top right corner.';
+    showModal.value = true;
+  }
+}
+
+
+function Signin() {
+  isLoading.value = true;
+  connectionStore.setAuthToken()
+      .then(response => {
+          modalType.value = 'success';
+          message.value = 'You are now signed in!';
+          isLoading.value = false;
+          showButton.value = false;
+      })
+      .catch(error => {
+          modalType.value = 'danger';
+          message.value = 'Something went wrong, please try again.';
+          isLoading.value = false;
+          showButton.value = false;
+      });
+}
 
 </script>
 
@@ -15,7 +45,7 @@ const connectionStore = useConnectionStore();
   <div class="sticky flex items-center gap-4 top-0 z-10 pt-4 px-4 sm:px-40 pb-20 sm:pb-5 drop-shadow-md">
     <div class="navbar  w-full   bg-yellow-100	 border-2 bmorder-black rounded-full ">
   <div class="flex-1 border-solid border-2 border-black rounded-full bg-orange-100">
-    <router-link to="/" class="btn btn-ghost normal-case text-sm sm:text-2xl">Task Sama</router-link>
+    <router-link to="/" class="btn btn-ghost normal-case text-sm sm:text-2xl overflow-hidden whitespace-nowrap truncate">Task Sama</router-link>
     <ul class="menu menu-horizontal px-1">
       <li class="hidden md:block"><router-link to="/" class=" hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out">Home</router-link></li>
     </ul>
@@ -35,6 +65,26 @@ const connectionStore = useConnectionStore();
     
     <Avatar />
   </div>
+
+
+  <!--MODAL SIGNIN METAMASK-->
+  <Modal @close-modal="showModal = false" :showModal="showModal" :modalType="modalType">
+      <template v-slot:title>Sign in your account</template>
+      <template v-slot:content>
+        <div class="flex flex-col">
+          <span>{{ message }}</span>
+          <div class="flex gap-4">
+            <button v-if="showButton" @click="createTask" class="btn mt-2 w-40 bg-orange-400 text-white">
+              <span v-if="!isLoading" @click="Signin">Sign message</span>
+              <span v-else class="flex items-center gap-3">Signing...<span class="loading loading-ring loading-md -translate-x-1"></span> </span>
+            </button>
+            <button v-if="showButton" @click="showModal = false" class="btn mt-2 w-40 bg-orange-400 text-white">Ignore</button>  
+          </div>
+
+        </div>
+
+      </template>
+    </Modal>
 </template>
 
 <style scoped>

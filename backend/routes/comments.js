@@ -2,6 +2,8 @@ const { connectToDatabase } = require('../db');
 const Router = require('@koa/router');
 const router = new Router();
 const { ObjectId } = require('mongodb');
+const Web3Token = require('web3-token');
+
 require('dotenv').config();
 
 
@@ -20,7 +22,6 @@ router.get('/getComments', async (ctx, next) => {
   
       try {
         const documents = await collection.find({'tokenId': tokenId}).toArray();
-        console.log("comments retrieved:", documents);
         
         if(documents.length === 0){
           ctx.body = {
@@ -56,11 +57,24 @@ router.post('/postComment', async (ctx, next) => {
   if (ctx.request.path === '/postComment') {
     console.log("\n ####################################### \n '/postComment' " + new Date() + "\n ####################################### \n ");
   
+    // getting token from authorization header 
+    const authToken = ctx.headers['authorization'];
+    var walletAddress;
+    try {
+      const { address, body } = await Web3Token.verify(authToken);
+      walletAddress = address;
+    }catch (error) {
+      console.log("Invalid token: ", error)
+      ctx.throw(401, 'Invalid token: ', error);
+    }
     const tokenId = ctx.request.body.tokenId;
     const commentBody = ctx.request.body.commentBody;
-    const walletAddress = ctx.headers['x-wallet-address'];
     const currentDate = new Date();
     const formattedDate = formatDateToString(currentDate);
+
+    if(commentBody.length > 1000){
+      ctx.throw(400, 'Comment body too long.');
+    }
 
     try {
       const db = await connectToDatabase();
@@ -98,6 +112,56 @@ router.post('/postComment', async (ctx, next) => {
   }
 });
 
+
+
+/* 
+###############################################################
+####################### deleteComment #########################
+############################################################### 
+*/
+router.post('/deleteComment', async (ctx, next) => {
+  if (ctx.request.path === '/deleteComment') {
+    console.log("\n ####################################### \n '/deleteComment' " + new Date() + "\n ####################################### \n ");
+  
+    const commentId = new ObjectId(ctx.request.body.commentId);
+    const authToken = ctx.headers['authorization'];
+    try {
+      const { address, body } = await Web3Token.verify(authToken);
+    }catch (error) {
+      console.log("Invalid token: ", error)
+      ctx.throw(401, 'Invalid token: ', error);
+    }
+    
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('comments');
+      
+      // delete the comment
+      const result = await collection.deleteOne({ _id: commentId });
+
+      if(result.deletedCount === 0){
+        ctx.throw(400, 'Unable to delete comment');
+      } else {
+        ctx.body = {
+          message: 'Comment deleted successfully.',
+          data: result,
+        };
+      }
+    } catch (error) {
+      ctx.throw(500, 'Failed to delete comment: ', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
+
+
 /* 
 ###############################################################
 ########################## upComment ##########################
@@ -107,10 +171,18 @@ router.post('/upComment', async (ctx, next) => {
   if (ctx.request.path === '/upComment') {
     console.log("\n ####################################### \n '/upComment' " + new Date() + "\n ####################################### \n ");
   
-    // Ensure the commentId is converted to ObjectId if using MongoDB's default ObjectId
+    // getting token from authorization header 
+    const authToken = ctx.headers['authorization'];
+    var walletAddress;
+    try {
+      const { address, body } = await Web3Token.verify(authToken);
+      walletAddress = address;
+    }catch (error) {
+      console.log("Invalid token: ", error)
+      ctx.throw(401, 'Invalid token: ', error);
+    }
     const commentId = new ObjectId(ctx.request.body.commentId); 
     const isUp = ctx.request.body.isUp;
-    const walletAddress = ctx.headers['x-wallet-address'];
 
     try {
       const db = await connectToDatabase();
@@ -158,10 +230,18 @@ router.post('/downComment', async (ctx, next) => {
   if (ctx.request.path === '/downComment') {
     console.log("\n ####################################### \n '/downComment' " + new Date() + "\n ####################################### \n ");
   
-    // Ensure the commentId is converted to ObjectId if using MongoDB's default ObjectId
+    // getting token from authorization header 
+    const authToken = ctx.headers['authorization'];
+    var walletAddress;
+    try {
+      const { address, body } = await Web3Token.verify(authToken);
+      walletAddress = address;
+    }catch (error) {
+      console.log("Invalid token: ", error)
+      ctx.throw(401, 'Invalid token: ', error);
+    }
     const commentId = new ObjectId(ctx.request.body.commentId); 
     const isDown = ctx.request.body.isDown;
-    const walletAddress = ctx.headers['x-wallet-address'];
 
     try {
       const db = await connectToDatabase();
