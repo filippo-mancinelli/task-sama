@@ -22,7 +22,6 @@ router.get('/getComments', async (ctx, next) => {
   
       try {
         const documents = await collection.find({'tokenId': tokenId}).toArray();
-        console.log("comments retrieved:", documents);
         
         if(documents.length === 0){
           ctx.body = {
@@ -174,8 +173,10 @@ router.post('/upComment', async (ctx, next) => {
   
     // getting token from authorization header 
     const authToken = ctx.headers['authorization'];
+    var walletAddress;
     try {
       const { address, body } = await Web3Token.verify(authToken);
+      walletAddress = address;
     }catch (error) {
       console.log("Invalid token: ", error)
       ctx.throw(401, 'Invalid token: ', error);
@@ -189,10 +190,10 @@ router.post('/upComment', async (ctx, next) => {
       
       const updateQuery = {};
       if (isUp) {
-        updateQuery.$push = { upsAddresses: address };
+        updateQuery.$push = { upsAddresses: walletAddress };
         updateQuery.$inc = { ups: 1 };
       } else {
-        updateQuery.$pull = { upsAddresses: address };
+        updateQuery.$pull = { upsAddresses: walletAddress };
         updateQuery.$inc = { ups: -1 };
       }
       
@@ -231,8 +232,10 @@ router.post('/downComment', async (ctx, next) => {
   
     // getting token from authorization header 
     const authToken = ctx.headers['authorization'];
+    var walletAddress;
     try {
       const { address, body } = await Web3Token.verify(authToken);
+      walletAddress = address;
     }catch (error) {
       console.log("Invalid token: ", error)
       ctx.throw(401, 'Invalid token: ', error);
@@ -247,10 +250,10 @@ router.post('/downComment', async (ctx, next) => {
       // Find the comment document by ID and increment/decrement the up count by 1 and push/pull walletAssociated
       const updateQuery = { };
       if (isDown) {
-        updateQuery.$push = { downsAddresses: address };
+        updateQuery.$push = { downsAddresses: walletAddress };
         updateQuery.$inc = { downs: 1 };
       } else {
-        updateQuery.$pull = { downsAddresses: address };
+        updateQuery.$pull = { downsAddresses: walletAddress };
         updateQuery.$inc = { downs: -1 };
       }
       

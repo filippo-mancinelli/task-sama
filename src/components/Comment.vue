@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, defineProps, defineEmits } from 'vue';
+import { watch, ref, defineProps, defineEmits } from 'vue';
 import { ChevronDoubleUpIcon, ChevronDoubleDownIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { useCommentsStore } from '../stores/useCommentsStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
@@ -13,19 +13,20 @@ const props = defineProps([
   'ups',
   'downs',
   'postDate',
-  'isUp',
-  'isDown'
+  'upsAddresses',
+  'downsAddresses'
 ]);
 const emit = defineEmits(['refreshComments']);
 
 const avatarImgHtml1 = ref('');
-const isUpRef = ref(props.isUp);
-const isDownRef = ref(props.isDown);
+const isUpRef = ref(false);
+const isDownRef = ref(false);
 const upsRef = ref(props.ups);
 const downsRef = ref(props.downs);
 
 const seed = Math.round(Math.random() * 10000000);
 avatarImgHtml1.value = useConnectionStore().getAvatarImg(25, seed); 
+
 
 function up() {
     if (isDownRef.value) {
@@ -39,7 +40,13 @@ function up() {
     useCommentsStore().upComment(props.commentId, !isUpRef.value).then(response => {
         upsRef.value = response.data.ups;
         isUpRef.value = response.data.isUp;
-    });
+    }).catch(error => {
+        if(error.response.status == 401){
+            usePopupStore().setPopup(true, 'danger', 'You need to sign in with your wallet first', 'noModal')
+        } else {
+            usePopupStore().setPopup(true, 'danger', error.response.data.message, 'noModal')
+        }
+    });;
 }
 
 function down() {
@@ -54,13 +61,18 @@ function down() {
     useCommentsStore().downComment(props.commentId, !isDownRef.value).then(response => {
         downsRef.value = response.data.downs;
         isDownRef.value = response.data.isDown;
-    });
+    }).catch(error => {
+        if(error.response.status == 401){
+            usePopupStore().setPopup(true, 'danger', 'You need to sign in with your wallet first', 'noModal')
+        } else {
+            usePopupStore().setPopup(true, 'danger', error.response.data.message, 'noModal')
+        }
+    });;
 }
 
 function deleteComment() {
     useCommentsStore().deleteComment(props.commentId).then(response => {
         emit('refreshComments');
-        console.log(response);
     }).catch(error => {
         if(error.response.status == 401){
             usePopupStore().setPopup(true, 'danger', 'You need to sign in with your wallet first', 'noModal')
@@ -69,6 +81,17 @@ function deleteComment() {
         }
     });
 }
+
+function setCommentUpDownStatus() {
+    props.upsAddresses.includes(useConnectionStore().walletAddress) ? isUpRef.value = true : isUpRef.value = false;
+    props.downsAddresses.includes(useConnectionStore().walletAddress) ? isDownRef.value = true : isDownRef.value = false;
+}
+
+// Set the isUp and isDown variables at component mount, and then everytime wallet address changes or metamask disconnects
+setCommentUpDownStatus();
+watch([() => useConnectionStore().isAllSetUp, () => useConnectionStore().triggerEvent], ([isAllSetup, triggerEvent], [prevIsAllSetuo, prevTriggerEvent]) => {
+    setCommentUpDownStatus();
+});
 
 </script>
 

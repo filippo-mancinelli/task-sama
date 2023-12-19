@@ -12,7 +12,7 @@ import axios from 'axios';
 export const useConnectionStore = defineStore('metamaskConnection', {
 
     state: () => ({ 
-        authToken: localStorage.getItem('authToken') == null ? null : localStorage.getItem('authToken'),
+        authToken: localStorage.getItem('authToken') == 'null' ? 'null' : localStorage.getItem('authToken'),
         isSigned: localStorage.getItem('isSigned') == 'true' ? true : false,
         provider: null,
         signer: null,
@@ -46,10 +46,6 @@ export const useConnectionStore = defineStore('metamaskConnection', {
             await this.setProvider();
             
             if(newValue == true) {
-              if(this.authToken !== null) {
-                axios.defaults.headers.common['Authorization'] = this.authToken;
-              }
-
               if(localStorage.getItem('disconnectPreference') === 'false') {
                 await this.setSigner();
                 await this.setWalletAddress();
@@ -105,10 +101,11 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           await this.setProvider();
           await this.setSigner();
           await this.setWalletAddress();  
-
           this.isConnected = true;
           localStorage.setItem('disconnectPreference', 'false');
-          localStorage.setItem('isSigned', 'true');
+
+          // Trigger this event to propagate all components that are watching it that the connection has changed
+          this.triggerEvent = !this.triggerEvent;
         } else {
           console.log("install metamask!")
         }
@@ -119,13 +116,16 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           if (this.hasMetamask()) {
             this.isConnected = false;
             this.walletAddress = null;
-            this.authToken = null;
+            this.authToken = 'null';
             this.isSigned = false;
             await this.setProvider();
             await this.setSigner();
             localStorage.setItem('disconnectPreference', 'true')
-            localStorage.setItem('authToken', null);
+            localStorage.setItem('authToken', 'null');
             localStorage.setItem('isSigned', 'false');
+
+            // Trigger this event to propagate all components that are watching it that the connection has changed
+            this.triggerEvent = !this.triggerEvent;
           }
         }
       },
@@ -167,14 +167,16 @@ export const useConnectionStore = defineStore('metamaskConnection', {
       async setWalletAddress() {
         if(this.isConnected && this.signer != null) {
           this.walletAddress = await this.signer.getAddress();
+          this.walletAddress = this.walletAddress.toLowerCase();
         }
       },
 
       async setAuthToken() {
-        if(this.signer && this.authToken == null) {
+        if(this.signer && this.authToken == 'null') {
           this.authToken = await Web3Token.sign(async msg => await this.signer.signMessage(msg), '1d');
           axios.defaults.headers.common['Authorization'] = this.authToken;
           localStorage.setItem('authToken', this.authToken);
+          localStorage.setItem('isSigned', 'true');
           this.isSigned = true;
         }
       },
