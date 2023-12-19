@@ -8,7 +8,7 @@ const corsOptions = {
   origin: '*',
   credentials: true,
   methods: ['POST'],
-  allowHeaders: ['Content-Type', 'Authorization', 'X-Wallet-Address'],
+  allowHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));

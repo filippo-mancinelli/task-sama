@@ -7,6 +7,7 @@ const fs = require('fs');
 const { PassThrough } = require('stream'); 
 const { FilebaseClient, File } = require('@filebase/client');
 const filebaseClient = new FilebaseClient({ token: process.env.FILEBASE_API_TOKEN });
+const Web3Token = require('web3-token');
 require('dotenv').config();
 
 /* 
@@ -20,7 +21,15 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
 
     const video = ctx.request.file; 
     const taskId = ctx.request.body.tokenId;
-    const walletAddress = ctx.headers['x-wallet-address'];
+    const authToken = ctx.headers['authorization'];
+    var walletAddress;
+    try {
+      const { address, body } = await Web3Token.verify(authToken);
+      walletAddress = address;
+    }catch (error) {
+      console.log("Invalid token: ", error)
+      ctx.throw(401, 'Invalid token: ', error);
+    }
    
     //#### video checks ####//
     if (!video) {

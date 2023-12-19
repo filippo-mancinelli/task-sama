@@ -65,7 +65,6 @@ function participateTask() {
   }
   isLoading.value = true;
   //before updating the task NFT with the participation we upload the user video + tokenId to our server for moderation purposes
-  console.log("argStore.arguments",argStore.arguments)
   useTaskStore().uploadVideoToDB(argStore.arguments.fileData.value, props.tokenId).then(() => {
     connectionStore.callContractFunction('Tasks', 'participate', 'stateChanging', [props.tokenId])
       .then(response => {

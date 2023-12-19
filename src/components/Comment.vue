@@ -44,7 +44,7 @@ function up() {
         if(error.response.status == 401){
             usePopupStore().setPopup(true, 'danger', 'You need to sign in with your wallet first', 'noModal')
         } else {
-            usePopupStore().setPopup(true, 'danger', error.response.data.message, 'noModal')
+            usePopupStore().setPopup(true, 'danger', error.response.data, 'noModal')
         }
     });;
 }
@@ -65,7 +65,7 @@ function down() {
         if(error.response.status == 401){
             usePopupStore().setPopup(true, 'danger', 'You need to sign in with your wallet first', 'noModal')
         } else {
-            usePopupStore().setPopup(true, 'danger', error.response.data.message, 'noModal')
+            usePopupStore().setPopup(true, 'danger', error.response.data, 'noModal')
         }
     });;
 }

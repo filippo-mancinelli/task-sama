@@ -40,7 +40,7 @@ function postComment() {
 <template>
 <!-- COMMENT LIST -->
 <div class="card bg-white shadow-lg flex flex-col gap-2">
-    <div v-for="comment in commentsArray">
+    <div v-for="comment in commentsArray" :key="comment._id">
         <span class="text-sm"> 
              <Comment 
                 :commentId="comment._id"

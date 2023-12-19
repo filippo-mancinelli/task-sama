@@ -20,9 +20,8 @@ const imageMapping = ref({});
 function fetchData() {
     connectionStore.triggerEvent = !connectionStore.triggerEvent;
     taskStore.fetchTasksMetadata().then(() => {
-        elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
+        elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner.toLowerCase() == connectionStore.walletAddress);
         taskStore.fetchTasksImages().then(response => {
-            console.log(response);
             for(var i = 0; i < elements.value.length; i++) {
                 if(response.message == 'No images found.') {
                     imageMapping.value[elements.value[i].tokenId] = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
@@ -43,18 +42,18 @@ watch(() => selected.value, (newSelected) => {
 
         switch(newSelected) {
             case 'created':
-                elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
+                elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner.toLowerCase() == connectionStore.walletAddress);
                 break;
 
             case 'participating':
                 elements.value = taskStore.tasksMetadata.filter(metadata => {
-                    const isParticipant = metadata.participants.some(participant => participant === connectionStore.walletAddress);
+                    const isParticipant = metadata.participants.some(participant => participant.toLowerCase() === connectionStore.walletAddress);
                     return isParticipant;
                 });
                 break;
 
             case 'won':
-                elements.value = videoStore.videoMetadata.filter(metadata => metadata.winner == connectionStore.walletAddress)
+                elements.value = videoStore.videoMetadata.filter(metadata => metadata.winner.toLowerCase() == connectionStore.walletAddress)
                 break;
 
         }
