@@ -1,5 +1,6 @@
 <script setup>
     import { useConnectionStore } from '../stores/useConnectionStore'
+    import { useUsersStore } from '../stores/useUsersStore';
     import { computed } from '@vue/reactivity';
     import { ref, onMounted, watch, getCurrentInstance } from 'vue';
     import { UserIcon  } from '@heroicons/vue/24/solid';
@@ -10,6 +11,7 @@
     const videoStore = useVideoStore();
     const taskStore = useTaskStore();
     const connectionStore = useConnectionStore();
+    const usersStore = useUsersStore();
     const isConnected = computed(() => { return connectionStore.isConnected});
     const avatarImgHtml1 = ref('');
     const avatarImgHtml2 = ref('');
@@ -65,17 +67,14 @@
     }
     
     onMounted(() => {
-      watch([() => videoStore.isDataReady, () => connectionStore.isAllSetUp], ([isDataReady, isAllSetUp], [prevIsDataReady, prevIsAllSetUp]) => {
-        if (isDataReady && isAllSetUp) {
+      watch([() => videoStore.isDataReady, () => connectionStore.isAllSetUp, () => connectionStore.triggerEvent], ([isDataReady, isAllSetUp, triggerEvent], [prevIsDataReady, prevIsAllSetUp, prevTriggerEvent]) => {
           refreshUserData();
-        }
       });
 
-      watch(() => connectionStore.isAllSetUp, (newValue, oldValue) => {
-        if(newValue == true) {
-          const seed = Math.round(Math.random() * 10000000);
-          avatarImgHtml1.value = connectionStore.getAvatarImg(60, seed); 
-          avatarImgHtml2.value = connectionStore.getAvatarImg(20, seed);
+      watch([() => connectionStore.isAllSetUp, () => usersStore.seed], ([isAllSetUp, isAllSetUpOld], [seed, seedOld]) => {
+        if(isAllSetUp == true || seed !== 0) {
+          avatarImgHtml1.value = connectionStore.getAvatarImg(60, usersStore.seed); 
+          avatarImgHtml2.value = connectionStore.getAvatarImg(25, usersStore.seed);
           
           //needed to check if user closed the dropdown by clicking outside the dropdown
           document.addEventListener('click', handleDropdownOutsideClick);
@@ -102,9 +101,14 @@
         <div class="card-body p-2">
 
           <div class="flex flex-col gap-1">
-            <div class="flex items-start gap-1">
-              <div v-html="avatarImgHtml2" class=""></div>
-              <h5 class="card-title text-sm mb-0">{{ connectionStore.walletAddress }}</h5>
+            <div class="flex items-center gap-2">
+              <div class="rounded-full ring ring-primary ring-offset-base-100 avatar">
+                <div v-html="avatarImgHtml2" class=""></div>
+              </div>
+              <div class="flex flex-col">
+                <h5 class="card-title text-sm mb-0">{{ connectionStore.walletAddress }}</h5>
+                <h5 class="card-title text-sm mb-0">{{ usersStore.username }}</h5>
+              </div>
             </div>
             <p>Tasks listed: {{ listed }}</p>
             <p>Tasks participated: {{ participated }}</p>

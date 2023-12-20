@@ -1,13 +1,13 @@
 <script setup>
-import {  ref, computed, defineEmits } from 'vue';
-import { useConnectionStore } from '../stores/useConnectionStore';
+import {  ref, defineEmits } from 'vue';
 import { useCommentsStore } from '../stores/useCommentsStore';
 import Comment from './Comment.vue';
 import { usePopupStore } from '../stores/usePopupStore';
 
 const props = defineProps([
   'tokenId',
-  'commentsArray'
+  'commentsArray',
+  'category'
 ]);
 const emit = defineEmits(['refreshComments']);
 const commentText = ref('');
@@ -16,7 +16,7 @@ const isLoading = ref(false);
 function postComment() {
     isLoading.value = true;
     if(commentText.value.length > 0 && commentText.value.length < 1000) {
-        useCommentsStore().postComment(props.tokenId, commentText.value).then(response => {
+        useCommentsStore().postComment(props.tokenId, commentText.value, props.category).then(response => {
             commentText.value = '';
             emit('refreshComments');
             isLoading.value = false;
@@ -46,6 +46,8 @@ function postComment() {
                 :commentId="comment._id"
                 :tokenId="comment.tokenId"
                 :posterAddress="comment.posterAddress"
+                :posterUsername="comment.username"
+                :posterSeed="comment.seed"
                 :commentBody="comment.commentBody"
                 :ups="comment.ups"
                 :downs="comment.downs"

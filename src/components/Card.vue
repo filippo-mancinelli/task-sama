@@ -54,6 +54,7 @@ function playLikeAnimation(){
 //##### video player #####//
 const videoPlayer = ref(null);
 const showControls = ref(false);
+const isVideoLoading = ref(true);
 
 async function fetchIPFSVideo() {
   const gateways = ['https://ipfs.io/', 'https://cloudflare-ipfs.com/'];
@@ -80,6 +81,7 @@ async function fetchIPFSVideo() {
     const finalUrl = selectedGateway + props.ipfsVideoUrl;
     try {
       const response = await fetch(finalUrl);
+      isVideoLoading.value = false;
       const blob = await response.blob();
       videoPlayer.value.src = URL.createObjectURL(blob);
     } catch (error) {
@@ -107,6 +109,10 @@ onMounted(async () => {
 <template>
 <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
   <!-- video player -->
+  <div v-if="isVideoLoading" class="flex flex-col gap-2 items-center justify-center py-24 rounded-t-2xl bg-orange-100">
+      <span>Loading video from IPFS...</span>
+      <span class="loading loading-spinner text-neutral w-8"></span>
+  </div>
   <div class="video-container" @mouseenter="showControls = true" @mouseleave="showControls = false">
     <div class="video-wrapper">
       <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
@@ -129,7 +135,7 @@ onMounted(async () => {
           watch
           <PlayCircleIcon class="h-6 w-6 hover:cursor-pointer" /> 
         </router-link>
-        <lottie-player class="relative h-8 resize left-4 bottom-0.5 align-top" ref="lottiePlayer" src="src/assets/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;"></lottie-player>
+        <lottie-player class="relative h-8 resize left-4 bottom-0.5 align-top" ref="lottiePlayer" src="/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;"></lottie-player>
         <div class="absolute hover:cursor-pointer h-7 w-7 mr-9"  @click="likeButton"></div> <!-- hitbox for click -->
         <span>{{ likeCount }}</span>
       </div>

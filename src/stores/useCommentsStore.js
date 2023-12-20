@@ -9,13 +9,13 @@ export const useCommentsStore = defineStore('commentsStore', {
     }),
 
     actions: {
-        async getComments(tokenId) {
-            const promise = axios.get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getComments?tokenId=${tokenId}`)
+        async getComments(tokenId, category) {
+            const promise = axios.get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getComments?tokenId=${tokenId}&category=${category}`)
             return promise;
         },
 
-        async postComment(tokenId, commentBody) {
-          const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/postComment', { tokenId, commentBody });
+        async postComment(tokenId, commentBody, category) {
+          const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/postComment', { tokenId, commentBody, category });
           return promise;
         },
 

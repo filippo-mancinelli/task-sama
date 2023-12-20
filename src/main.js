@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHashHistory } from 'vue-router'; 
+import { useConnectionStore } from './stores/useConnectionStore';
 import App from './App.vue'
 import Home from './components/Home.vue'
 import Profile from './components/Profile.vue'
@@ -15,8 +16,8 @@ const pinia = createPinia()
 const app = createApp(App)
 
 const routes = [
-    //{ path: '/', redirect: '/home' },
     { path: '/', component: Home },
+    { path: '/home', name: 'Home', redirect: '/' },
     { path: '/profile', component: Profile },
     { path: '/video/:tokenId', component: WatchVideo },
     { path: '/task/:tokenId', component: WatchTask },
@@ -27,6 +28,16 @@ export const router = createRouter({
     history: createWebHashHistory(), 
     routes,
 })
+
+router.beforeEach((to, from, next) => {
+    // non-connected users cannot access the profile page
+    if ((from.path === '/profile' || from.path === '#/profile') && !useConnectionStore().isConnected && to.path !== '/') {
+      next({ name: '/home' }); 
+    } else {
+      next();
+    }
+  });
+  
 
 app.use(router)
 app.use(pinia)

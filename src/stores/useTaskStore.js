@@ -40,7 +40,7 @@ export const useTaskStore = defineStore('api', {
         },
 
         async getParticipantVideo(tokenId, participantAddress) {
-            const promise = axios.get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getParticipantVideo?tokenId=${tokenId}&participantAddress=${participantAddress}`, { responseType: 'arraybuffer', })
+            const promise = axios.get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getParticipantVideo?tokenId=${tokenId}&participantAddress=${participantAddress.toLowerCase()}`, { responseType: 'arraybuffer', })
             return promise;
         },
 

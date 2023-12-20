@@ -3,12 +3,15 @@ import { watch, ref, defineProps, defineEmits } from 'vue';
 import { ChevronDoubleUpIcon, ChevronDoubleDownIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { useCommentsStore } from '../stores/useCommentsStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
+import { useUsersStore } from '../stores/useUsersStore';
 import { usePopupStore } from '../stores/usePopupStore';
 
 const props = defineProps([
   'commentId',
   'tokenId',
   'posterAddress',
+  'posterUsername',
+  'posterSeed',
   'commentBody',
   'ups',
   'downs',
@@ -18,14 +21,11 @@ const props = defineProps([
 ]);
 const emit = defineEmits(['refreshComments']);
 
-const avatarImgHtml1 = ref('');
 const isUpRef = ref(false);
 const isDownRef = ref(false);
 const upsRef = ref(props.ups);
 const downsRef = ref(props.downs);
-
-const seed = Math.round(Math.random() * 10000000);
-avatarImgHtml1.value = useConnectionStore().getAvatarImg(25, seed); 
+const avatarImgHtml1 = useConnectionStore().getAvatarImg(25, props.posterSeed); 
 
 
 function up() {
@@ -102,8 +102,8 @@ watch([() => useConnectionStore().isAllSetUp, () => useConnectionStore().trigger
             <div class="flex gap-2 p-2">
                 <div v-html="avatarImgHtml1" class="rounded-full ring ring-primary avatar"></div>
                 <div class="tooltip" :data-tip="posterAddress">
-                    <div class="max-sm:w-24 max-sm:text-ellipsis max-sm:overflow-hidden max-sm:whitespace-nowrap">
-                        <span class="text-md">{{ posterAddress }}</span>
+                    <div class="">
+                        <span class="text-md">{{ posterUsername }}</span>
                     </div>
                 </div>
             </div>

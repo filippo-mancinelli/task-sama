@@ -13,38 +13,45 @@ require('dotenv').config();
 ############################################################### 
 */
 router.get('/getComments', async (ctx, next) => {
-    if (ctx.request.path === '/getComments') {
-      console.log("\n ####################################### \n '/getComments' " + new Date() + "\n ####################################### \n ");
-  
-      const tokenId = ctx.request.query.tokenId;
-      const db = await connectToDatabase();
-      const collection = db.collection('comments');
-  
-      try {
-        const documents = await collection.find({'tokenId': tokenId}).toArray();
-        
-        if(documents.length === 0){
-          ctx.body = {
-            message: 'No comments found.',
-          };
-        } else {
-          ctx.body = {
-            message: 'Comments fetched correctly.',
-            data: documents,
-          };
-        }
-      } catch (error) {
-        ctx.throw(500, 'Failed to fetch comments.', error);
-      }
+  if (ctx.request.path === '/getComments') {
+    console.log("\n ####################################### \n '/getComments' " + new Date() + "\n ####################################### \n ");
+
+    const tokenId = ctx.request.query.tokenId;
+    const category = ctx.request.query.category;
+    console.log("category: ", category)
+    const db = await connectToDatabase();
+    var collection = db.collection('comments');
+
+    // Retreve comments
+    const documents = await collection.find({'tokenId': tokenId, 'category': category}).toArray();
+
+    // For each comment retrieve the username and the seed of the poster
+    collection = db.collection('users');
+    for (var i = 0; i < documents.length; i++) {
+      const user = await collection.findOne({ address: documents[i].posterAddress });
+      documents[i].username = user.username;
+      documents[i].seed = user.seed;
     }
-    await next();
-  
-    if (ctx.status === 404) {
+
+    if(documents.length === 0){
       ctx.body = {
-        message: 'Not found',
+        message: 'No comments found.',
+      };
+    } else {
+      ctx.body = {
+        message: 'Comments fetched correctly.',
+        data: documents,
       };
     }
-  });
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
 
 
 
@@ -69,6 +76,7 @@ router.post('/postComment', async (ctx, next) => {
     }
     const tokenId = ctx.request.body.tokenId;
     const commentBody = ctx.request.body.commentBody;
+    const category = ctx.request.body.category;
     const currentDate = new Date();
     const formattedDate = formatDateToString(currentDate);
 
@@ -89,7 +97,8 @@ router.post('/postComment', async (ctx, next) => {
         downs: 0,
         upsAddresses: [],
         downsAddresses: [],
-        postDate: formattedDate
+        postDate: formattedDate,
+        category: category
       };
 
       await collection.insertOne(commentData);

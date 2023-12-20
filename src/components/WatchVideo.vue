@@ -62,15 +62,16 @@ async function fetchIPFSVideo() {
 }
 
 async function fetchComments() {
-  const commentsResponse = await commentsStore.getComments(tokenId);
+  const commentsResponse = await commentsStore.getComments(tokenId, 'taskSamaVideo');
   comments.value = commentsResponse.data.message == 'Comments fetched correctly.' ? commentsResponse.data.data : [];
 }
 
 onMounted(async () => {
     route = useRoute();
     tokenId = route.params.tokenId;
-    fetchIPFSVideo();
     tasksamaObject.value = await videoStore.fetchTasksamaMetadata(tokenId);
+    fetchIPFSVideo();
+    console.log(tasksamaObject.value)
     await fetchComments();
     isReady.value = true;
 });
@@ -80,9 +81,9 @@ onMounted(async () => {
 <div class="card lg:card-side bg-base-100 shadow-xl mx-12 my-6">
   <!--VIDEO PLAYER-->
   <div v-if="isVideoLoading" class="flex flex-col gap-2 items-center justify-center py-24 rounded-t-2xl bg-orange-100">
-        <span>Loading video from IPFS...</span>
-        <span class="loading loading-spinner text-neutral w-8"></span>
-      </div>
+      <span>Loading video from IPFS...</span>
+      <span class="loading loading-spinner text-neutral w-8"></span>
+  </div>
   <div v-else class="video-container max-w-xl" @mouseenter="showControls = true" @mouseleave="showControls = false">
     <div class="video-wrapper">
       <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
@@ -105,6 +106,7 @@ onMounted(async () => {
   <CommentSection 
     :tokenId="tokenId"
     :commentsArray="comments"
+    :category="'taskSamaVideo'"
     @refreshComments="fetchComments"
   />
 </div>

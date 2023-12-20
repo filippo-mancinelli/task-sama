@@ -16,8 +16,8 @@ export const useVideoStore = defineStore('videoNFTs', {
     },
 
     actions: {
+        // Fetch from blockchain the metadata of all the taskSama NFT videos
         async initVideoMetadata() {
-                // Fetch from blockchain
                 const { result } = await useConnectionStore().callContractFunction("TaskSama", "getVideos");
                 const fetchedMetadata = result;
 

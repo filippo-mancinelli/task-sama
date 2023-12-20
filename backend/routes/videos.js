@@ -74,7 +74,7 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
         uploadDate: formattedDate,
         size: video.size,
         taskId: taskId,
-        senderAddress: walletAddress,
+        senderAddress: walletAddress.toLocaleLowerCase(),
         moderated: 'null'  // null means that the video is not moderated yet
       };
 
@@ -245,7 +245,6 @@ router.get('/getParticipantVideo', async (ctx, next) => {
 
     const participantAddress = ctx.request.query.participantAddress;
     const tokenId = ctx.request.query.tokenId;
-
     try {
       const db = await connectToDatabase();
       const collection = db.collection('videos');

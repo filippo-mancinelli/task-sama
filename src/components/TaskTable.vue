@@ -91,6 +91,7 @@ const resizeEventListener = function(event){
 };
 
 onMounted(() => {
+  refreshTasksMetadata();
   watch(() => [connectionStore.walletAddress, connectionStore.tasksInstance, connectionStore.triggerEvent], async (instance) => {
     if(instance != null) {
       await refreshTasksMetadata();

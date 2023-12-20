@@ -133,8 +133,8 @@ onMounted(() => {
 </Modal>
 
 <Modal @close-modal="showModalResult = false" :showModal="showModalResult" :modalType="modalType">
-<template v-slot:title></template>
-<template v-slot:content>{{ message }}</template>
+  <template v-slot:title></template>
+  <template v-slot:content>{{ message }}</template>
 </Modal>
 
 <div id="home" class="hero mb-10 mt-4">

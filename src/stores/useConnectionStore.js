@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { Web3Provider } from '@ethersproject/providers';
 import { tasksAddress, tasksamaAddress } from '../helpers/contractAddresses';
 import { defineStore } from 'pinia'
+import { useUsersStore } from './useUsersStore';
 import { watch, markRaw  } from 'vue';
 import Web3Token from 'web3-token';
 import TasksABI from "../helpers/TasksABI.json";
@@ -68,9 +69,12 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           });        
         } 
 
-        // If the authToken is already stored in localStorage, set it as default header for axios
+        // If the authToken is already stored in localStorage, we set it as default header for axios 
+        // and then fetch user profile data from backend using it 
         if(this.authToken != 'null') {
           axios.defaults.headers.common['Authorization'] = this.authToken;
+          useUsersStore().verifyUser();
+          useUsersStore().getUserData();
         }
 
         this.triggerEvent = !this.triggerEvent;
@@ -120,6 +124,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
             this.authToken = 'null';
             await this.setProvider();
             await this.setSigner();
+            useUsersStore().resetUserData();
             localStorage.setItem('disconnectPreference', 'true')
             localStorage.setItem('authToken', 'null');
 
@@ -175,6 +180,8 @@ export const useConnectionStore = defineStore('metamaskConnection', {
           this.authToken = await Web3Token.sign(async msg => await this.signer.signMessage(msg), '1d');
           axios.defaults.headers.common['Authorization'] = this.authToken;
           localStorage.setItem('authToken', this.authToken);
+          useUsersStore().verifyUser();
+          useUsersStore().getUserData();
         }
       },
 
