@@ -100,12 +100,8 @@ watch([() => useConnectionStore().isAllSetUp, () => useConnectionStore().trigger
         <!-- COMMENT HEADER -->
         <div class="flex justify-between">
             <div class="flex gap-2 p-2">
-                <div v-html="avatarImgHtml1" class="rounded-full ring ring-primary avatar"></div>
-                <div class="tooltip" :data-tip="posterAddress">
-                    <div class="">
-                        <span class="text-md">{{ posterUsername }}</span>
-                    </div>
-                </div>
+                <div v-html="avatarImgHtml1" class="rounded-full ring ring-primary avatar hover:cursor-pointer"></div>
+                <router-link :to="'/users/' + posterUsername" class="text-md hover:text-orange-700 hover:cursor-pointer">{{ posterUsername }}</router-link>
             </div>
 
 

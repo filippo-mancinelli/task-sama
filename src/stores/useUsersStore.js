@@ -24,6 +24,11 @@ export const useUsersStore = defineStore('users', {
             return promise;
         },
 
+        async getUserDataByUsername(username) {
+            const promise = axios.get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getUserDataByUsername?username=${username}`);
+            return promise;
+        },
+
         // This checks if the user already exists in the database. If not, it creates it with a random seed and username
         async verifyUser() {
             const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/verifyUser');

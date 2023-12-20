@@ -5,8 +5,10 @@ import { useCommentsStore } from '../stores/useCommentsStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useBackgroundStore } from '../stores/useBackgroundStore';
+import { tasksamaAddress } from '../helpers/contractAddresses';
 import CommentSection from './CommentSection.vue';
 
+var contractAddressesLink = "https://www.moonscan.io/address/" + tasksamaAddress;
 const connectionStore = useConnectionStore();
 const backgroundStore = useBackgroundStore();
 const commentsStore = useCommentsStore();
@@ -71,7 +73,6 @@ onMounted(async () => {
     tokenId = route.params.tokenId;
     tasksamaObject.value = await videoStore.fetchTasksamaMetadata(tokenId);
     fetchIPFSVideo();
-    console.log(tasksamaObject.value)
     await fetchComments();
     isReady.value = true;
 });
@@ -96,6 +97,14 @@ onMounted(async () => {
     <div>
       <p class="italic text-xs -mt-3">{{ tasksamaObject.timestamp }}</p>
       <p class="mt-2">{{ tasksamaObject.description }}</p>
+    </div>
+    
+    <div>
+      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task creator: </span> {{ tasksamaObject.creator }}</p>
+      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task winner: </span> {{ tasksamaObject.winner }}</p>
+      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Contract address: </span> <a :href="contractAddressesLink" target="_blank" class="text-sm text-blue-500 hover:text-blue-700 hover:cursor-pointer">{{ tasksamaAddress }}</a></p>
+      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Token ID: </span> {{ tasksamaObject.tokenId }}</p>
+      <p class="text-sm italic"> <span class=" font-bold">Reward earned: </span> {{ tasksamaObject.rewardEarned }} GLMR</p>
     </div>
 
   </div>

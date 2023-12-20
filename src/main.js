@@ -5,6 +5,7 @@ import { useConnectionStore } from './stores/useConnectionStore';
 import App from './App.vue'
 import Home from './components/Home.vue'
 import Profile from './components/Profile.vue'
+import User from './components/User.vue'
 import WatchVideo from './components/WatchVideo.vue'
 import WatchTask from './components/WatchTask.vue'
 import ChooseWinner from './components/ChooseWinner.vue'
@@ -19,6 +20,7 @@ const routes = [
     { path: '/', component: Home },
     { path: '/home', name: 'Home', redirect: '/' },
     { path: '/profile', component: Profile },
+    { path: '/users/:username', component: User },
     { path: '/video/:tokenId', component: WatchVideo },
     { path: '/task/:tokenId', component: WatchTask },
     { path: '/chooseWinner/:tokenId', component: ChooseWinner },

@@ -90,6 +90,47 @@ router.get('/getUserData', async (ctx, next) => {
 
 /* 
 ###############################################################
+################### getUserDataByUsername #####################
+############################################################### 
+*/
+router.get('/getUserDataByUsername', async (ctx, next) => {
+  if (ctx.request.path === '/getUserDataByUsername') {
+    console.log("\n ####################################### \n '/getUserDataByUsername' " + new Date() + "\n ####################################### \n ");
+
+    const username = ctx.request.query.username;
+    
+    try {
+      const db = await connectToDatabase();
+      const collection = db.collection('users');
+  
+      const document = await collection.findOne({username: username })
+      if(document){
+        ctx.body = {
+          message: 'User fetched correctly.',
+          data: document,
+        };
+        console.log("User fetched correctly.", document);
+      } else {
+        ctx.throw(404, 'User not found.');
+        console.log("User not found.");
+      }
+
+    } catch (error) {
+      ctx.throw(500, 'Failed to fetch user.', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
+
+/* 
+###############################################################
 ########################## verifyUser #########################
 ############################################################### 
 */
@@ -174,11 +215,19 @@ router.post('/editUsername', async (ctx, next) => {
     if(username.length < 2 || username.length > 25){
       ctx.throw(400, 'Username must be between 2 and 25 characters long.');
       console.log("Username must be between 2 and 25 characters long.");
-    }
+    }  
 
     const db = await connectToDatabase();
     const collection = db.collection('users');
 
+    // Check if username is already taken
+    const document = await collection.findOne({username: username });
+    if(document){
+      ctx.throw(400, 'Username already taken.');
+      console.log("Username already taken.");
+    }
+
+    // Proceed to update username
     const updateResult = await collection.updateOne({address: walletAddress }, { $set: { username: username } });
     
     if(updateResult.modifiedCount === 1){
