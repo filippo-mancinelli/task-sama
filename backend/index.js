@@ -33,10 +33,6 @@ app.use(taskRouter.routes());
 app.use(commentsRouter.routes());
 app.use(usersRouter.routes());
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
-
 // Create HTTPS server only on production
 if (process.env.NODE_ENV === 'production') {
   const options = {
@@ -64,6 +60,10 @@ if (process.env.NODE_ENV === 'production') {
     console.log(`HTTP server running on port ${httpPort}`);
   });
 }
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
 
 
 // ### SPAWN BATCH JOB ### //
