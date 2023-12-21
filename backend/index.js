@@ -40,9 +40,9 @@ app.listen(3000, () => {
 // Create HTTPS server only on production
 if (process.env.NODE_ENV === 'production') {
   const options = {
-    key: fs.readFileSync('/certificates/privkey.pem'),
-    cert: fs.readFileSync('/certificates/cert.pem'),
-    ca: fs.readFileSync('/certificates/chain.pem'),
+    key: fs.readFileSync('./certificates/privkey.pem'),
+    cert: fs.readFileSync('./certificates/cert.pem'),
+    ca: fs.readFileSync('./certificates/chain.pem'),
   };
 
   const httpsServer = https.createServer(options, app.callback());
