@@ -16,6 +16,8 @@
     "axios": "^1.5.1",
     "dotenv": "^16.0.3",
     "ethers": "^6.9.0",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
     "ipfs-core": "^0.18.1",
     "ipfs-http-client": "^60.0.1",
     "js-cookie": "^3.0.5",

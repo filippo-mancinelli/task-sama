@@ -3,6 +3,9 @@ const cors = require('@koa/cors');
 const bodyParser = require('koa-bodyparser');
 const app = new Koa();
 const { spawn } = require("child_process");
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
 
 const corsOptions = {
   origin: '*',
@@ -33,6 +36,34 @@ app.use(usersRouter.routes());
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
+
+// Create HTTPS server only on production
+if (process.env.NODE_ENV === 'production') {
+  const options = {
+    key: fs.readFileSync('/etc/letsencrypt/live/tasksama.eu/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/tasksama.eu/cert.pem'),
+    ca: fs.readFileSync('/etc/letsencrypt/live/tasksama.eu/chain.pem'),
+  };
+
+  const httpsServer = https.createServer(options, app.callback());
+
+  httpsServer.listen(443, () => {
+    console.log('Server running on port 443 (HTTPS)');
+  });
+}
+
+// Create HTTP server that redirects all traffic to HTTPS server only on production
+if (process.env.NODE_ENV === 'production') {
+  const httpPort = 80; 
+  const httpServer = http.createServer((req, res) => {
+    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+    res.end();
+  });
+  
+  httpServer.listen(httpPort, () => {
+    console.log(`HTTP server running on port ${httpPort}`);
+  });
+}
 
 
 // ### SPAWN BATCH JOB ### //
