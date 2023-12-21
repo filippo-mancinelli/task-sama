@@ -19,7 +19,7 @@ export const useTaskStore = defineStore('api', {
             formData.append('tokenId', tokenId);
 
             return axios
-              .post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadVideoToDB', formData, {
+              .post(import.meta.env.VITE_BACKEND_URL + '/uploadVideoToDB', formData, {
                 headers: {
                   'Content-Type': 'multipart/form-data',
                 },
@@ -35,17 +35,17 @@ export const useTaskStore = defineStore('api', {
         },
 
         uploadVideoToIpfs(tokenId, winnerAddress) {
-            const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadVideoToIpfs', { tokenId, winnerAddress });
+            const promise = axios.post(import.meta.env.VITE_BACKEND_URL + '/uploadVideoToIpfs', { tokenId, winnerAddress });
             return promise;
         },
 
         async getParticipantVideo(tokenId, participantAddress) {
-            const promise = axios.get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getParticipantVideo?tokenId=${tokenId}&participantAddress=${participantAddress.toLowerCase()}`, { responseType: 'arraybuffer', })
+            const promise = axios.get(`${import.meta.env.VITE_BACKEND_URL}/getParticipantVideo?tokenId=${tokenId}&participantAddress=${participantAddress.toLowerCase()}`, { responseType: 'arraybuffer', })
             return promise;
         },
 
         async reminder(tokenId, participantAddress) {
-          const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/reminder', { tokenId, participantAddress })
+          const promise = axios.post(import.meta.env.VITE_BACKEND_URL + '/reminder', { tokenId, participantAddress })
           return promise;
         },
 
@@ -57,7 +57,7 @@ export const useTaskStore = defineStore('api', {
             formData.append('tokenId', tokenId);
 
             return axios
-              .post(import.meta.env.VITE_DEV_BACKEND_URL + '/uploadImageToDB', formData, {
+              .post(import.meta.env.VITE_BACKEND_URL + '/uploadImageToDB', formData, {
                 headers: {
                   'Content-Type': 'multipart/form-data',
                 },
@@ -73,7 +73,7 @@ export const useTaskStore = defineStore('api', {
         },
         
         fetchTasksImages() {
-          const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTasksImages').then(response => {
+          const promise = axios.get(import.meta.env.VITE_BACKEND_URL + '/fetchTasksImages').then(response => {
               this.tasksImages = response.data;
               return response.data;
           });
@@ -81,7 +81,7 @@ export const useTaskStore = defineStore('api', {
         },
 
         fetchTaskImage(taskId) {
-          const promise = axios.get(import.meta.env.VITE_DEV_BACKEND_URL + '/fetchTaskImage?taskId=' + taskId);
+          const promise = axios.get(import.meta.env.VITE_BACKEND_URL + '/fetchTaskImage?taskId=' + taskId);
           return promise;
         },
 
