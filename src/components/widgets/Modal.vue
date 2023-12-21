@@ -30,7 +30,7 @@ watchEffect(() => {
                     
                     <div v-if="modalType !== ''" class="py-4 flex justify-center rounded-lg" :class="modalClass">
                         <div v-if="modalType == 'success'" id="lottie-container"></div>
-                        <lottie-player v-if="modalType == 'success'" src="src/assets/task-complete-tick.json" mode="bounce" background="transparent"  speed="1.1"  style="width: 100px; height: 100px;" loop autoplay></lottie-player>
+                        <lottie-player v-if="modalType == 'success'" src="/task-complete-tick.json" mode="bounce" background="transparent"  speed="1.1"  style="width: 100px; height: 100px;" loop autoplay></lottie-player>
                         <lottie-player v-if="modalType == 'danger'" src="https://assets6.lottiefiles.com/packages/lf20_qpwbiyxf.json" mode="bounce" background="transparent"  speed="1.2"  style="width: 100px; height: 100px;" loop autoplay></lottie-player>
                     </div>
                     <div>

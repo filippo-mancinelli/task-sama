@@ -7,6 +7,7 @@ const fs = require('fs');
 const { PassThrough } = require('stream'); 
 const { FilebaseClient, File } = require('@filebase/client');
 const filebaseClient = new FilebaseClient({ token: process.env.FILEBASE_API_TOKEN });
+const Web3Token = require('web3-token');
 require('dotenv').config();
 
 /* 
@@ -20,7 +21,15 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
 
     const video = ctx.request.file; 
     const taskId = ctx.request.body.tokenId;
-    const walletAddress = ctx.headers['x-wallet-address'];
+    const authToken = ctx.headers['authorization'];
+    var walletAddress;
+    try {
+      const { address, body } = await Web3Token.verify(authToken);
+      walletAddress = address;
+    }catch (error) {
+      console.log("Invalid token: ", error)
+      ctx.throw(401, 'Invalid token: ', error);
+    }
    
     //#### video checks ####//
     if (!video) {
@@ -65,7 +74,7 @@ router.post('/uploadVideoToDB', upload.single('file'), async (ctx, next) => {
         uploadDate: formattedDate,
         size: video.size,
         taskId: taskId,
-        senderAddress: walletAddress,
+        senderAddress: walletAddress.toLocaleLowerCase(),
         moderated: 'null'  // null means that the video is not moderated yet
       };
 
@@ -236,7 +245,6 @@ router.get('/getParticipantVideo', async (ctx, next) => {
 
     const participantAddress = ctx.request.query.participantAddress;
     const tokenId = ctx.request.query.tokenId;
-
     try {
       const db = await connectToDatabase();
       const collection = db.collection('videos');

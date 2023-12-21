@@ -1,36 +1,57 @@
 <script setup>
+import { useRouter, useRoute } from 'vue-router'
 import { useBackgroundStore } from '../stores/useBackgroundStore';
+import { usePopupStore } from '../stores/usePopupStore';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
+import { useUsersStore } from '../stores/useUsersStore';
 import { useTaskStore } from '../stores/useTaskStore';
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { PlayCircleIcon } from "@heroicons/vue/24/solid"
+import { PencilIcon } from '@heroicons/vue/24/solid';
+import Modal from './widgets/Modal.vue';
 
 const connectionStore = useConnectionStore();
+const popupStore = usePopupStore();
+const usersStore = useUsersStore();
 const videoStore = useVideoStore();
 const taskStore = useTaskStore();
 const backgroundStore = useBackgroundStore();
 backgroundStore.changeBackgroundClass('bg-orange-50 h-screen');
 
-
+// tabs data
 const selected = ref('created');
 const elements = ref([]);
 const imageMapping = ref({});
 
+// profile data
+const avatarImgHtml = ref('');
+const newUsername = ref('');
+
+// modal
+const showModal = ref(false);
+
+
+function editUsername() {
+    usersStore.editUsername(newUsername.value).then(() => {
+        showModal.value = false;
+    }).catch((error) => {
+        console.log("error", error);
+        popupStore.setPopup(true, 'danger', error.response.data, 'modal');
+    });
+}
+
+
 function fetchData() {
     connectionStore.triggerEvent = !connectionStore.triggerEvent;
     taskStore.fetchTasksMetadata().then(() => {
-        elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
+        elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner.toLowerCase() == connectionStore.walletAddress);
         taskStore.fetchTasksImages().then(response => {
-            console.log(response);
             for(var i = 0; i < elements.value.length; i++) {
-                if(response.message == 'No images found.') {
-                    imageMapping.value[elements.value[i].tokenId] = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
-                } else {
-                    for(var j = 0; j < response.data.length; j++) {
-                        if(elements.value[i].tokenId == response.data[j].taskId) {
-                            imageMapping.value[elements.value[i].tokenId] = 'data:image/jpeg;base64,' + response.data[j].data;
-                        }
+                imageMapping.value[elements.value[i].tokenId] = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
+                for(var j = 0; j < response.data.length; j++) {
+                    if(elements.value[i].tokenId == response.data[j].taskId) {
+                        imageMapping.value[elements.value[i].tokenId] = 'data:image/jpeg;base64,' + response.data[j].data;
                     }
                 }
             }
@@ -43,18 +64,18 @@ watch(() => selected.value, (newSelected) => {
 
         switch(newSelected) {
             case 'created':
-                elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
+                elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner.toLowerCase() == connectionStore.walletAddress);
                 break;
 
             case 'participating':
                 elements.value = taskStore.tasksMetadata.filter(metadata => {
-                    const isParticipant = metadata.participants.some(participant => participant === connectionStore.walletAddress);
+                    const isParticipant = metadata.participants.some(participant => participant.toLowerCase() === connectionStore.walletAddress);
                     return isParticipant;
                 });
                 break;
 
             case 'won':
-                elements.value = videoStore.videoMetadata.filter(metadata => metadata.winner == connectionStore.walletAddress)
+                elements.value = videoStore.videoMetadata.filter(metadata => metadata.winner.toLowerCase() == connectionStore.walletAddress)
                 break;
 
         }
@@ -64,17 +85,52 @@ watch(() => selected.value, (newSelected) => {
 watch(() => connectionStore.isAllSetUp, (value) => {
     if (value) {
         fetchData();
+        avatarImgHtml.value = connectionStore.getAvatarImg(100, usersStore.seed); 
+    } else {
+        useRouter().push({ name: '/' });
     }
 });
 
 onMounted(async () => {
+    setTimeout(() => {
+        if(!connectionStore.isConnected){
+            useRouter().push({ name: 'Home' });
+        }
+    }, 1000);   
+
     elements.value = taskStore.tasksMetadata.filter(metadata => metadata.owner == connectionStore.walletAddress);
+    avatarImgHtml.value = connectionStore.getAvatarImg(100, usersStore.seed); 
     fetchData();
 });
 
 </script>
 
 <template>
+<!-- USER INFO -->
+<div class="card card-side flex items-center bg-base-100 shadow-xl m-4 mb-8">
+    <div class="rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 avatar ml-4">
+        <div v-html="avatarImgHtml" class=""></div>
+    </div>
+  
+    <div class="card-body">
+        <h2 class="card-title">
+            {{ usersStore.username }}
+            <PencilIcon tabindex="0" @click="showModal=true" class="h-4 w-4 mr-1 cursor-pointer text-slate-500" />
+        </h2>
+        <p class="max-sm:w-48 max-sm:text-xs max-sm:text-ellipsis max-sm:overflow-hidden max-sm:whitespace-nowrap">{{ connectionStore.walletAddress }}</p>
+    </div>
+</div>
+
+<!-- MODAL -->
+<Modal @close-modal="showModal = false" :showModal="showModal" :modal-type="''">
+    <template v-slot:title>Edit username</template>
+    <template v-slot:content>
+        <input type="text" v-model="newUsername" placeholder="Your new username" class="input input-bordered input-error w-full max-w-xs" />
+        <button @click="editUsername()" class="btn w-20 h-10 ml-2 mt-2 bg-orange-400 text-white">Confirm</button>
+    </template>
+</Modal>
+
+<!--TASKS INFO-->
 <div class="flex">
   <button class="flex flex-col items-center p-2 w-full border-2 border-pink-200 bg-pink-200 text-pink-600 hover:border-pink-600" :class="selected == 'created' ? 'border-pink-600' : ''" @click="() => selected = 'created'">
     <svg xmlns="http://www.w3.org/2000/svg"  class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>

@@ -13,6 +13,8 @@ contract Tasks is ERC721, Ownable {
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
+    address payable public feeRecipient;
+    uint256 public feePercentage = 5;
 
     struct Task {
         uint256 tokenId;
@@ -27,18 +29,22 @@ contract Tasks is ERC721, Ownable {
     ITasksSamaContract private _taskSamaContract;
     mapping(uint256 => Task) public tasks;
 
-    uint256 public minimumReward = 10 ether; // Minimum reward is 5 GLMR tokens //900
+    uint256 public minimumReward = 10 ether; // Minimum reward is 10 GLMR tokens //900
 
     event TaskCreated(uint256 indexed taskId, address owner, string title, string description, uint256 reward);
     event TaskCompleted(uint256 indexed taskId, address winner, uint256 newTokenId);
 
-    constructor(address taskSamaContractAddress) ERC721("Tasks", "TASK") {
+    constructor(address taskSamaContractAddress, address _feeRecipient) ERC721("Tasks", "TASK") {
         _taskSamaContract = ITasksSamaContract(taskSamaContractAddress);
+        feeRecipient = payable(_feeRecipient); 
     }
 
     function createTask(string memory _title, string memory _description) public payable {
         require(msg.value >= minimumReward, "Reward is too low");
-
+    
+        uint256 fee = (msg.value * feePercentage) / 100; // Calculating 5% fee
+        uint256 netReward = msg.value - fee; // Calculating the net reward for the task
+    
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         Task memory newTask = Task({
@@ -46,15 +52,19 @@ contract Tasks is ERC721, Ownable {
             owner: msg.sender,
             title: _title,
             description: _description,
-            reward: msg.value,
+            reward: netReward, 
             participants: new address[](0),
             timestamp: block.timestamp
         });
-
+    
         tasks[tokenId] = newTask;
         _mint(msg.sender, tokenId);
-
-        emit TaskCreated(tokenId, msg.sender, _title, _description, msg.value);
+    
+        // Transfer the fee to the contract owner or any desired address
+        address payable feeRecipient = payable(owner()); 
+        feeRecipient.transfer(fee);
+    
+        emit TaskCreated(tokenId, msg.sender, _title, _description, netReward);
     }
 
     function participate(uint256 _taskId) public {
@@ -129,4 +139,11 @@ contract Tasks is ERC721, Ownable {
     function _getParticipantsOf(uint256 _taskId) public view returns (address[] memory) {
         return tasks[_taskId].participants;
     }
+
+    function updateFeeRecipientAndPercentage(address _newRecipient, uint256 _newFeePercentage) external onlyOwner {
+        require(_newFeePercentage >= 1 && _newFeePercentage <= 20, "Fee percentage should be between 1 and 20");
+        feeRecipient = payable(_newRecipient);
+        feePercentage = _newFeePercentage;
+    }
+    
 }

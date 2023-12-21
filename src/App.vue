@@ -8,9 +8,9 @@ import Popup from './components/widgets/Popup.vue';
 const connectionStore = useConnectionStore();
 const backgroundStore = useBackgroundStore();
 
-onMounted(() => {
-      connectionStore.initConnectionWatcher();
-      connectionStore.checkConnection();
+onMounted(async () => {
+      await connectionStore.initConnectionWatcher();
+      await connectionStore.checkConnection();
 });
 
 </script>

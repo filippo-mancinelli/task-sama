@@ -5,13 +5,18 @@ import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router'
 import { useTaskStore } from '../stores/useTaskStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
+import { useCommentsStore } from '../stores/useCommentsStore';
 import { HandRaisedIcon, ClockIcon } from '@heroicons/vue/24/solid';
 import { useBackgroundStore } from '../stores/useBackgroundStore';
 import { useArgStore } from '../stores/useArgStore';
 import { usePopupStore } from '../stores/usePopupStore';
+import { tasksAddress } from '../helpers/contractAddresses';
+import CommentSection from './CommentSection.vue';
 
+var contractAddressesLink = "https://www.moonscan.io/address/" + tasksAddress;
 const backgroundStore = useBackgroundStore();
 const connectionStore = useConnectionStore();
+const commentsStore = useCommentsStore();
 const argStore = useArgStore();
 const popupStore = usePopupStore();
 
@@ -23,6 +28,7 @@ const isParticipating = ref(false);
 const taskObject = ref({})
 const imageSrc = ref('');
 const isReady = ref(false);
+const comments = ref([]);
 const isLoading = ref(false);
 const showModal1 = ref(false);
 const showModal2 = ref(false);
@@ -80,11 +86,17 @@ function participateTask() {
 }
 
 
+async function fetchComments() {
+  const commentsResponse = await commentsStore.getComments(tokenId, 'task');
+  comments.value = commentsResponse.data.message == 'Comments fetched correctly.' ? commentsResponse.data.data : [];
+}
+
 onMounted(async () => {
     route = useRoute();
     tokenId = route.params.tokenId;
     taskObject.value = await useTaskStore().fetchTaskMetadata(tokenId);
     isReady.value = true;
+    await fetchComments();
 
     // Check if current user is participanting
     if(connectionStore.isConnected) {
@@ -109,11 +121,15 @@ onMounted(async () => {
     <div v-if="isReady" class="mx-6">
         <div class="card card-side flex flex-col sm:flex-row bg-base-100 shadow-xl">
             <figure ><img class="rounded-md border-black border-2 max-h-60 max-w-120" :src="imageSrc" alt="Movie"/></figure>
-            <div v-if="taskObject.result != undefined" class="card-body max-w-xl">
+            <div v-if="taskObject.result != undefined" class="card-body max-w-xl gap-2">
                 <h2 class="card-title">#{{ taskObject.tokenId  }} -{{ taskObject.result.title }}</h2>
                 <p class="italic text-xs -mt-2">{{ taskObject.timestamp }}</p>
                 <p class="truncate ...">{{ taskObject.result.description }}</p>
-                 <div class="italic truncate">Reward:<span class="pl-2 text-lg">{{ taskObject.reward }} GLMR</span></div> 
+                <p class="italic truncate">Creator:<span class="pl-2 text-sm">{{ taskObject.result.owner }} </span></p>
+                <p class="italic truncate">Contract address:<a :href="contractAddressesLink" target="_blank" class="pl-2 text-sm text-blue-500 hover:text-blue-700 hover:cursor-pointer">{{ tasksAddress }}</a></p>
+                <p class="italic truncate">Token ID:<span class="pl-2 text-lg">{{ taskObject.result.tokenId }} </span></p>
+                <p class="italic truncate">Reward:<span class="pl-2 text-lg">{{ taskObject.reward }} GLMR</span></p>
+
 
                 <div class="card-actions justify-end">
                     <label v-if="!isParticipating" @click="openModal" class="btn btn-primary pr-1 pl-4 w-30 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
@@ -134,6 +150,16 @@ onMounted(async () => {
                     <p class="text-sm rounded bg-slate-100 my-1 border-l-4 border-orange-500 pl-1">{{ participant }}</p>
             </div>
         </div>
+    </div>
+
+    <!--COMMENT SECTION-->
+    <div class="mx-6 my-6">
+        <CommentSection 
+            :tokenId="tokenId"
+            :commentsArray="comments"
+            :category="'task'"
+            @refreshComments="fetchComments"
+        />
     </div>
 
 

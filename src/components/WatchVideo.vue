@@ -5,8 +5,10 @@ import { useCommentsStore } from '../stores/useCommentsStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useBackgroundStore } from '../stores/useBackgroundStore';
+import { tasksamaAddress } from '../helpers/contractAddresses';
 import CommentSection from './CommentSection.vue';
 
+var contractAddressesLink = "https://www.moonscan.io/address/" + tasksamaAddress;
 const connectionStore = useConnectionStore();
 const backgroundStore = useBackgroundStore();
 const commentsStore = useCommentsStore();
@@ -62,15 +64,15 @@ async function fetchIPFSVideo() {
 }
 
 async function fetchComments() {
-  const commentsResponse = await commentsStore.getComments(tokenId);
+  const commentsResponse = await commentsStore.getComments(tokenId, 'taskSamaVideo');
   comments.value = commentsResponse.data.message == 'Comments fetched correctly.' ? commentsResponse.data.data : [];
 }
 
 onMounted(async () => {
     route = useRoute();
     tokenId = route.params.tokenId;
-    fetchIPFSVideo();
     tasksamaObject.value = await videoStore.fetchTasksamaMetadata(tokenId);
+    fetchIPFSVideo();
     await fetchComments();
     isReady.value = true;
 });
@@ -80,9 +82,9 @@ onMounted(async () => {
 <div class="card lg:card-side bg-base-100 shadow-xl mx-12 my-6">
   <!--VIDEO PLAYER-->
   <div v-if="isVideoLoading" class="flex flex-col gap-2 items-center justify-center py-24 rounded-t-2xl bg-orange-100">
-        <span>Loading video from IPFS...</span>
-        <span class="loading loading-spinner text-neutral w-8"></span>
-      </div>
+      <span>Loading video from IPFS...</span>
+      <span class="loading loading-spinner text-neutral w-8"></span>
+  </div>
   <div v-else class="video-container max-w-xl" @mouseenter="showControls = true" @mouseleave="showControls = false">
     <div class="video-wrapper">
       <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
@@ -96,6 +98,14 @@ onMounted(async () => {
       <p class="italic text-xs -mt-3">{{ tasksamaObject.timestamp }}</p>
       <p class="mt-2">{{ tasksamaObject.description }}</p>
     </div>
+    
+    <div>
+      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task creator: </span> {{ tasksamaObject.creator }}</p>
+      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task winner: </span> {{ tasksamaObject.winner }}</p>
+      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Contract address: </span> <a :href="contractAddressesLink" target="_blank" class="text-sm text-blue-500 hover:text-blue-700 hover:cursor-pointer">{{ tasksamaAddress }}</a></p>
+      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Token ID: </span> {{ tasksamaObject.tokenId }}</p>
+      <p class="text-sm italic"> <span class=" font-bold">Reward earned: </span> {{ tasksamaObject.rewardEarned }} GLMR</p>
+    </div>
 
   </div>
 </div>
@@ -105,6 +115,7 @@ onMounted(async () => {
   <CommentSection 
     :tokenId="tokenId"
     :commentsArray="comments"
+    :category="'taskSamaVideo'"
     @refreshComments="fetchComments"
   />
 </div>

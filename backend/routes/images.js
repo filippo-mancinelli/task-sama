@@ -4,7 +4,7 @@ const router = new Router();
 const multer = require('@koa/multer');
 const upload = multer({ dest: "uploads/images" }); 
 const fs = require('fs');
-const { forEach } = require('lodash');
+const Web3Token = require('web3-token');
 require('dotenv').config();
 
 
@@ -19,7 +19,15 @@ router.post('/uploadImageToDB', upload.single('file'), async (ctx, next) => {
   
     const image = ctx.request.file; 
     const taskId = ctx.request.body.tokenId;
-    const walletAddress = ctx.headers['x-wallet-address'];
+    const authToken = ctx.headers['authorization'];
+    var walletAddress;
+    try {
+      const { address, body } = await Web3Token.verify(authToken);
+      walletAddress = address;
+    }catch (error) {
+      console.log("Invalid token: ", error)
+      ctx.throw(401, 'Invalid token: ', error);
+    }
 
     //### Uploaded image checks ###//
     if (!image) {

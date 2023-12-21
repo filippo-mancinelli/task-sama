@@ -1,13 +1,13 @@
 <script setup>
-import {  ref, computed, defineEmits } from 'vue';
-import { useConnectionStore } from '../stores/useConnectionStore';
+import {  ref, defineEmits } from 'vue';
 import { useCommentsStore } from '../stores/useCommentsStore';
 import Comment from './Comment.vue';
 import { usePopupStore } from '../stores/usePopupStore';
 
 const props = defineProps([
   'tokenId',
-  'commentsArray'
+  'commentsArray',
+  'category'
 ]);
 const emit = defineEmits(['refreshComments']);
 const commentText = ref('');
@@ -16,7 +16,7 @@ const isLoading = ref(false);
 function postComment() {
     isLoading.value = true;
     if(commentText.value.length > 0 && commentText.value.length < 1000) {
-        useCommentsStore().postComment(props.tokenId, commentText.value).then(response => {
+        useCommentsStore().postComment(props.tokenId, commentText.value, props.category).then(response => {
             commentText.value = '';
             emit('refreshComments');
             isLoading.value = false;
@@ -40,12 +40,14 @@ function postComment() {
 <template>
 <!-- COMMENT LIST -->
 <div class="card bg-white shadow-lg flex flex-col gap-2">
-    <div v-for="comment in commentsArray">
+    <div v-for="comment in commentsArray" :key="comment._id">
         <span class="text-sm"> 
              <Comment 
                 :commentId="comment._id"
                 :tokenId="comment.tokenId"
                 :posterAddress="comment.posterAddress"
+                :posterUsername="comment.username"
+                :posterSeed="comment.seed"
                 :commentBody="comment.commentBody"
                 :ups="comment.ups"
                 :downs="comment.downs"

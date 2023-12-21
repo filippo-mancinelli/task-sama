@@ -14,6 +14,9 @@ module.exports = {
       backgroundImage: (theme) => ({
         'background-image': "url('/src/assets/background.jpg')",
       }),
+      spacing: {
+        '18': '4.5rem',
+      },
     },
   },
   plugins: [

@@ -26,6 +26,7 @@
     "koa2-formidable": "^1.0.3",
     "mongodb": "^5.4.0",
     "node-cron": "^3.0.2",
+    "sillyname": "^0.1.0",
     "web3-token": "^1.0.6"
   },
   "devDependencies": {
