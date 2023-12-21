@@ -38,11 +38,11 @@ app.listen(3000, () => {
 });
 
 // Create HTTPS server only on production
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'production') {
   const options = {
-    key: fs.readFileSync('./certificates/privkey.pem'),
-    cert: fs.readFileSync('./certificates/cert.pem'),
-    ca: fs.readFileSync('./certificates/chain.pem'),
+    key: fs.readFileSync('/task-sama/backend/certificates/privkey.pem'),
+    cert: fs.readFileSync('/task-sama/backend/certificates/cert.pem'),
+    ca: fs.readFileSync('/task-sama/backend/certificates/chain.pem'),
   };
 
   const httpsServer = https.createServer(options, app.callback());
@@ -53,7 +53,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Create HTTP server that redirects all traffic to HTTPS server only on production
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'production') {
   const httpPort = 80; 
   const httpServer = http.createServer((req, res) => {
     res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
