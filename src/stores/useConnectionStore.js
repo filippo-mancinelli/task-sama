@@ -149,7 +149,7 @@ export const useConnectionStore = defineStore('metamaskConnection', {
         } else {
           //this.provider = new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/e595556a6f02441e809bc933758ab52a');  //Infura
           //this.provider = ethers.getDefaultProvider('moonbeam'); //Default provider, moonbeam mainnet
-          this.provider = markRaw(new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545'));  //ganache
+          this.provider = markRaw(new ethers.providers.JsonRpcProvider(import.meta.env.VITE_GANACHE_URL));  //ganache
         }
         //either way we need to update the contracts instances because they use the provider
         await this.setContractInstances();

@@ -109,11 +109,11 @@ onMounted(async () => {
 <template>
 <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
   <!-- video player -->
-  <div v-if="isVideoLoading" class="flex flex-col gap-2 items-center justify-center py-24 rounded-t-2xl bg-orange-100">
+  <div v-if="isVideoLoading" class="flex flex-col gap-2 items-center justify-center py-18 rounded-t-2xl bg-orange-100">
       <span>Loading video from IPFS...</span>
       <span class="loading loading-spinner text-neutral w-8"></span>
   </div>
-  <div class="video-container" @mouseenter="showControls = true" @mouseleave="showControls = false">
+  <div v-else class="video-container" @mouseenter="showControls = true" @mouseleave="showControls = false">
     <div class="video-wrapper">
       <video ref="videoPlayer" :class="{ 'show-controls': showControls }" controls autoplay class="video-player rounded-t-2xl"></video>
     </div>

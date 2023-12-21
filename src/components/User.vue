@@ -28,13 +28,14 @@ useUsersStore().getUserDataByUsername(username).then(response => {
         <div v-html="avatarImgHtml" class=""></div>
     </div>
   
-    <div class="card-body">
+    <div class="card-body flex flex-col">
         <h2 class="card-title">
             {{ userData.username }}
             <PencilIcon tabindex="0" @click="showModal=true" class="h-4 w-4 mr-1 cursor-pointer text-slate-500" />
         </h2>
-        <p class="max-sm:w-48 max-sm:text-xs max-sm:text-ellipsis max-sm:overflow-hidden max-sm:whitespace-nowrap">{{ userData.address }}</p>
+        <p class="max-sm:text-xs max-sm:text-ellipsis max-sm:overflow-hidden max-sm:whitespace-nowrap">{{ userData.address }}</p>
     </div>
+
 </div>
 </template>
 

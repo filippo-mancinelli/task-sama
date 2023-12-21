@@ -6,6 +6,11 @@
           "internalType": "address",
           "name": "taskSamaContractAddress",
           "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_feeRecipient",
+          "type": "address"
         }
       ],
       "stateMutability": "nonpayable",
@@ -199,6 +204,34 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "feePercentage",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "feeRecipient",
+      "outputs": [
+        {
+          "internalType": "address payable",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -730,6 +763,24 @@
       "stateMutability": "view",
       "type": "function",
       "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_newRecipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_newFeePercentage",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateFeeRecipientAndPercentage",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     }
   ]
 }

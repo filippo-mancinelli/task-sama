@@ -15,6 +15,8 @@ const { tasksImages: images } = toRefs(taskStore);
 const searchQuery = ref("");
 const sortOrder = ref("tokenId");
 const sortDirection = ref("asc");
+const currentPage = ref(1);
+const visibleCardsNumber = ref(9);
 
 const filteredTasks = computed(() => {
   let results = tasks && tasks.value ? tasks.value : [];
@@ -36,7 +38,9 @@ const filteredTasks = computed(() => {
         results = _.orderBy(results, ["reward"], [sortDirection.value]);
     }
 
-    return results;
+    const startIndex = (currentPage.value - 1) * visibleCardsNumber.value;
+    const endIndex = startIndex + visibleCardsNumber.value;
+    return results.slice(startIndex, endIndex);;
 });
 
 const sortTasks = () => {
@@ -55,19 +59,37 @@ const toggleSortDirection = () => {
 //###### task columns ######//
 const calculateColumnNumber = () => {
   var result = 3;
+  visibleCardsNumber.value = 9;
 
   if(window.innerWidth <= 900) {
     result = 1;
   } else if(window.innerWidth <= 1200) {
     result = 2;
+    visibleCardsNumber.value = 8;
   } else if (window.innerWidth <= 1700) {
     result = 3;
   } else {
     result = 4;
+    visibleCardsNumber.value = 8;
   }
   return result;
 }
 const screenSizeColumns =  ref(calculateColumnNumber());
+
+//###### pagination ######//
+function prevPage() {
+  if(currentPage.value > 1) {
+    currentPage.value--;
+  }
+}
+
+function nextPage() {
+  const totalPages = Math.ceil(tasks.value.length / 9);
+  if (currentPage.value < totalPages) {
+    currentPage.value++;
+  }
+}
+
 
 //### REFRESH METADATA ####
 async function refreshTasksMetadata() {
@@ -136,6 +158,11 @@ onBeforeUnmount(() => {
       <button @click="toggleSortDirection" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
         {{ sortDirection === 'asc' ? 'Ascending' : 'Descending'}}
       </button>
+      <div class="join self-center">
+          <button @click="prevPage" class="join-item btn bg-white border-orange-200">«</button>
+          <button class="join-item btn bg-white border-orange-200">Page {{ currentPage }}</button>
+          <button @click="nextPage" class="join-item btn bg-white border-orange-200">»</button>
+      </div>
     </div>
   </div>
 
