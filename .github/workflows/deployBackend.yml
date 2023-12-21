@@ -70,7 +70,7 @@ jobs:
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker rmi crosta/ts-backend:latest || true
             echo "${PASSWORD}" | sudo -S docker pull crosta/ts-backend:latest
-            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 3000:3000 crosta/ts-backend:latest
+            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 3000:3000 -v /etc/letsencrypt/live/tasksama.eu:/task-sama/backend/certificates crosta/ts-backend:latest
 
             
             
