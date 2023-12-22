@@ -17,6 +17,6 @@ jobs:
           script: |
             PASSWORD="${{ secrets.VPS_PASSWORD }}"
             CONTAINER_NAME="ts-backend"
-            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 443:3000 -v /home/carl/certificates:/task-sama/backend/certificates crosta/ts-backend:latest
+            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} --network ts-network -p 443:443 -v /home/carl/certificates:/task-sama/backend/certificates crosta/ts-backend:latest
 
             
