@@ -47,9 +47,6 @@ jobs:
           envkey_FILEBASE_API_ENDPOINT: ${{ secrets.FILEBASE_API_ENDPOINT }}
           envkey_NODE_ENV: ${{ secrets.NODE_ENV }}
           envkey_GANACHE_URL: ${{ secrets.GANACHE_URL }}
-          envkey_PRIVKEY: ${{ secrets.PRIVKEY }}
-          envkey_CERT: ${{ secrets.CERT }}
-          envkey_CHAIN: ${{ secrets.CHAIN }}
           some_other_variable: foobar
 
       - name: Build and push
