@@ -37,7 +37,7 @@ async function likeButton() {
 
 function playLikeAnimation(){
     if(props.isLiked) {
-      ctx.$refs.lottiePlayer.seek("10%");
+      ctx.$refs.lottiePlayer.seek("15%");
       isLikePlaying = false;
     } else {
       ctx.$refs.lottiePlayer.play();
@@ -98,16 +98,16 @@ onMounted(async () => {
   fetchIPFSVideo();
 
   //execute it the first time and then keep watching for user connection state to enable/disable like button
-  setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 300)
+  setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("15%")}, 300)
   watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
-    setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("10%")}, 300)
+    setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("15%")}, 300)
   });
 });
 
 </script>
 
 <template>
-<div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
+<div class="card bg-base-100 shadow-xl border-2 border-black">
   <!-- video player -->
   <div v-if="isVideoLoading" class="flex flex-col gap-2 items-center justify-center py-18 rounded-t-2xl bg-orange-100">
       <span>Loading video from IPFS...</span>
@@ -135,8 +135,8 @@ onMounted(async () => {
           watch
           <PlayCircleIcon class="h-6 w-6 hover:cursor-pointer" /> 
         </router-link>
-        <lottie-player class="relative h-8 resize left-4 bottom-0.5 align-top" ref="lottiePlayer" src="/like.json" mode="bounce" background="transparent" speed="2"  style="width: 90px; height: 90px;"></lottie-player>
-        <div class="absolute hover:cursor-pointer h-7 w-7 mr-9"  @click="likeButton"></div> <!-- hitbox for click -->
+        <lottie-player class="relative overflow-hidden h-20 w-20 resize" ref="lottiePlayer" src="/like.json" mode="bounce" background="transparent" speed="2" ></lottie-player>
+        <div class="absolute hover:cursor-pointer h-8 w-8 mr-9"  @click="likeButton"></div> <!-- hitbox for click -->
         <span>{{ likeCount }}</span>
       </div>
     </div>
@@ -146,7 +146,7 @@ onMounted(async () => {
 
 <style scoped>
 .resize {
-  transform: scale(3);
+  transform: scale(1.5);
 }
 
 .video-container {

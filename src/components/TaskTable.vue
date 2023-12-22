@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
   </div>
 
   <div class="card-table px-4 sm:px-40 mt-10">
-    <div v-for="(taskRow, index) in _.chunk(filteredTasks, screenSizeColumns)" :key="index" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
+    <div v-for="(taskRow, index) in _.chunk(filteredTasks, screenSizeColumns)" :key="index" class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
       <div v-for="task in taskRow">
         <Task
           :tokenId="task.tokenId"

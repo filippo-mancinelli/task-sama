@@ -22,6 +22,17 @@
     const participated = ref('');
     const won = ref('');
     const filteredAccounts = ref([]);
+    var avatarSize
+
+    const resizeEventListener = function(event){
+      if(window.innerWidth <= 500) {
+        avatarImgHtml1.value = connectionStore.getAvatarImg(40, usersStore.seed);
+      } else {
+        avatarImgHtml1.value = connectionStore.getAvatarImg(60, usersStore.seed);
+      }
+    };
+    window.addEventListener('resize', resizeEventListener);
+
 
     function toggleDropdown() {
       if (showDropdown.value) {
@@ -73,7 +84,7 @@
 
       watch([() => connectionStore.isAllSetUp, () => usersStore.seed], ([isAllSetUp, isAllSetUpOld], [seed, seedOld]) => {
         if(isAllSetUp == true || seed !== 0) {
-          avatarImgHtml1.value = connectionStore.getAvatarImg(60, usersStore.seed); 
+          avatarImgHtml1.value = connectionStore.getAvatarImg(window.innerWidth <= 500 ? 40 : 60, usersStore.seed); 
           avatarImgHtml2.value = connectionStore.getAvatarImg(25, usersStore.seed);
           
           //needed to check if user closed the dropdown by clicking outside the dropdown

@@ -42,12 +42,14 @@ function Signin() {
 </script>
 
 <template>
-  <div class="sticky flex items-center gap-4 top-0 z-10 pt-4 px-4 sm:px-40 pb-20 sm:pb-5 drop-shadow-md">
+  <div class="sticky flex items-center gap-4 top-0 z-10 pt-4 px-2 sm:px-40 pb-20 sm:pb-5 drop-shadow-md">
     <div class="navbar  w-full   bg-yellow-100	 border-2 bmorder-black rounded-full ">
   <div class="flex-1 border-solid border-2 border-black rounded-full bg-orange-100">
-    <router-link to="/" class="btn btn-ghost normal-case text-sm sm:text-2xl overflow-hidden whitespace-nowrap truncate">Task Sama</router-link>
+    <router-link to="/" class="btn btn-ghost">
+      <img src="/tasksamalogoTextOnly.png" class="w-20 sm:w-28" alt="logo" />
+    </router-link>
     <ul class="menu menu-horizontal px-1">
-      <li class="hidden md:block"><router-link to="/" class=" hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out">Home</router-link></li>
+      <li class="hidden md:block"><router-link to="/" class=" hover:bg-orange-300 text-xl transition-all duration-300 ease-in-out text-black">Home</router-link></li>
     </ul>
 
     </div>
@@ -73,7 +75,7 @@ function Signin() {
       <template v-slot:content>
         <div class="flex flex-col">
           <span>{{ message }}</span>
-          <div class="flex gap-4">
+          <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
             <button v-if="showButton" @click="createTask" class="btn mt-2 w-40 bg-orange-400 text-white">
               <span v-if="!isLoading" @click="Signin">Sign message</span>
               <span v-else class="flex items-center gap-3">Signing...<span class="loading loading-ring loading-md -translate-x-1"></span> </span>

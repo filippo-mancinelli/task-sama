@@ -89,13 +89,13 @@ function participateTask() {
 </script>
 
 <template>
-  <div class="card w-96 bg-base-100 shadow-xl border-2 border-black">
+  <div class="card w-80 bg-base-100 shadow-xl border-2 border-black">
     <router-link :to="`/task/${tokenId}`">
-      <figure  class="max-h-52 rounded-t-xl">
+      <figure  class="h-52 rounded-t-xl">
           <img :src="getImageUrl" alt="image" />
       </figure>
     </router-link>
-    <div class="card-body gap-1 p-4 h-52">
+    <div class="card-body w-80 gap-1 p-4 h-52 rounded-full bg-white">
       <h2 class="card-title hover:text-slate-500">
         <router-link :to="`/task/${tokenId}`">
           #{{ tokenId  }} - {{ title }}  
@@ -106,11 +106,11 @@ function participateTask() {
       <span class="italic text-xs font-normal">{{ timestamp }}</span>
 
       <div class="flex border-t">
-        <p class="italic truncate mt-2">Participating: <span class="pl-1 text-xs">{{ participants[0] }}</span></p>
+        <p class="italic truncate mt-2">Participating: <span class="text-xs">{{ participants[0] }}</span></p>
 
         <!--DROPDOWN SEARCHBAR-->
         <div class="dropdown mt-2">
-          <label tabindex="0" class="hover:cursor-pointer" ><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg></label> 
+          <label tabindex="0" class="hover:cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg></label> 
           <div tabindex="0" class="dropdown-content z-[1] card card-compact right-1 shadow border-2 border-black bg-white text-black rounded p-1">
             <div class="card-body p-1 max-h-80 min-w-max overflow-y-auto">
               <!--SEARCHBAR AND ADDRESS LIST-->

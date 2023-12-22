@@ -4,7 +4,7 @@ const { tasksAddress, tasksamaAddress } = require('./helpers/contractAddresses')
 const TasksABI = require("./helpers/TasksABI.json");
 const TasksamaABI = require("./helpers/TasksamaABI.json");
 const fs = require('fs');
-const ganacheUrl = process.env.GANACHE_URL
+const ganacheUrl = process.env.NODE_ENV === 'production' ? process.env.GANACHE_URL : 'http://localhost:8545';
 const { connectToDatabase } = require('./db');
 
 async function fetchActiveTask() {

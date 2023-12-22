@@ -76,7 +76,7 @@ module.exports = async function (deployer) {
   // funds fish
   sender = accounts[8]
   receiver = "0x2Ce98347b5818ea72F28Aa77407d3902b5997128"
-  amount = web3.utils.toWei("100", "ether")
+  amount = web3.utils.toWei("800", "ether")
   await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
   
 
