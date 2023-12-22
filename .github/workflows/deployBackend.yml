@@ -74,7 +74,7 @@ jobs:
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker rmi crosta/ts-backend:latest || true
             echo "${PASSWORD}" | sudo -S docker pull crosta/ts-backend:latest
-            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} -p 443:3000 -v /home/carl/certificates:/task-sama/backend/certificates crosta/ts-backend:latest
+            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} --network ts-network -p 443:3000 -v /home/carl/certificates:/task-sama/backend/certificates crosta/ts-backend:latest
 
             
             
