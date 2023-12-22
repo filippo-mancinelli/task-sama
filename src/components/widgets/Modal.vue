@@ -25,7 +25,7 @@ watchEffect(() => {
     <Transition name="fade">
         <div v-if="showModal" class="w-full sticky z-50 ">
             <div class="modal" :class="{ 'modal-open': showModal }">
-                <div class="modal-box w-3/4 h-auto relative flex flex-col justify-center">
+                <div class="modal-box w-3/4 h-auto relative flex flex-col justify-center bg-white">
                     <button @click="$emit('closeModal')" class="btn btn-sm btn-circle absolute right-2 top-2 bg-orange-400 border-orange-400 text-white">✕</button>
                     
                     <div v-if="modalType !== ''" class="py-4 flex justify-center rounded-lg" :class="modalClass">

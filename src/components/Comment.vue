@@ -3,7 +3,6 @@ import { watch, ref, defineProps, defineEmits } from 'vue';
 import { ChevronDoubleUpIcon, ChevronDoubleDownIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { useCommentsStore } from '../stores/useCommentsStore';
 import { useConnectionStore } from '../stores/useConnectionStore';
-import { useUsersStore } from '../stores/useUsersStore';
 import { usePopupStore } from '../stores/usePopupStore';
 
 const props = defineProps([
@@ -101,15 +100,15 @@ watch([() => useConnectionStore().isAllSetUp, () => useConnectionStore().trigger
         <div class="flex justify-between">
             <div class="flex gap-2 p-2">
                 <div v-html="avatarImgHtml1" class="rounded-full ring ring-primary avatar hover:cursor-pointer"></div>
-                <router-link :to="'/users/' + posterUsername" class="text-md hover:text-orange-700 hover:cursor-pointer">{{ posterUsername }}</router-link>
+                <router-link :to="'/users/' + posterUsername" class="text-md text-black hover:text-orange-700 hover:cursor-pointer">{{ posterUsername }}</router-link>
             </div>
 
 
-            <span class="italic text-xs mr-2">{{ postDate }}</span>
+            <span class="italic text-xs mr-2 text-black">{{ postDate }}</span>
         </div>
 
         <!-- COMMENT BODY -->
-        <div class="p-1 text-lg">
+        <div class="p-1 text-lg text-black">
             {{ commentBody }}
         </div>
 

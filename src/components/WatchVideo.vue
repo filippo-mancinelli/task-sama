@@ -92,19 +92,19 @@ onMounted(async () => {
   </div>
 
   <!--CARD BODY-->
-  <div class="card-body max-md:p-4">
-    <h2 class="card-title">{{ tasksamaObject.title }}</h2>
+  <div class="card-body max-md:p-4 bg-white">
+    <h2 class="card-title text-black">{{ tasksamaObject.title }}</h2>
     <div>
-      <p class="italic text-xs -mt-3">{{ tasksamaObject.timestamp }}</p>
-      <p class="mt-2">{{ tasksamaObject.description }}</p>
+      <p class="italic text-xs -mt-3 text-black">{{ tasksamaObject.timestamp }}</p>
+      <p class="mt-2 text-black">{{ tasksamaObject.description }}</p>
     </div>
     
     <div>
-      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task creator: </span> {{ tasksamaObject.creator }}</p>
-      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task winner: </span> {{ tasksamaObject.winner }}</p>
-      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Contract address: </span> <a :href="contractAddressesLink" target="_blank" class="text-sm text-blue-500 hover:text-blue-700 hover:cursor-pointer">{{ tasksamaAddress }}</a></p>
-      <p class="text-sm italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Token ID: </span> {{ tasksamaObject.tokenId }}</p>
-      <p class="text-sm italic"> <span class=" font-bold">Reward earned: </span> {{ tasksamaObject.rewardEarned }} GLMR</p>
+      <p class="text-sm text-black italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task creator: </span> {{ tasksamaObject.creator }}</p>
+      <p class="text-sm text-black italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task winner: </span> {{ tasksamaObject.winner }}</p>
+      <p class="text-sm text-black italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Contract address: </span> <a :href="contractAddressesLink" target="_blank" class="text-sm text-blue-500 hover:text-blue-700 hover:cursor-pointer">{{ tasksamaAddress }}</a></p>
+      <p class="text-sm text-black italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Token ID: </span> {{ tasksamaObject.tokenId }}</p>
+      <p class="text-sm text-black italic"> <span class=" font-bold">Reward earned: </span> {{ tasksamaObject.rewardEarned }} GLMR</p>
     </div>
 
   </div>

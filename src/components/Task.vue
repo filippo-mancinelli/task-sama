@@ -95,18 +95,18 @@ function participateTask() {
           <img :src="getImageUrl" alt="image" />
       </figure>
     </router-link>
-    <div class="card-body w-80 gap-1 p-4 h-52 rounded-full bg-white">
+    <div class="card-body w-80 gap-1 p-4 h-52 bg-white rounded-b-2xl ">
       <h2 class="card-title hover:text-slate-500">
-        <router-link :to="`/task/${tokenId}`">
+        <router-link :to="`/task/${tokenId}`" class="text-black">
           #{{ tokenId  }} - {{ title }}  
         </router-link>
         <div class="badge badge-secondary text-white">NEW</div>
       </h2>
-      <p class="italic truncate">{{ description }}</p>
-      <span class="italic text-xs font-normal">{{ timestamp }}</span>
+      <p class="italic truncate text-black">{{ description }}</p>
+      <span class="italic text-xs font-normal text-black">{{ timestamp }}</span>
 
       <div class="flex border-t">
-        <p class="italic truncate mt-2">Participating: <span class="text-xs">{{ participants[0] }}</span></p>
+        <p class="italic truncate mt-2 text-black">Participating: <span class="text-xs">{{ participants[0] }}</span></p>
 
         <!--DROPDOWN SEARCHBAR-->
         <div class="dropdown mt-2">
@@ -114,16 +114,16 @@ function participateTask() {
           <div tabindex="0" class="dropdown-content z-[1] card card-compact right-1 shadow border-2 border-black bg-white text-black rounded p-1">
             <div class="card-body p-1 max-h-80 min-w-max overflow-y-auto">
               <!--SEARCHBAR AND ADDRESS LIST-->
-              <p class="text-s">{{ participants.length }} {{ participants.length === 1 ? 'participant' : 'participants' }}</p>
+              <p class="text-s text-black">{{ participants.length }} {{ participants.length === 1 ? 'participant' : 'participants' }}</p>
               <div class="flex gap-1 items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class=" w-5 h-5"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                <input type="text" v-model="searchQuery" class="border rounded p-0.5 w-full outline-none border-orange-300 focus:ring-1 focus:ring-orange-400 focus:border-transparent" placeholder="Search address...">
+                <input type="text" v-model="searchQuery" class="border rounded p-0.5 w-full outline-none bg-white border-orange-300 focus:ring-1 focus:ring-orange-400 focus:border-transparent" placeholder="Search address...">
               </div>
               <div v-if="filteredParticipants.length > 0" v-for="participant in filteredParticipants">
-                <p class="border-b-2 border-orange-300 text-xs">{{ participant }}</p>
+                <p class="border-b-2 border-orange-300 text-xs text-black">{{ participant }}</p>
               </div>
               <div v-else>
-                <p class="text-s mr-40">No address found...</p>
+                <p class="text-s mr-40 text-black">No address found...</p>
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@ function participateTask() {
       </div>
 
       <div class="card-actions justify-between">
-        <div class="italic truncate">Reward:<span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
+        <div class="italic text-black truncate">Reward:<span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
         <label v-if="!isParticipating" @click="openModal" class="btn btn-primary pr-1 pl-4 w-30 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
           Participate
           <HandRaisedIcon class="h-6 w-6 pl-2 -translate-x-2" />

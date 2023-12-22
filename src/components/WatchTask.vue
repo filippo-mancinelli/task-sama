@@ -20,7 +20,7 @@ const commentsStore = useCommentsStore();
 const argStore = useArgStore();
 const popupStore = usePopupStore();
 
-backgroundStore.changeBackgroundClass('bg-background-image h-screen');
+backgroundStore.changeBackgroundClass('bg-background-image h-full');
 
 let route;
 var tokenId;
@@ -119,16 +119,16 @@ onMounted(async () => {
 
 <template>
     <div v-if="isReady" class="mx-6">
-        <div class="card card-side flex flex-col sm:flex-row bg-base-100 shadow-xl">
+        <div class="card card-side flex flex-col sm:flex-row shadow-xl bg-white">
             <figure ><img class="rounded-md border-black border-2 max-h-60 max-w-120" :src="imageSrc" alt="Movie"/></figure>
             <div v-if="taskObject.result != undefined" class="card-body max-w-xl gap-2">
-                <h2 class="card-title">#{{ taskObject.tokenId  }} -{{ taskObject.result.title }}</h2>
-                <p class="italic text-xs -mt-2">{{ taskObject.timestamp }}</p>
-                <p class="truncate ...">{{ taskObject.result.description }}</p>
-                <p class="italic truncate">Creator:<span class="pl-2 text-sm">{{ taskObject.result.owner }} </span></p>
-                <p class="italic truncate">Contract address:<a :href="contractAddressesLink" target="_blank" class="pl-2 text-sm text-blue-500 hover:text-blue-700 hover:cursor-pointer">{{ tasksAddress }}</a></p>
-                <p class="italic truncate">Token ID:<span class="pl-2 text-lg">{{ taskObject.result.tokenId }} </span></p>
-                <p class="italic truncate">Reward:<span class="pl-2 text-lg">{{ taskObject.reward }} GLMR</span></p>
+                <h2 class="card-title text-black">#{{ taskObject.tokenId  }} -{{ taskObject.result.title }}</h2>
+                <p class="italic text-xs -mt-2 text-black">{{ taskObject.timestamp }}</p>
+                <p class="text-black truncate ...">{{ taskObject.result.description }}</p>
+                <p class="italic truncate text-black">Creator:<span class="pl-2 text-sm">{{ taskObject.result.owner }} </span></p>
+                <p class="italic truncate text-black">Contract address:<a :href="contractAddressesLink" target="_blank" class="pl-2 text-sm text-blue-500 hover:text-blue-700 hover:cursor-pointer">{{ tasksAddress }}</a></p>
+                <p class="italic truncate text-black">Token ID:<span class="pl-2 text-lg">{{ taskObject.result.tokenId }} </span></p>
+                <p class="italic truncate text-black">Reward:<span class="pl-2 text-lg">{{ taskObject.reward }} GLMR</span></p>
 
 
                 <div class="card-actions justify-end">
@@ -144,8 +144,8 @@ onMounted(async () => {
             </div>
         </div>
 
-        <div class="card card-side flex flex-col bg-base-100 shadow-xl my-4 p-4">
-            <h2 class="card-title mb-2">Participants:</h2>
+        <div class="card card-side flex flex-col bg-white shadow-xl my-4 p-4">
+            <h2 class="card-title mb-2 text-black">Participants:</h2>
             <div v-for="participant in taskObject.result.participants" >
                     <p class="text-sm rounded bg-slate-100 my-1 border-l-4 border-orange-500 pl-1">{{ participant }}</p>
             </div>
@@ -153,7 +153,7 @@ onMounted(async () => {
     </div>
 
     <!--COMMENT SECTION-->
-    <div class="mx-6 my-6">
+    <div class="mx-6 mt-6 mb-0">
         <CommentSection 
             :tokenId="tokenId"
             :commentsArray="comments"
@@ -165,12 +165,12 @@ onMounted(async () => {
 
 
     <Modal @close-modal="showModal1 = false" :showModal="showModal1" :modalType="''">
-        <template v-slot:title>Participate to this task:</template>
+        <template v-slot:title> <span class="text-black">Participate to this task:</span></template>
         <template v-slot:content>
         <div class="flex flex-col mb-2">
-            <span class="text-lg">&#x1F4F0; <span class="italic"> {{ taskObject.result.title }}  </span> </span>
-            <span class="text-lg">&#x270F; <span class="italic"> {{ taskObject.result.description }}  </span> </span>
-            <span class="text-lg">&#x1F4B8;<span class="italic"> {{ taskObject.reward }} GLMR </span> </span>
+            <span class="text-lg">&#x1F4F0; <span class="italic text-black"> {{ taskObject.result.title }}  </span> </span>
+            <span class="text-lg">&#x270F; <span class="italic text-black"> {{ taskObject.result.description }}  </span> </span>
+            <span class="text-lg">&#x1F4B8;<span class="italic text-black"> {{ taskObject.reward }} GLMR </span> </span>
         </div>
         <FileUpload :upload-type="'video'" />
         <div class="flex flex-col items-end">

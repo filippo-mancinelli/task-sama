@@ -95,9 +95,9 @@ watchEffect(() => {
 
 <template> 
     <div class="py-2">
-      <span class="label-text text-lg ">Upload {{ props.uploadType == 'image' ? 'an image:' : 'a video' }}  </span>
-        <form id="myForm" class="flex">
-          <input type="file" class="file-input file-input-bordered w-full mt-2" @change="onFileChange">
+      <span class="label-text text-lg text-black">Upload {{ props.uploadType == 'image' ? 'an image:' : 'a video' }}  </span>
+        <form id="myForm" class="flex ">
+          <input type="file" class="file-input file-input-bordered w-full mt-2 bg-white text-black" @change="onFileChange">
           <Transition name="trash">
             <TrashIcon v-if="uploadedFile.size > 0" @click="deleteFile" class="h-10 w-10 mt-3 ml-2 text-stone-600 hover:cursor-pointer"/>
           </Transition>
