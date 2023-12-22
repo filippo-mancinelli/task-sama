@@ -41,8 +41,8 @@ if (process.env.NODE_ENV === 'production') {
     ca: fs.readFileSync('/task-sama/backend/certificates/chain.pem', 'utf8'),
   };
 
-  const httpServer = http.createServer(app);
-  const httpsServer = https.createServer(options, app);
+  const httpServer = http.createServer(app.callback());
+  const httpsServer = https.createServer(options, app.callback());
 
   httpServer.listen(80, () => {
     console.log('HTTP Server running on port 80');
