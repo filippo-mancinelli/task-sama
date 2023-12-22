@@ -1,4 +1,4 @@
-name: Restart backend container remotely
+name: Restart ganache container remotely
 on:
   workflow_dispatch:
 
@@ -16,8 +16,8 @@ jobs:
           port: 22
           script: |
             PASSWORD="${{ secrets.VPS_PASSWORD }}"
-            CONTAINER_NAME="ts-backend"
+            CONTAINER_NAME="ganache"
             echo "${PASSWORD}" | sudo -S docker stop ${CONTAINER_NAME} || true
             echo "${PASSWORD}" | sudo -S docker rm ${CONTAINER_NAME} || true
-            echo "${PASSWORD}" | sudo -S docker run -d --name ${CONTAINER_NAME} --network ts-network -p 443:443 -v /home/carl/certificates:/task-sama/backend/certificates crosta/ts-backend:latest
+            echo "${PASSWORD}" | sudo -S docker run -d --name ganache --network ts-network -p 8545:8545 trufflesuite/ganache:v7.9.0
             
