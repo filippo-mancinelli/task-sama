@@ -62,14 +62,20 @@ function replaceContractsABI() {
 module.exports = async function (deployer) {
   // Give test funds to your metamask account
   const accounts = await web3.eth.getAccounts()
-  const sender = accounts[9]
+  var sender = accounts[9]
   var receiver = "0x2178BA9B2EF2d9b0d10C4eA913A15E7F4A3D2911"
-  var amount = web3.utils.toWei("400", "ether")
+  var amount = web3.utils.toWei("750", "ether")
   await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
   receiver = "0xCe383BE5b0d041c7Bc3C1fBb9Ae43380e9CDF536"
   amount = web3.utils.toWei("100", "ether")
   await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
   receiver = "0x811f05a8F95351E5DEF89aDCe81b062926e7c717"
+  amount = web3.utils.toWei("100", "ether")
+  await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
+
+  // funds fish
+  sender = accounts[8]
+  receiver = "0x2Ce98347b5818ea72F28Aa77407d3902b5997128"
   amount = web3.utils.toWei("100", "ether")
   await web3.eth.sendTransaction({from: sender, to: receiver, value: amount})
   
