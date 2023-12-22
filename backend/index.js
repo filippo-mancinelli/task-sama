@@ -36,35 +36,26 @@ app.use(usersRouter.routes());
 // Create HTTPS server only on production
 if (process.env.NODE_ENV === 'production') {
   const options = {
-    key: fs.readFileSync('/task-sama/backend/certificates/privkey.pem'),
-    cert: fs.readFileSync('/task-sama/backend/certificates/cert.pem'),
-    ca: fs.readFileSync('/task-sama/backend/certificates/chain.pem'),
+    key: fs.readFileSync('/task-sama/backend/certificates/privkey.pem', 'utf8'),
+    cert: fs.readFileSync('/task-sama/backend/certificates/cert.pem', 'utf8'),
+    ca: fs.readFileSync('/task-sama/backend/certificates/chain.pem', 'utf8'),
   };
 
-  const httpsServer = https.createServer(options, app.callback());
+  const httpServer = http.createServer(app);
+  const httpsServer = https.createServer(options, app);
+
+  httpServer.listen(80, () => {
+    console.log('HTTP Server running on port 80');
+  });
 
   httpsServer.listen(443, () => {
-    console.log('Server running on port 443 (HTTPS)');
+    console.log('HTTPS Server running on port 443');
+  });
+} else {
+  app.listen(3000, () => {
+    console.log('Server is running on port 3000');
   });
 }
-
-// Create HTTP server that redirects all traffic to HTTPS server only on production
-if (process.env.NODE_ENV === 'production') {
-  const httpPort = 80; 
-  const httpServer = http.createServer((req, res) => {
-    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-    res.end();
-  });
-  
-  httpServer.listen(httpPort, () => {
-    console.log(`HTTP server running on port ${httpPort}`);
-  });
-}
-
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
-
 
 // ### SPAWN BATCH JOB ### //
 const batchJob = spawn("node", ["batch.js"]);
