@@ -46,7 +46,7 @@ function createTask() {
     if(argStore.getArguments.textInput == '') 
       showInputError.value = true;
     
-    if(argStore.getArguments.numberInput == '' || argStore.getArguments.numberInput < 10) 
+    if(argStore.getArguments.numberInput == '' || argStore.getArguments.numberInput < 20) 
       showTokenError.value = true;
 
   } else if(connectionStore.isConnected) {
@@ -107,7 +107,7 @@ onMounted(() => {
   <template v-slot:title> Create a new Task </template>
   <template v-slot:content>
     <TextInput :showError="showInputError" :errorMessage="'Title cannot be empty.'" :maxLength=50><template v-slot:text-input>Task title:</template></TextInput>
-    <TextArea :showError="showAreaError" :errorMessage="textAreaErrorMessage" :maxLength="maximumChars">
+    <TextArea :showError="showAreaError" :errorMessage="'Description cannot be empty.'" :maxLength="maximumChars">
       <template v-slot:text-area>
         <div class="flex flex-col"> 
           <span>Task description:</span>
@@ -118,7 +118,7 @@ onMounted(() => {
     <FileUpload :uploadType="'image'" />
     <div class="flex flex-nowrap just">
       <div class="w-1/3">
-        <TokenAmount :showError="showTokenError" :errorMessage="'Minimum reward is 10 GLMR.'"><template v-slot:title>Reward amount:</template></TokenAmount> 
+        <TokenAmount :showError="showTokenError" :errorMessage="'Minimum reward is 20 GLMR.'"><template v-slot:title>Reward amount:</template></TokenAmount> 
       </div>
     </div>
 

@@ -4,7 +4,7 @@ const { tasksAddress, tasksamaAddress } = require('./helpers/contractAddresses')
 const TasksABI = require("./helpers/TasksABI.json");
 const TasksamaABI = require("./helpers/TasksamaABI.json");
 const fs = require('fs');
-const ganacheUrl = process.env.NODE_ENV === 'production' ? process.env.GANACHE_URL : 'http://localhost:8545';
+const ganacheUrl = process.env.NODE_ENV === 'production' ? process.env.GANACHE_URL_PROD : process.env.GANACHE_URL_DEV;
 const { connectToDatabase } = require('./db');
 
 async function fetchActiveTask() {
@@ -24,7 +24,7 @@ async function fetchActiveTask() {
 // it means that the task has been completed and removed, hence we can remove all the non-winner participant videos 
 // both on disk and DB
 //cron.schedule('*/20 * * * * *', async () => {
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/20 * * * *", async () => {
   console.log("Starting job: PurgeVideos&DB");
 
   const tasks = await fetchActiveTask();

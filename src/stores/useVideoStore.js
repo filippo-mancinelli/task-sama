@@ -37,7 +37,7 @@ export const useVideoStore = defineStore('videoNFTs', {
 
          //fetch total likes per video, an array of wallets who liked it, and the status (isLiked)
         async initLikes(walletAddress) {
-            const promise = axios.post(import.meta.env.VITE_BACKEND_URL + '/initLikes', {walletAddress}).then(response => { 
+            const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/initLikes', {walletAddress}).then(response => { 
                 response.data.data.forEach(video => {
                     this.likesMetadata.set(video.tokenId, { "likeCount": video.likes, "likeWallets": video.likeWallets, "isLiked": video.isLiked });
                 });
@@ -50,7 +50,7 @@ export const useVideoStore = defineStore('videoNFTs', {
 
 
         async like(tokenId, isLiked, walletAddress) {
-            const result = await axios.post(import.meta.env.VITE_BACKEND_URL + '/like', {tokenId, isLiked, walletAddress});
+            const result = await axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/like', {tokenId, isLiked, walletAddress});
             const tempMetadata = this.likesMetadata.get(tokenId);
             tempMetadata.likeCount = result.data;
             this.likesMetadata.set(tokenId, tempMetadata);
@@ -59,13 +59,13 @@ export const useVideoStore = defineStore('videoNFTs', {
 
         // Initialize a new document to DB collection "likes" in order to be able to display the newly minted NFT in the homepage
         async addNewNftLikeDocument(tokenId) {
-            const promise = axios.post(import.meta.env.VITE_BACKEND_URL + '/addNewNftLikeDocument', {tokenId});
+            const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/addNewNftLikeDocument', {tokenId});
             return promise;
         },
         
         // Since we upload the video to IPFS regardless of the minting process, we need to tell the DB if the minting was successful or not by giving the tokenID
         async confirmNFTId(IPFSMetadataUrl, tokenId) {
-            const promise = axios.post(import.meta.env.VITE_BACKEND_URL + '/confirmNFTId', {IPFSMetadataUrl, tokenId});
+            const promise = axios.post(import.meta.env.VITE_DEV_BACKEND_URL + '/confirmNFTId', {IPFSMetadataUrl, tokenId});
             return promise;
         },
 
@@ -84,6 +84,11 @@ export const useVideoStore = defineStore('videoNFTs', {
             return finalMetadata;
         },
 
+        // Make a request to the backend to use it as proxy for fetching video from IPFS for avoiding CORS troubles
+        async getVideoFromIPFS(ipfsUrl) { 
+            const promise = axios.get(`${import.meta.env.VITE_DEV_BACKEND_URL}/getVideoFromIPFS?ipfsUrl=${ipfsUrl}`, { responseType: 'arraybuffer', })
+            return promise;
+        },
 
         jsonParse(object) {
             return JSON.parse(JSON.stringify(object));

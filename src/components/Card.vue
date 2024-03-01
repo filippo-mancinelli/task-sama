@@ -2,6 +2,7 @@
 import { getCurrentInstance, ref, watch, onMounted, defineEmits, nextTick } from 'vue';
 import { useConnectionStore } from '../stores/useConnectionStore';
 import { usePopupStore } from '../stores/usePopupStore';
+import { useVideoStore } from '../stores/useVideoStore';
 import { PlayCircleIcon } from "@heroicons/vue/24/solid"
 
 //TODO: txhash, address, like/dislike,
@@ -57,40 +58,24 @@ const showControls = ref(false);
 const isVideoLoading = ref(true);
 
 async function fetchIPFSVideo() {
-  const gateways = ['https://ipfs.io/', 'https://cloudflare-ipfs.com/'];
-  let selectedGateway = '';
+  try {
+    const response = await useVideoStore().getVideoFromIPFS(props.ipfsVideoUrl);
+    isVideoLoading.value = false;
 
-  for (const gateway of gateways) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      const checkAvailability = await fetch(gateway, { method: 'HEAD', signal: controller.signal });
-      clearTimeout(timeoutId);
-
-      if (checkAvailability.ok) {
-        selectedGateway = gateway;
-        break;
+    // Use nextTick to ensure videoPlayer is available in the DOM
+    await nextTick(() => {
+      if (videoPlayer.value) {
+        const blob = new Blob([response.data], { type: 'video/mp4' });
+        videoPlayer.value.src = URL.createObjectURL(blob);
+      } else {
+        console.error('Error: videoPlayer is null');
       }
-    } catch (error) {
-      console.error(`Error checking ${gateway}:`, error);
-    }
-  }
-
-  if (selectedGateway) {
-    const finalUrl = selectedGateway + props.ipfsVideoUrl;
-    try {
-      const response = await fetch(finalUrl);
-      isVideoLoading.value = false;
-      const blob = await response.blob();
-      videoPlayer.value.src = URL.createObjectURL(blob);
-    } catch (error) {
-      console.error('Error fetching video:', error);
-    }
-  } else {
-    console.error('No available IPFS gateway');
+    });
+  } catch (error) {
+    console.error('Error fetching video:', error);
   }
 }
+
 
 
 
@@ -135,7 +120,7 @@ onMounted(async () => {
           watch
           <PlayCircleIcon class="h-6 w-6 hover:cursor-pointer" /> 
         </router-link>
-        <lottie-player class="relative overflow-hidden h-20 w-20 resize" ref="lottiePlayer" src="/like.json" mode="bounce" background="transparent" speed="2" ></lottie-player>
+        <lottie-player class="relative overflow-hidden h-20 w-20 resize-lottie" ref="lottiePlayer" src="/like.json" mode="bounce" background="transparent" speed="2" ></lottie-player>
         <div class="absolute hover:cursor-pointer h-8 w-8 mr-9"  @click="likeButton"></div> <!-- hitbox for click -->
         <span>{{ likeCount }}</span>
       </div>
@@ -145,7 +130,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.resize {
+.resize-lottie {
   transform: scale(1.5);
 }
 

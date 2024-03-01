@@ -95,7 +95,7 @@ function participateTask() {
           <img :src="getImageUrl" alt="image" />
       </figure>
     </router-link>
-    <div class="card-body w-80 gap-1 p-4 h-52 bg-white rounded-b-2xl ">
+    <div class="card-body w-79 gap-1 p-4 h-52 bg-white rounded-b-2xl">
       <h2 class="card-title hover:text-slate-500">
         <router-link :to="`/task/${tokenId}`" class="text-black">
           #{{ tokenId  }} - {{ title }}  

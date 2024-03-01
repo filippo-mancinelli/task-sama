@@ -202,36 +202,65 @@ router.post('/uploadVideoToIpfs', async (ctx, next) => {
 
 
 /* 
-##############################################################
-####################### confirmNFTId #########################
-############################################################## 
+###############################################################
+##################### getVideoFromIPFS #######################
+############################################################### 
 */
-router.post('/confirmNFTId', async (ctx, next) => {
-  if (ctx.request.path === '/confirmNFTId') {
-    console.log("\n ####################################### \n '/confirmNFTId' " + new Date() + "\n ####################################### \n ");
+router.get('/getVideoFromIPFS', async (ctx, next) => {
+  if (ctx.request.path === '/getVideoFromIPFS') {
+      console.log("\n ####################################### \n '/getVideoFromIPFS' " + new Date() + "\n ####################################### \n ");
 
-    const IPFSMetadataUrl = ctx.request.body.IPFSMetadataUrl;
-    const tokenId = ctx.request.body.tokenId;
-   
-    try {
-      const db = await connectToDatabase();
-      var collection = db.collection('IPFSVideos');
-      const updateResult = await collection.updateOne(
-        { 'IPFSMetadataUrl': IPFSMetadataUrl },
-        { $set: { nftId: tokenId} }
-      );
+      const ipfsUrl = ctx.request.query.ipfsUrl;
+      const gateways = ['https://ipfs.io/', 'https://cloudflare-ipfs.com/'];
+      let selectedGateway = '';
+    
+      // Check available gateways
+      for (const gateway of gateways) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+  
+        const checkAvailability = await fetch(gateway, { method: 'HEAD', signal: controller.signal });
+        clearTimeout(timeoutId);
+  
+        if (checkAvailability.ok) {
+          selectedGateway = gateway;
+          break;
+        }
+      }
+    
+      // Fetch from gateway selected
+      if (selectedGateway) {
+        try {
+          const finalUrl = selectedGateway + ipfsUrl;
+          
+          const fetchResult = await fetch(finalUrl);
+          const videoData = await fetchResult.arrayBuffer(); // Convert response data to ArrayBuffer
 
-    } catch (error) {
-      ctx.throw(500, 'Failed to update IPFSVideos document.', error);
+          ctx.response.status = 200;
+          ctx.response.set({
+              'Content-Type': 'video/mp4',
+          });
+
+          // Create a PassThrough stream to pass data to the response
+          const passThroughStream = new PassThrough();
+
+          // Write the video data to the PassThrough stream
+          passThroughStream.end(Buffer.from(videoData));
+
+          // Set the response body to the PassThrough stream
+          ctx.body = passThroughStream;
+        } catch (error) {
+          console.log(`${error}`);
+          ctx.status = 500;
+          ctx.body = 'Error fetching video';      
+        }
+      }
+
+    } else {
+      ctx.throw(404, 'Not found');
     }
-  }
-  await next();
 
-  if (ctx.status === 404) {
-    ctx.body = {
-      message: 'Not found',
-    };
-  }
+    await next();
 });
 
 /* This blocks non moderated videos.
@@ -403,6 +432,41 @@ router.post('/moderateVideo', async (ctx, next) => {
 
     } catch (error) {
       ctx.throw(500, 'Failed to moderate video:', error);
+    }
+  }
+  await next();
+
+  if (ctx.status === 404) {
+    ctx.body = {
+      message: 'Not found',
+    };
+  }
+});
+
+
+
+/* 
+##############################################################
+####################### confirmNFTId #########################
+############################################################## 
+*/
+router.post('/confirmNFTId', async (ctx, next) => {
+  if (ctx.request.path === '/confirmNFTId') {
+    console.log("\n ####################################### \n '/confirmNFTId' " + new Date() + "\n ####################################### \n ");
+
+    const IPFSMetadataUrl = ctx.request.body.IPFSMetadataUrl;
+    const tokenId = ctx.request.body.tokenId;
+   
+    try {
+      const db = await connectToDatabase();
+      var collection = db.collection('IPFSVideos');
+      const updateResult = await collection.updateOne(
+        { 'IPFSMetadataUrl': IPFSMetadataUrl },
+        { $set: { nftId: tokenId} }
+      );
+
+    } catch (error) {
+      ctx.throw(500, 'Failed to update IPFSVideos document.', error);
     }
   }
   await next();
