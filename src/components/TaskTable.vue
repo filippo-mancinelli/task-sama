@@ -1,19 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch, computed, onMounted, onBeforeUnmount, toRefs } from 'vue';
-import { useConnectionStore } from '../stores/useConnectionStore';
-import { useTaskStore } from '../stores/useTaskStore'
+import { useSolanaWalletStore } from '../stores/useSolanaWalletStore';
+import { useSolanaTaskStore } from '../stores/useSolanaTaskStore'
 import Task from './Task.vue';
 import _ from 'lodash';
 
-const taskStore = useTaskStore();
-const connectionStore = useConnectionStore();
+const taskStore = useSolanaTaskStore();
+const walletStore = useSolanaWalletStore();
 
-const { tasksMetadata: tasks } = toRefs(taskStore);
-const { tasksImages: images } = toRefs(taskStore);
+const { tasks } = toRefs(taskStore);
 
 //### SEARCH FILTERS ####
 const searchQuery = ref("");
-const sortOrder = ref("tokenId");
+const sortOrder = ref("taskId");
 const sortDirection = ref("asc");
 const currentPage = ref(1);
 const visibleCardsNumber = ref(9);
@@ -21,35 +20,35 @@ const visibleCardsNumber = ref(9);
 const filteredTasks = computed(() => {
   let results = tasks && tasks.value ? tasks.value : [];
 
-    if (searchQuery.value) {
-        results = _.filter(results, (task) => {
-            return (
-                task.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                task.description
-                .toLowerCase()
-                .includes(searchQuery.value.toLowerCase())
-            );
-        });
-    }
+  // Filter by search query
+  if (searchQuery.value) {
+    results = _.filter(results, (task) => {
+      return (
+        task.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        task.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+      );
+    });
+  }
 
-    if (sortOrder.value === "tokenId") {
-        results = _.orderBy(results, ["tokenId"], [sortDirection.value]);
-    } else if (sortOrder.value === "reward") {
-        results = _.orderBy(results, ["reward"], [sortDirection.value]);
-    }
+  // Sort
+  if (sortOrder.value === "taskId") {
+    results = _.orderBy(results, ["taskId"], [sortDirection.value]);
+  } else if (sortOrder.value === "rewardAmount") {
+    results = _.orderBy(results, ["rewardAmount"], [sortDirection.value]);
+  }
 
-    const startIndex = (currentPage.value - 1) * visibleCardsNumber.value;
-    const endIndex = startIndex + visibleCardsNumber.value;
-    return results.slice(startIndex, endIndex);;
+  // Pagination
+  const startIndex = (currentPage.value - 1) * visibleCardsNumber.value;
+  const endIndex = startIndex + visibleCardsNumber.value;
+  return results.slice(startIndex, endIndex);
 });
 
 const sortTasks = () => {
-  console.log("tasks.value",tasks.value)
-    if (sortOrder.value === "tokenId") {
-      tasks.value = _.orderBy(tasks.value, ["tokenId"], [sortDirection.value]);
-    } else if (sortOrder.value === "reward") {
-      tasks.value = _.orderBy(tasks.value, ["reward"], [sortDirection.value]);
-    }
+  if (sortOrder.value === "taskId") {
+    tasks.value = _.orderBy(tasks.value, ["taskId"], [sortDirection.value]);
+  } else if (sortOrder.value === "rewardAmount") {
+    tasks.value = _.orderBy(tasks.value, ["rewardAmount"], [sortDirection.value]);
+  }
 };
 
 const toggleSortDirection = () => {
@@ -93,47 +92,43 @@ function nextPage() {
 
 //### REFRESH METADATA ####
 async function refreshTasksMetadata() {
-  tasks.value = await taskStore.fetchTasksMetadata();
-  images.value = await taskStore.fetchTasksImages();
+  await taskStore.fetchTasks();
 
-  images.value.data.forEach((image) => {
-    tasks.value.forEach((task) => {
-      if(parseInt(image.taskId) == task.tokenId) {
-        task.base64Image = image.data;
-      } else if(task.base64Image == undefined){
-        task.base64Image = 'noimage';
-      }
-    });
-  });
+  // Fetch task images from backend
+  // TODO: Implement fetchTasksImages if needed
+  // const images = await axios.get('/fetchTasksImages')
 }
 
-//Define callback function for event listeners for updating columns on screen resize 
+//Define callback function for event listeners for updating columns on screen resize
 const resizeEventListener = function(event){
   screenSizeColumns.value = calculateColumnNumber();
 };
 
-onMounted(() => {
-  refreshTasksMetadata();
-  watch(() => [connectionStore.walletAddress, connectionStore.tasksInstance, connectionStore.triggerEvent], async (instance) => {
-    if(instance != null) {
-      await refreshTasksMetadata();
-    }
+onMounted(async () => {
+  await refreshTasksMetadata();
+
+  // Watch for wallet changes
+  watch(() => [walletStore.walletAddress, walletStore.isConnected], async () => {
+    await refreshTasksMetadata();
   });
 
+  // Update isParticipating flag for each task
   watch(() => tasks.value, () => {
-    if (connectionStore.walletAddress != null && connectionStore.tasksInstance != null) {
-      tasks.value.forEach((task) => {
+    if (walletStore.walletAddress && tasks.value) {
+      tasks.value.forEach((task: any) => {
         task.isParticipating = false;
-        for (let i = 0; i < task.participants.length; i++) {
-          if(task.participants[i] == connectionStore.walletAddress) {
-            task.isParticipating = true;
-          }
+        // Check if wallet address is in participants array
+        // Note: In Solana, we need to fetch ParticipantRecord PDAs
+        // For now, simplified version
+        if (task.participantCount > 0) {
+          // TODO: Fetch participant records to check if user is participating
+          task.isParticipating = false;
         }
       });
     }
   });
 
-  //listeners for updating columns 
+  //listeners for updating columns
   window.addEventListener('resize', resizeEventListener);
 })
 
@@ -152,8 +147,8 @@ onBeforeUnmount(() => {
     <input type="text" v-model="searchQuery" class="w-full py-2 px-3  mb-2 sm:mb-0 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Search tasks...">
     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
       <select v-model="sortOrder" @change="sortTasks" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
-        <option value="tokenId" class="hover:bg-orange-200">Sort by ID</option>
-        <option value="reward">Sort by Reward</option>
+        <option value="taskId" class="hover:bg-orange-200">Sort by ID</option>
+        <option value="rewardAmount">Sort by Reward</option>
       </select>
       <button @click="toggleSortDirection" class="px-4 py-2 text-gray-700 bg-white border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
         {{ sortDirection === 'asc' ? 'Ascending' : 'Descending'}}
@@ -168,16 +163,16 @@ onBeforeUnmount(() => {
 
   <div class="card-table px-4 sm:px-40 mt-10">
     <div v-for="(taskRow, index) in _.chunk(filteredTasks, screenSizeColumns)" :key="index" class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
-      <div v-for="task in taskRow">
+      <div v-for="task in taskRow" :key="task.taskId">
         <Task
-          :tokenId="task.tokenId"
+          :tokenId="task.taskId"
           :title="task.title"
           :description="task.description"
-          :reward="task.reward"
-          :participants="task.participants"
-          :isParticipating="task.isParticipating"
-          :base64Image="task.base64Image"
-          :timestamp="task.timestamp"
+          :reward="(task.rewardAmount / 1_000_000_000).toFixed(2)"
+          :participants="[]"
+          :isParticipating="task.isParticipating || false"
+          :base64Image="task.base64Image || 'noimage'"
+          :timestamp="new Date(task.createdAt * 1000).toLocaleDateString()"
           @sentParticipation="() => refreshTasksMetadata()"
           class="bg-white text-black"
         />

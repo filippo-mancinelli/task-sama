@@ -1,14 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import Modal from './widgets/Modal.vue';
 import FileUpload from './bricks/FileUpload.vue';
 import { HandRaisedIcon, ClockIcon } from '@heroicons/vue/24/solid';
 import { ref, computed } from 'vue'
-import { useConnectionStore } from '../stores/useConnectionStore';
+import { useSolanaWalletStore } from '../stores/useSolanaWalletStore';
+import { useSolanaTaskStore } from '../stores/useSolanaTaskStore';
 import { useArgStore } from '../stores/useArgStore';
 import { usePopupStore } from '../stores/usePopupStore';
-import { useTaskStore } from '../stores/useTaskStore';
 
-const connectionStore = useConnectionStore();
+const walletStore = useSolanaWalletStore();
+const taskStore = useSolanaTaskStore();
 const argStore = useArgStore();
 const popupStore = usePopupStore();
 
@@ -50,41 +51,43 @@ const getImageUrl = computed(() => {
 });
 
 
-function participateTask() {
+async function participateTask() {
   if(isLoading.value === true) {
     popupStore.setPopup(true, 'alert', 'Wait for the current participation request to finish', 'modal');
     return;
   }
-  if(argStore.getArguments.file.size == 0) { 
+  if(argStore.getArguments.file.size == 0) {
     popupStore.setPopup(true, 'danger', 'You must upload a valid video to participate', 'modal');
     return;
-  } 
-  else if(!connectionStore.isConnected){
+  }
+  else if(!walletStore.isConnected){
      popupStore.setPopup(true, 'warning', 'You need to connect your wallet first', 'modal');
      return;
   }
-  isLoading.value = true;
-  //before updating the task NFT with the participation we upload the user video + tokenId to our server for moderation purposes
-  useTaskStore().uploadVideoToDB(argStore.arguments.fileData.value, props.tokenId).then(() => {
-    connectionStore.callContractFunction('Tasks', 'participate', 'stateChanging', [props.tokenId])
-      .then(response => {
-        const { transactionReceipt } = response;
-        isLoading.value = false;
-        modalType.value = 'success';
-        message.value = 'You sent your participation!';
-        showModal2.value = true;
-        showModal1.value = false;
 
-        emit('sentParticipation'); 
-      })
-      .catch(error => {
-        console.log("error",error)
-        isLoading.value = false;
-        modalType.value = 'danger';
-        message.value = 'Error sending participation: ' + error.data.message;
-        showModal2.value = true;
-      } );
-  });
+  isLoading.value = true;
+
+  try {
+    // Upload video to backend first
+    await taskStore.uploadVideo(props.tokenId, argStore.arguments.fileData.value);
+
+    // Then participate on-chain
+    const result = await taskStore.participate(props.tokenId);
+
+    isLoading.value = false;
+    modalType.value = 'success';
+    message.value = 'You sent your participation! Transaction: ' + result.signature.slice(0, 8) + '...';
+    showModal2.value = true;
+    showModal1.value = false;
+
+    emit('sentParticipation');
+  } catch (error: any) {
+    console.log("error", error);
+    isLoading.value = false;
+    modalType.value = 'danger';
+    message.value = 'Error sending participation: ' + (error.message || error);
+    showModal2.value = true;
+  }
 }
 </script>
 
@@ -98,7 +101,7 @@ function participateTask() {
     <div class="card-body w-79 gap-1 p-4 h-52 bg-white rounded-b-2xl">
       <h2 class="card-title hover:text-slate-500">
         <router-link :to="`/task/${tokenId}`" class="text-black">
-          #{{ tokenId  }} - {{ title }}  
+          #{{ tokenId  }} - {{ title }}
         </router-link>
         <div class="badge badge-secondary text-white">NEW</div>
       </h2>
@@ -110,7 +113,7 @@ function participateTask() {
 
         <!--DROPDOWN SEARCHBAR-->
         <div class="dropdown mt-2">
-          <label tabindex="0" class="hover:cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg></label> 
+          <label tabindex="0" class="hover:cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg></label>
           <div tabindex="0" class="dropdown-content z-[1] card card-compact right-1 shadow border-2 border-black bg-white text-black rounded p-1">
             <div class="card-body p-1 max-h-80 min-w-max overflow-y-auto">
               <!--SEARCHBAR AND ADDRESS LIST-->
@@ -131,7 +134,7 @@ function participateTask() {
       </div>
 
       <div class="card-actions justify-between">
-        <div class="italic text-black truncate">Reward:<span class="pl-2 text-lg">{{ reward }} GLMR</span></div> 
+        <div class="italic text-black truncate">Reward:<span class="pl-2 text-lg">{{ reward }} SOL</span></div>
         <label v-if="!isParticipating" @click="openModal" class="btn btn-primary pr-1 pl-4 w-30 text-white bg-orange-400 border-1 border-black hover:bg-orange-600 hover:border-black ">
           Participate
           <HandRaisedIcon class="h-6 w-6 pl-2 -translate-x-2" />
@@ -150,7 +153,7 @@ function participateTask() {
       <div class="flex flex-col mb-2">
         <span class="text-lg">&#x1F4F0; <span class="italic"> {{ title }}  </span> </span>
         <span class="text-lg">&#x270F; <span class="italic"> {{ description }}  </span> </span>
-        <span class="text-lg">&#x1F4B8;<span class="italic"> {{ reward }} GLMR </span> </span>
+        <span class="text-lg">&#x1F4B8;<span class="italic"> {{ reward }} SOL </span> </span>
       </div>
       <FileUpload :upload-type="'video'" />
       <div class="flex flex-col items-end">
