@@ -1,30 +1,34 @@
-<script setup>
-import { useConnectionStore } from './stores/useConnectionStore';
-import { useBackgroundStore } from './stores/useBackgroundStore';
-import { onMounted, watch, ref } from 'vue';
-import Navbar from './components/Navbar.vue';
-import Popup from './components/widgets/Popup.vue';
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import { useWallet } from 'solana-wallets-vue'
+import { useSolanaWalletStore } from './stores/useSolanaWalletStore'
+import { useBackgroundStore } from './stores/useBackgroundStore'
+import SolanaNavbar from './components/SolanaNavbar.vue'
+import Popup from './components/widgets/Popup.vue'
 
-const connectionStore = useConnectionStore();
-const backgroundStore = useBackgroundStore();
+const wallet = useWallet()
+const walletStore = useSolanaWalletStore()
+const backgroundStore = useBackgroundStore()
 
 onMounted(async () => {
-      await connectionStore.initConnectionWatcher();
-      await connectionStore.checkConnection();
-});
-
+  // Auto-reconnect if wallet was previously connected
+  if (wallet.connected.value && wallet.wallet.value) {
+    await walletStore.connectWallet(wallet.wallet.value)
+  }
+})
 </script>
 
 <template>
-  <div id="app" class="z-10" :class="backgroundStore.backgroundClass">
-    <Navbar />
+  <div id="app" class="z-10 min-h-screen" :class="backgroundStore.backgroundClass">
+    <SolanaNavbar />
     <Popup />
 
     <router-view></router-view>
   </div>
 </template>
 
-
 <style scoped>
-
+#app {
+  min-height: 100vh;
+}
 </style>
