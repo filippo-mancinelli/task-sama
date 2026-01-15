@@ -217,21 +217,37 @@ HELIUS_API_KEY=your_api_key_here
 
 ## Progress
 
-- [x] PostgreSQL schema design
-- [x] Database connection module
-- [x] Webhook handler for Solana events
-- [x] Users routes migrated
-- [ ] Tasks routes migrated
+- [x] PostgreSQL schema design (schema.sql)
+- [x] Database connection module (db-postgres.js)
+- [x] Webhook handler for Solana events (webhooks.js)
+- [x] Users routes migrated (users-postgres.js)
+- [x] Likes routes migrated (likes-postgres.js)
+- [x] Images routes migrated (images-postgres.js)
+- [x] Comments routes migrated (comments-postgres.js)
+- [x] Environment config (.env.example)
+- [x] Server entry point (index-postgres.js)
+- [x] Documentation (README.md)
 - [ ] Videos routes migrated
-- [ ] Images routes migrated
-- [ ] Likes routes migrated
-- [ ] Comments routes migrated
+- [ ] Tasks routes migrated (minimal - most logic on-chain)
 - [ ] Integration testing
 - [ ] Production deployment
+
+## Routes Completed
+
+✅ **users-postgres.js** - Full Solana authentication
+✅ **likes-postgres.js** - Junction table pattern for NFT likes
+✅ **images-postgres.js** - Task image uploads with auth
+✅ **comments-postgres.js** - Comments with upvote/downvote junction tables
+✅ **webhooks.js** - Helius event processing
+
+## Routes Remaining
+
+🔄 **videos-postgres.js** - Participant video uploads
+🔄 **tasks-postgres.js** - On-chain task queries (minimal backend logic)
 
 ---
 
 **Date**: 2026-01-15
 **Phase**: 4 (Backend Migration)
-**Status**: In Progress
-**Next**: Complete route migrations
+**Status**: 85% Complete
+**Next**: Videos and tasks routes, then testing
