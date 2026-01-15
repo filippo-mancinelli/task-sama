@@ -1,15 +1,14 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router'
 import { useCommentsStore } from '../stores/useCommentsStore';
-import { useConnectionStore } from '../stores/useConnectionStore';
+import { useSolanaWalletStore } from '../stores/useSolanaWalletStore';
 import { useVideoStore } from '../stores/useVideoStore';
 import { useBackgroundStore } from '../stores/useBackgroundStore';
-import { tasksamaAddress } from '../helpers/contractAddresses';
+import { PROGRAM_ID } from '../lib/solana/config';
 import CommentSection from './CommentSection.vue';
 
-var contractAddressesLink = "https://www.moonscan.io/address/" + tasksamaAddress;
-const connectionStore = useConnectionStore();
+const walletStore = useSolanaWalletStore();
 const backgroundStore = useBackgroundStore();
 const commentsStore = useCommentsStore();
 const videoStore = useVideoStore();
@@ -102,9 +101,9 @@ onMounted(async () => {
     <div>
       <p class="text-sm text-black italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task creator: </span> {{ tasksamaObject.creator }}</p>
       <p class="text-sm text-black italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Task winner: </span> {{ tasksamaObject.winner }}</p>
-      <p class="text-sm text-black italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Contract address: </span> <a :href="contractAddressesLink" target="_blank" class="text-sm text-blue-500 hover:text-blue-700 hover:cursor-pointer">{{ tasksamaAddress }}</a></p>
+      <p class="text-sm text-black italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Program ID: </span> <span class="text-sm text-blue-500">{{ PROGRAM_ID.toString() }}</span></p>
       <p class="text-sm text-black italic overflow-hidden whitespace-nowrap truncate"> <span class=" font-bold">Token ID: </span> {{ tasksamaObject.tokenId }}</p>
-      <p class="text-sm text-black italic"> <span class=" font-bold">Reward earned: </span> {{ tasksamaObject.rewardEarned }} GLMR</p>
+      <p class="text-sm text-black italic"> <span class=" font-bold">Reward earned: </span> {{ tasksamaObject.rewardEarned ? (tasksamaObject.rewardEarned / 1_000_000_000).toFixed(2) : 0 }} SOL</p>
     </div>
 
   </div>

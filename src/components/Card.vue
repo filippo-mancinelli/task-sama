@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
 import { getCurrentInstance, ref, watch, onMounted, defineEmits, nextTick } from 'vue';
-import { useConnectionStore } from '../stores/useConnectionStore';
+import { useSolanaWalletStore } from '../stores/useSolanaWalletStore';
 import { usePopupStore } from '../stores/usePopupStore';
 import { useVideoStore } from '../stores/useVideoStore';
 import { PlayCircleIcon } from "@heroicons/vue/24/solid"
@@ -8,6 +8,7 @@ import { PlayCircleIcon } from "@heroicons/vue/24/solid"
 //TODO: txhash, address, like/dislike,
 const emit = defineEmits(['like'])
 const { ctx } = getCurrentInstance();
+const walletStore = useSolanaWalletStore();
 let isLikePlaying = false;
 
 const props = defineProps([
@@ -25,11 +26,11 @@ const props = defineProps([
 ]);
 async function likeButton() {
   if(!isLikePlaying) { //prevents spamming like button
-    if(useConnectionStore().isConnected) {
+    if(walletStore.isConnected) {
       playLikeAnimation();
-      //the parent component (CardTables) listens for this event to take care of updating the DB and re-render  
+      //the parent component (CardTables) listens for this event to take care of updating the DB and re-render
       //this card component with updated data of likeCount and isLiked status props.
-      emit('like', props.tokenId, !props.isLiked, useConnectionStore().walletAddress); 
+      emit('like', props.tokenId, !props.isLiked, walletStore.walletAddress);
     } else {
       usePopupStore().setPopup(true, 'alert', 'Connect your wallet before liking videos!', 'modal');
     }
@@ -84,7 +85,7 @@ onMounted(async () => {
 
   //execute it the first time and then keep watching for user connection state to enable/disable like button
   setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("15%")}, 300)
-  watch(() => useConnectionStore().isConnected, (newValue, oldValue) => {
+  watch(() => walletStore.isConnected, (newValue, oldValue) => {
     setTimeout(function(){props.isLiked==true ? ctx.$refs.lottiePlayer.seek("70%") : ctx.$refs.lottiePlayer.seek("15%")}, 300)
   });
 });
@@ -113,8 +114,8 @@ onMounted(async () => {
     <div class="flex-container mt-2"> 
       <p class="italic truncate">Created:  <span class="pl-1 text-xs">{{ timestamp }}</span></p>
       <p class="italic truncate">Creator:  <span class="pl-1 text-xs">{{ creatorAddress }}</span></p>
-      <p class="italic truncate">Winner:  <span class="pl-1 text-xs">{{ winnerAddress }}</span></p> 
-      <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ rewardEarned }} GLMR</span></p> 
+      <p class="italic truncate">Winner:  <span class="pl-1 text-xs">{{ winnerAddress }}</span></p>
+      <p class="italic">Reward earned:  <span class="pl-1 text-lg">{{ (rewardEarned / 1_000_000_000).toFixed(2) }} SOL</span></p> 
       <div class="flex items-center justify-end pt-3">
         <router-link :to="'/video/' + props.tokenId" class="btn absolute left-4 btn-primary text-white bg-orange-400 border-orange-400 hover:bg-orange-600 hover:border-black ">
           watch

@@ -1,18 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import Modal from './widgets/Modal.vue';
 import TextInput from './bricks/TextInput.vue';
 import TextArea from './bricks/TextArea.vue';
 import FileUpload from './bricks/FileUpload.vue';
 import TokenAmount from './bricks/TokenAmount.vue';
 import { ref, watchEffect, onMounted } from 'vue';
-import { useConnectionStore } from '../stores/useConnectionStore';
+import { useSolanaWalletStore } from '../stores/useSolanaWalletStore';
 import { usePopupStore } from '../stores/usePopupStore';
 import { useArgStore } from '../stores/useArgStore';
-import { useTaskStore } from '../stores/useTaskStore';
+import { useSolanaTaskStore } from '../stores/useSolanaTaskStore';
 
-const connectionStore = useConnectionStore();
+const walletStore = useSolanaWalletStore();
 const argStore = useArgStore();
-const taskStore = useTaskStore();
+const taskStore = useSolanaTaskStore();
 
 const maximumChars = 200;
 const showModal = ref(false);
@@ -38,45 +38,45 @@ function closeModalEvent() {
   argStore.resetArgs();
 }
 
-function createTask() {
+async function createTask() {
   if(argStore.getArguments.textArea == '' || argStore.getArguments.textInput == '' || argStore.getArguments.numberInput == '' || argStore.getArguments.error.value == true) {
-    if(argStore.getArguments.textArea == '') 
+    if(argStore.getArguments.textArea == '')
       showAreaError.value = true;
-    
-    if(argStore.getArguments.textInput == '') 
+
+    if(argStore.getArguments.textInput == '')
       showInputError.value = true;
-    
-    if(argStore.getArguments.numberInput == '' || argStore.getArguments.numberInput < 20) 
+
+    if(argStore.getArguments.numberInput == '' || argStore.getArguments.numberInput < 0.02)
       showTokenError.value = true;
 
-  } else if(connectionStore.isConnected) {
+  } else if(walletStore.isConnected) {
      isLoading.value = true;
      const { numberInput: _reward, textInput: _title, textArea: _description } = argStore.getArguments;
 
-     connectionStore.callContractFunction('Tasks', 'createTask', 'payable', [_title,  _description], _reward.toString())
-      .then(response => {
-        modalType.value = 'success';
-        message.value = 'Task created successfully!';
-        showModalResult.value = true;
-        showModal.value = false;
-        isLoading.value = false;
-        connectionStore.triggerEvent = !connectionStore.triggerEvent;
+     try {
+       // Create task on Solana
+       const result = await taskStore.createTask(_title, _description, _reward);
 
-        // After the task NFT is created and if the user uploaded an image, we upload it to our DB for moderation reasons
-        if(argStore.getArguments.file != undefined) {
-          if(argStore.getArguments.file.size > 0) {
-            const taskId = parseInt(response.transactionReceipt.events[1].args.taskId);
-            taskStore.uploadImageToDB(argStore.arguments.fileData.value, taskId);
-          }
-        }
-      })
-      .catch(error => {
-        modalType.value = 'danger';
-        message.value = 'Error creating task: ' + error.code;
-        showModalResult.value = true;
-        isLoading.value = false;
-        console.log("errore Nella creazione del task: ", error.code)
-      } );
+       modalType.value = 'success';
+       message.value = 'Task created successfully! Tx: ' + result.signature.slice(0, 8) + '...';
+       showModalResult.value = true;
+       showModal.value = false;
+       isLoading.value = false;
+
+       // After the task is created, upload image to backend if provided
+       if(argStore.getArguments.file != undefined && argStore.getArguments.file.size > 0) {
+         await taskStore.uploadImage(result.taskId, argStore.arguments.fileData.value);
+       }
+
+       // Refresh tasks list
+       await taskStore.fetchTasks();
+     } catch (error: any) {
+       modalType.value = 'danger';
+       message.value = 'Error creating task: ' + (error.message || error);
+       showModalResult.value = true;
+       isLoading.value = false;
+       console.log("Error creating task: ", error)
+     }
   } else {
     usePopupStore().setPopup(true, 'alert', 'You need to connect your wallet before creating the task', 'noModal')
   }
@@ -118,7 +118,7 @@ onMounted(() => {
     <FileUpload :uploadType="'image'" />
     <div class="flex flex-nowrap just">
       <div class="w-1/3">
-        <TokenAmount :showError="showTokenError" :errorMessage="'Minimum reward is 20 GLMR.'"><template v-slot:title>Reward amount:</template></TokenAmount> 
+        <TokenAmount :showError="showTokenError" :errorMessage="'Minimum reward is 0.02 SOL.'"><template v-slot:title>Reward amount:</template></TokenAmount>
       </div>
     </div>
 

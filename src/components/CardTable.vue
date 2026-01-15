@@ -1,13 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, defineProps, onBeforeUnmount, watch } from 'vue';
 import { useVideoStore } from '../stores/useVideoStore';
-import { useConnectionStore } from '../stores/useConnectionStore';
+import { useSolanaWalletStore } from '../stores/useSolanaWalletStore';
 import { storeToRefs } from 'pinia';
 import Card from './Card.vue';
 import _ from 'lodash';
 
 const videoStore = useVideoStore();
-const connectionStore = useConnectionStore();
+const walletStore = useSolanaWalletStore();
 const { videoMetadata: cards } = storeToRefs(videoStore);
 
 const searchQuery = ref("");
@@ -108,9 +108,14 @@ const getCurrentIsLiked = computed(() => (tokenId) => {
   }
 });
 
-async function like(tokenId, likeValue, walletAddress) {
-    cards.value.find(element => element.tokenId === tokenId).likeCount = await updatelike(tokenId, likeValue, walletAddress); //updateLike takes care of updating likesMetadata store values
-    videoStore.likesMetadata.get(tokenId).isLiked = likeValue;
+async function like(tokenId: number, likeValue: boolean, walletAddress: string) {
+    const card = cards.value.find((element: any) => element.tokenId === tokenId);
+    if (card) {
+        card.likeCount = await updatelike(tokenId, likeValue, walletAddress); //updateLike takes care of updating likesMetadata store values
+        if (videoStore.likesMetadata.has(tokenId)) {
+            videoStore.likesMetadata.get(tokenId).isLiked = likeValue;
+        }
+    }
 }
 
 
@@ -121,14 +126,14 @@ const resizeEventListener = function(event){
 
 async function refreshMetadata() {
   cards.value = await videoStore.initVideoMetadata();  //fetch videos metadata on-chain
-  videoStore.likesMetadata = await videoStore.initLikes(connectionStore.walletAddress ? connectionStore.walletAddress : null); // Fetch likes metadata from backend. If we pass "null", the backend will respond with the like count but with isLiked false for every video
+  videoStore.likesMetadata = await videoStore.initLikes(walletStore.walletAddress ? walletStore.walletAddress : null); // Fetch likes metadata from backend. If we pass "null", the backend will respond with the like count but with isLiked false for every video
   if(cards.value.length > 0 && videoStore.likesMetadata.size > 0) videoStore.isDataReady = true;
-} 
+}
 
 onMounted(async () => {
   refreshMetadata();
 
-  watch([() => connectionStore.isConnected, () => connectionStore.walletAddress], async () => {
+  watch([() => walletStore.isConnected, () => walletStore.walletAddress], async () => {
     refreshMetadata();
   });
 
