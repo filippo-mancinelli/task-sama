@@ -1,7 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { useBackgroundStore } from '../stores/useBackgroundStore';
-import { useConnectionStore } from '../stores/useConnectionStore';
-import { useTaskStore } from '../stores/useTaskStore';
+import { useSolanaWalletStore } from '../stores/useSolanaWalletStore';
+import { useSolanaTaskStore } from '../stores/useSolanaTaskStore';
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router'
 import { usePopupStore } from '../stores/usePopupStore';
@@ -10,9 +10,9 @@ import Modal from './widgets/Modal.vue';
 
 // Stores
 let route;
-const connectionStore = useConnectionStore();
+const walletStore = useSolanaWalletStore();
 const videoStore = useVideoStore();
-const taskStore = useTaskStore();
+const taskStore = useSolanaTaskStore();
 const backgroundStore = useBackgroundStore();
 backgroundStore.changeBackgroundClass('bg-teal-200 h-full');
 
@@ -85,80 +85,87 @@ function reminder() {
 }
 
 //##### CHOOSE WINNER #####//
-// Before calling the contract function, we have to make sure first that the video has been succesfully deployed to IPFS
-// in order to retrieve the IPFS URL which will be passed to the contract function, which will mint a new completed NFT with it.
-function chooseWinner() {
+// Before calling the program instruction, upload the winner's video to IPFS
+// to get the metadata URL which will be used for NFT minting
+async function chooseWinner() {
     if(selectedWinner.value != '') {
         isLoading.value = true;
         loadingMessage.value = 'uploading video to IPFS'
-        taskStore.uploadVideoToIpfs(taskObject.value.tokenId, selectedWinner.value).then(result => {
-            if(result.status == 200) {
-                loadingMessage.value = 'Waiting for transaction confirmation'
-                
-                connectionStore.callContractFunction('Tasks', 'chooseWinner', 'stateChanging', [taskObject.value.tokenId, selectedWinner.value, result.data.data.IPFSMetadataUrl, result.data.data.IPFSVideoUrl]).then(res => {
-                    modalType.value = 'success';
-                    message.value = '🏆 The winner has been chosen! \nYour NFT has been minted and transferred to your account.';
-                    showModalResult.value = true;
-                    isLoading.value = false;
-                    videoStore.confirmNFTId(result.data.data.IPFSMetadataUrl, taskObject.value.tokenId);
 
-                    // Now we need to add the new NFT to the DB "like" structure in order to be able to display it in the homepage
-                    // We need to retrieve the newly minted tokenId from the Tasks contract event emitted "TaskCompleted"
-                    const tokenId = parseInt(res.transactionReceipt.events[2].args[2]);
-                    videoStore.addNewNftLikeDocument(tokenId);
-                }).catch(error => {
-                    modalType.value = 'danger';
-                    message.value = 'Error creating task: ' + error.code;
-                    showModalResult.value = true;
-                    isLoading.value = false;
-                    console.log("Error while choosing winner: ", error)
-                });
+        try {
+            // Upload video to IPFS via backend
+            const uploadResult = await taskStore.uploadVideoToIpfs(taskObject.value.taskId, selectedWinner.value);
+
+            if(uploadResult.status == 200) {
+                loadingMessage.value = 'Waiting for transaction confirmation'
+
+                // Call Solana program to choose winner and mint NFT
+                const result = await taskStore.chooseWinner(
+                    taskObject.value.taskId,
+                    selectedWinner.value,
+                    uploadResult.data.data.IPFSMetadataUrl,
+                    uploadResult.data.data.IPFSVideoUrl
+                );
+
+                modalType.value = 'success';
+                message.value = '🏆 The winner has been chosen! NFT minted. Tx: ' + result.signature.slice(0, 8) + '...';
+                showModalResult.value = true;
+                isLoading.value = false;
+
+                // Add new NFT to backend database
+                videoStore.confirmNFTId(uploadResult.data.data.IPFSMetadataUrl, taskObject.value.taskId);
+                videoStore.addNewNftLikeDocument(taskObject.value.taskId);
             } else {
                 usePopupStore().setPopup(true, 'danger', 'There was a problem uploading the video to IPFS. Please try again', 'modal');
                 isLoading.value = false;
             }
-        }).catch(error => {
+        } catch (error: any) {
             console.log(error);
             isLoading.value = false;
-            usePopupStore().setPopup(true, 'danger', 'There was a problem uploading the video to IPFS. Please try again', 'modal')
-        });
+            modalType.value = 'danger';
+            message.value = 'Error choosing winner: ' + (error.message || error);
+            showModalResult.value = true;
+        }
     }
 }
 
 onMounted(async ()=> {
     //#### TASK METADATA FETCH ####//
     route = useRoute();
-    taskObject.value.tokenId = route.params.tokenId;
+    const tokenId = route.params.tokenId;
 
-    // Image init
-    const fetchResponse = await useTaskStore().fetchTaskImage(taskObject.value.tokenId);
-    if(fetchResponse.data.message == 'Not found') {
-        imageSrc.value = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
-    } else {
-        imageSrc.value = 'data:image/jpeg;base64,' + fetchResponse.data.data[0].data;
-    }
+    // Image init - TODO: Fetch from backend
+    imageSrc.value = 'https://cdnb.artstation.com/p/assets/covers/images/025/161/603/large/swan-dee-abstract-landscpe-9000-resize.jpg?1584855427';
 
-    // Onchain metadata + backend video init
-    if(connectionStore.isAllSetUp) {
-        taskStore.fetchTaskMetadata(taskObject.value.tokenId).then(response => {
-                taskObject.value = response;
-                participants.value = response.result.participants;
-                fetchBackendVideo(taskObject.value.tokenId, participants.value[0]);
-                isReady.value = true;
-        });
-    }
+    // Fetch task from Solana
+    if(walletStore.isConnected) {
+        const tasks = await taskStore.fetchTasks();
+        taskObject.value = tasks.find((t: any) => t.taskId === parseInt(tokenId));
 
-    // Watch for same things in case connection changes
-    watch(() => connectionStore.isAllSetUp, (newValue, oldValue) => {
-        if(newValue) {
-            taskStore.fetchTaskMetadata(taskObject.value.tokenId).then(response => {
-                taskObject.value = response;
-                participants.value = response.result.participants;
-                fetchBackendVideo(taskObject.value.tokenId, participants.value[0]);
-                isReady.value = true;
-            });
+        // TODO: Fetch participant records from PDAs
+        participants.value = [];
+
+        if(participants.value.length > 0) {
+            fetchBackendVideo(taskObject.value.taskId, participants.value[0]);
         }
-    });    
+        isReady.value = true;
+    }
+
+    // Watch for wallet connection changes
+    watch(() => walletStore.isConnected, async (newValue) => {
+        if(newValue) {
+            const tasks = await taskStore.fetchTasks();
+            taskObject.value = tasks.find((t: any) => t.taskId === parseInt(tokenId));
+
+            // TODO: Fetch participant records from PDAs
+            participants.value = [];
+
+            if(participants.value.length > 0) {
+                fetchBackendVideo(taskObject.value.taskId, participants.value[0]);
+            }
+            isReady.value = true;
+        }
+    });
 });
 
 </script>
@@ -168,11 +175,11 @@ onMounted(async ()=> {
     <!-- TASK SUMMARY -->
     <div class="card lg:card-side bg-base-100 shadow-xl mx-12 mt-6 ">
         <figure  class="max-w-lg"><img :src="imageSrc" alt="Shoes" /></figure>
-        
+
         <div class="card-body">
-            <h2 class="card-title">#{{ taskObject.tokenId }} - {{ taskObject.result.title }} </h2>
-            <p class="whitespace-normal overflow-hidden">{{ taskObject.result.description }}</p>
-            <p>Participants: {{ participants.length }}</p>
+            <h2 class="card-title">#{{ taskObject.taskId }} - {{ taskObject.title }} </h2>
+            <p class="whitespace-normal overflow-hidden">{{ taskObject.description }}</p>
+            <p>Participants: {{ taskObject.participantCount || 0 }}</p>
             <span>Winner: <span class="text-orange-600">{{ selectedWinner }}</span></span>
             <button class="btn self-start mt-1 bg-orange-400 hover:bg-orange-500 text-white" @click="chooseWinner">
                 <span v-if="!isLoading" class="flex gap-1 items-center">Choose <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" /></svg></span>
