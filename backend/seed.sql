@@ -39,7 +39,7 @@ INSERT INTO video_nfts
    'TaskSama Completion #1',
    'https://ipfs.io/ipfs/bafkreemetadata0001example0001example0001examp',
    'https://ipfs.io/ipfs/bafybvideo0001example0001example0001example001',
-   'NFTm1ntAddr1example1example1example1example1A',
+   'NFTm1ntDemo1example1example1example1example',
    NOW() - INTERVAL '2 days')
 ON CONFLICT DO NOTHING;
 
