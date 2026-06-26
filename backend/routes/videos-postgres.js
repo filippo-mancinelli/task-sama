@@ -5,7 +5,19 @@ const upload = multer({ dest: "uploads/videos" });
 const fs = require('fs');
 const { PassThrough } = require('stream');
 const { FilebaseClient, File } = require('@filebase/client');
-const filebaseClient = new FilebaseClient({ token: process.env.FILEBASE_API_TOKEN });
+
+// Lazily construct the Filebase client so a missing FILEBASE_API_TOKEN does not
+// crash the whole app at boot. It only matters for the IPFS upload endpoint.
+let _filebaseClient = null;
+function getFilebaseClient() {
+    if (!process.env.FILEBASE_API_TOKEN) {
+        throw new Error('FILEBASE_API_TOKEN is not configured');
+    }
+    if (!_filebaseClient) {
+        _filebaseClient = new FilebaseClient({ token: process.env.FILEBASE_API_TOKEN });
+    }
+    return _filebaseClient;
+}
 const { query } = require('../db-postgres');
 const nacl = require('tweetnacl');
 const bs58 = require('bs58');
@@ -116,7 +128,7 @@ router.post('/uploadVideoToIpfs', async (ctx, next) => {
             if (video && fs.existsSync(video.path)) {
                 const fileData = fs.readFileSync(video.path);
 
-                const metadata = await filebaseClient.store({
+                const metadata = await getFilebaseClient().store({
                     name: video.name,
                     description: `A TaskSama winner video made by ${video.participant_address}.`,
                     image: new File([fileData], video.participant_address, { type: 'video/mp4' }),
