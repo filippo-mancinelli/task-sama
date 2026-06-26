@@ -55,13 +55,17 @@ app.use(async (ctx, next) => {
   await next();
 });
 
-// 404 handler
+// 404 handler — only applies when no upstream route handled the request.
+// Route handlers set ctx.body and then call `await next()`, so without this
+// guard their responses would be overwritten with a 404.
 app.use(async (ctx) => {
-  ctx.status = 404;
-  ctx.body = {
-    error: 'Not Found',
-    path: ctx.request.path
-  };
+  if (ctx.body === undefined || ctx.body === null) {
+    ctx.status = 404;
+    ctx.body = {
+      error: 'Not Found',
+      path: ctx.request.path
+    };
+  }
 });
 
 // Create server based on environment
