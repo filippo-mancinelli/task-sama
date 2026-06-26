@@ -15,6 +15,10 @@ export const PROGRAM_ID = new PublicKey(
 
 export const COMMITMENT = 'confirmed' as const
 
+// Demo mode: when the on-chain program is not deployed, the UI is populated
+// with fictitious tasks so the app is browsable. Toggled via VITE_DEMO_MODE.
+export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true'
+
 // Platform config PDA
 export const PLATFORM_CONFIG_SEED = 'platform_config'
 

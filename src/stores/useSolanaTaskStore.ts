@@ -3,6 +3,8 @@ import { ref, computed } from 'vue'
 import { PublicKey } from '@solana/web3.js'
 import { useTaskSamaProgram } from '@/composables/useTaskSamaProgram'
 import { lamportsToSol, formatTimestamp } from '@/lib/solana/utils'
+import { DEMO_MODE } from '@/lib/solana/config'
+import { DEMO_TASKS, DEMO_PLATFORM_CONFIG, getDemoTask } from '@/lib/demo'
 import axios from 'axios'
 
 interface Task {
@@ -57,6 +59,10 @@ export const useSolanaTaskStore = defineStore('solanaTask', () => {
 
   // Fetch platform config
   async function fetchPlatformConfig() {
+    if (DEMO_MODE) {
+      platformConfig.value = { ...DEMO_PLATFORM_CONFIG }
+      return platformConfig.value
+    }
     try {
       isLoading.value = true
       error.value = null
@@ -82,6 +88,10 @@ export const useSolanaTaskStore = defineStore('solanaTask', () => {
 
   // Fetch all tasks
   async function fetchTasks() {
+    if (DEMO_MODE) {
+      tasks.value = DEMO_TASKS.map((t) => ({ ...t })) as Task[]
+      return tasks.value
+    }
     try {
       isLoading.value = true
       error.value = null
@@ -116,6 +126,11 @@ export const useSolanaTaskStore = defineStore('solanaTask', () => {
 
   // Fetch single task
   async function fetchTask(taskId: number) {
+    if (DEMO_MODE) {
+      const demo = getDemoTask(taskId)
+      currentTask.value = demo ? ({ ...demo } as Task) : null
+      return currentTask.value as Task
+    }
     try {
       isLoading.value = true
       error.value = null

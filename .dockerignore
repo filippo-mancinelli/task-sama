@@ -1,0 +1,14 @@
+node_modules
+dist
+.git
+.omc
+backend
+docs
+programs
+tests
+target
+*.log
+.env
+.env.*
+!.env.example
+npm-debug.log

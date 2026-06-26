@@ -2,8 +2,9 @@
 import { watch, ref, defineProps, defineEmits } from 'vue';
 import { ChevronDoubleUpIcon, ChevronDoubleDownIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { useCommentsStore } from '../stores/useCommentsStore';
-import { useConnectionStore } from '../stores/useConnectionStore';
+import { useSolanaWalletStore } from '../stores/useSolanaWalletStore';
 import { usePopupStore } from '../stores/usePopupStore';
+import { getAvatarImg } from '../lib/avatar';
 
 const props = defineProps([
   'commentId',
@@ -24,7 +25,7 @@ const isUpRef = ref(false);
 const isDownRef = ref(false);
 const upsRef = ref(props.ups);
 const downsRef = ref(props.downs);
-const avatarImgHtml1 = useConnectionStore().getAvatarImg(25, props.posterSeed); 
+const avatarImgHtml1 = getAvatarImg(25, props.posterSeed);
 
 
 function up() {
@@ -82,13 +83,14 @@ function deleteComment() {
 }
 
 function setCommentUpDownStatus() {
-    props.upsAddresses.includes(useConnectionStore().walletAddress) ? isUpRef.value = true : isUpRef.value = false;
-    props.downsAddresses.includes(useConnectionStore().walletAddress) ? isDownRef.value = true : isDownRef.value = false;
+    const walletAddress = useSolanaWalletStore().walletAddress;
+    props.upsAddresses.includes(walletAddress) ? isUpRef.value = true : isUpRef.value = false;
+    props.downsAddresses.includes(walletAddress) ? isDownRef.value = true : isDownRef.value = false;
 }
 
-// Set the isUp and isDown variables at component mount, and then everytime wallet address changes or metamask disconnects
+// Set the isUp and isDown variables at component mount, and then everytime the connected wallet changes
 setCommentUpDownStatus();
-watch([() => useConnectionStore().isAllSetUp, () => useConnectionStore().triggerEvent], ([isAllSetup, triggerEvent], [prevIsAllSetuo, prevTriggerEvent]) => {
+watch(() => useSolanaWalletStore().walletAddress, () => {
     setCommentUpDownStatus();
 });
 
@@ -127,7 +129,7 @@ watch([() => useConnectionStore().isAllSetUp, () => useConnectionStore().trigger
             </div>
 
             <!-- DELETE COMMENT -->
-            <div v-if="posterAddress == useConnectionStore().walletAddress" class="dropdown dropdown-end">
+            <div v-if="posterAddress == useSolanaWalletStore().walletAddress" class="dropdown dropdown-end">
                 <div tabindex="0" role="button">
                     <TrashIcon tabindex="0" class="h-6 w-6 cursor-pointer border rounded-full self-end text-gray-400 mb-2"   />
                 </div>
@@ -146,4 +148,3 @@ watch([() => useConnectionStore().isAllSetUp, () => useConnectionStore().trigger
 
 <style scoped>
 </style>
-```

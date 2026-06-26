@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useBackgroundStore } from '../stores/useBackgroundStore';
-import { useConnectionStore } from '../stores/useConnectionStore';
 import { useUsersStore } from '../stores/useUsersStore';
+import { getAvatarImg } from '../lib/avatar';
 import { useRoute } from 'vue-router';
 
 useBackgroundStore().changeBackgroundClass('bg-orange-50 h-screen');
@@ -14,7 +14,7 @@ var userData = ref({});
 useUsersStore().getUserDataByUsername(username).then(response => {
     console.log(response);
     userData.value = response.data.data;
-    avatarImgHtml = useConnectionStore().getAvatarImg(100, userData.value.seed);
+    avatarImgHtml = getAvatarImg(100, userData.value.seed);
 });
 
 

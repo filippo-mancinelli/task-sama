@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { useConnectionStore } from "./useConnectionStore";
 import axios from 'axios';
 
 export const useCommentsStore = defineStore('commentsStore', {
