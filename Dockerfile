@@ -2,8 +2,12 @@
 # Build context: repo root.
 
 # ---- Stage 1: build ----
-FROM node:20-alpine AS build
+# glibc base + build tools so any native npm modules (node-gyp) compile reliably.
+FROM node:20-bookworm-slim AS build
 WORKDIR /app
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
 
 # Install deps first for layer caching (.npmrc carries legacy-peer-deps=true)
 COPY package.json .npmrc ./
@@ -24,6 +28,8 @@ ENV VITE_BACKEND_URL=$VITE_BACKEND_URL \
     VITE_PROGRAM_ID=$VITE_PROGRAM_ID \
     VITE_HELIUS_DEVNET_RPC=$VITE_HELIUS_DEVNET_RPC
 
+# Headroom for the Rollup/Vite production build
+ENV NODE_OPTIONS=--max-old-space-size=2048
 RUN npm run build
 
 # ---- Stage 2: serve ----
