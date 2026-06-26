@@ -48,6 +48,24 @@ CREATE INDEX idx_videos_task_id ON participant_videos(task_id);
 CREATE INDEX idx_videos_participant ON participant_videos(participant_address);
 CREATE INDEX idx_videos_moderated ON participant_videos(moderated);
 
+-- Video NFTs table (equivalent to IPFSvideos in Mongo)
+CREATE TABLE video_nfts (
+    id SERIAL PRIMARY KEY,
+    task_id BIGINT NOT NULL,
+    participant_address VARCHAR(44) NOT NULL REFERENCES users(wallet_address),
+    winner_address VARCHAR(44) NOT NULL REFERENCES users(wallet_address),
+    name VARCHAR(255) NOT NULL,
+    ipfs_metadata_url TEXT,
+    ipfs_video_url TEXT,
+    nft_mint_address VARCHAR(44), -- populated after minting
+    minted_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_video_nfts_task ON video_nfts(task_id);
+CREATE INDEX idx_video_nfts_winner ON video_nfts(winner_address);
+
+
 -- NFT likes table
 CREATE TABLE nft_likes (
     id SERIAL PRIMARY KEY,

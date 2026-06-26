@@ -223,7 +223,7 @@ services:
 
 ## Migration from MongoDB
 
-See `BACKEND_MIGRATION.md` for details on migrating from the old MongoDB version.
+See [`../docs/BACKEND_MIGRATION.md`](../docs/BACKEND_MIGRATION.md) for details on migrating from the old MongoDB version.
 
 Key changes:
 - MongoDB → PostgreSQL

@@ -22,12 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-truffle/build/contracts/
-truffle/build/contracts/Address.json
-bin/src/contracts/TaskSama.abi
-bin/src/contracts/TaskSama.bin
-bin/src/contracts/TaskSama-solc-output.json
-bin/src/contracts/TaskSama.json
 .env
 
 # Frontend temp data
@@ -51,3 +45,6 @@ src/helpers/contractAddresses.js
 backend/helpers/contractAddresses.js
 backend/helpers/contractAddresses.js
 note.txt
+
+# OMC operational state
+.omc/

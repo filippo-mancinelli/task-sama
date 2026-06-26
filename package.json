@@ -23,12 +23,11 @@
     "axios": "^1.6.5",
     "bs58": "^5.0.0",
     "daisyui": "^4.6.0",
-    "ipfs-http-client": "^60.0.1",
     "lodash": "^4.17.21",
     "lottie-web": "^5.12.2",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
-    "solana-wallets-vue": "^0.6.2",
+    "solana-wallets-vue": "^0.6.1",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5",
     "vue3-lottie": "^3.2.0"

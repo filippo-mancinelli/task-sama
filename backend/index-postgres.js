@@ -18,12 +18,14 @@ app.use(cors(corsOptions));
 app.use(bodyParser());
 
 // Import PostgreSQL route files
+// Import PostgreSQL route files
 const webhooksRouter = require('./routes/webhooks');
 const usersRouter = require('./routes/users-postgres');
 const likesRouter = require('./routes/likes-postgres');
 const imagesRouter = require('./routes/images-postgres');
 const commentsRouter = require('./routes/comments-postgres');
-// TODO: Add videos-postgres and tasks-postgres when completed
+const videosRouter = require('./routes/videos-postgres');
+const taskRouter = require('./routes/tasks-postgres');
 
 // Use routes
 app.use(webhooksRouter.routes());
@@ -31,6 +33,8 @@ app.use(usersRouter.routes());
 app.use(likesRouter.routes());
 app.use(imagesRouter.routes());
 app.use(commentsRouter.routes());
+app.use(videosRouter.routes());
+app.use(taskRouter.routes());
 
 // Error handler
 app.on('error', (err, ctx) => {
